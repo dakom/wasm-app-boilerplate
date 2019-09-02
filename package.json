@@ -1,0 +1,54 @@
+{
+  "name": "my_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run _rust:build:dev && npm-run-all -p _webpack:start _rust:start",
+    "clean": "rimraf ./dist && rimraf ./_static/app/pkg && rimraf ./src/app/pkg && rimraf ./src/app/target",
+    "bundle:ci": "npm run clean && npm run _rust:package:release && npm run _webpack:build",
+    "bundle:local": "npm run bundle:ci && npm run _copy:static",
+    "_webpack:build": "webpack --progress --color --mode production --config webpack.release.js",
+    "_webpack:start": "webpack-dev-server --progress --color --mode development --config webpack.dev.js",
+    "_rust:start": "watchexec -w ./src/app/src npm run _rust:package:dev",
+    "_rust:package:dev": "npm run _rust:build:dev && npm run _rust:bindgen:dev",
+    "_rust:build:dev": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --features dev --target wasm32-unknown-unknown --manifest-path ./src/app/Cargo.toml",
+    "_rust:bindgen:dev": "wasm-bindgen ./src/app/target/wasm32-unknown-unknown/debug/my_app.wasm --no-typescript --target no-modules --out-dir ./_static/app/pkg",
+    "_rust:package:release": "npm run _rust:build:release && npm run _rust:bindgen:release && npm run _rust:opt",
+    "_rust:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown --manifest-path ./src/app/Cargo.toml",
+    "_rust:bindgen:release": "wasm-bindgen ./src/app/target/wasm32-unknown-unknown/release/my_app.wasm --no-typescript --target no-modules --out-dir ./_static/app/pkg",
+    "_rust:opt": "wasm-opt -Os -o ./_static/app/pkg/my_app_bg.wasm ./_static/app/pkg/my_app_bg.wasm",
+    "_copy:static": "cpy _redirects ../dist --cwd=_static && cpy **/* ../../dist/app --cwd=_static/app --parents"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakom/my_app.git"
+  },
+  "author": "David Komer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dakom/my_app/issues"
+  },
+  "homepage": "https://github.com/dakom/my_app#readme",
+  "devDependencies": {
+    "cpy-cli": "^2.0.0",
+    "cross-env": "^5.2.0",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.3.0",
+    "fork-ts-checker-notifier-webpack-plugin": "^1.0.2",
+    "fork-ts-checker-webpack-plugin": "^1.5.0",
+    "html-webpack-plugin": "^3.2.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.0",
+    "style-loader": "^1.0.0",
+    "ts-loader": "^6.0.4",
+    "tslib": "^1.10.0",
+    "typescript": "^3.6.2",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.8.0"
+  },
+  "dependencies": {
+    "lit-html": "^1.1.2"
+  }
+}

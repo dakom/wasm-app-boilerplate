@@ -1,0 +1,29 @@
+[package]
+name = "my_app"
+version = "0.1.0"
+authors = ["David Komer <david.komer@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 's'
+
+[dependencies]
+wasm-bindgen = "0.2.50"
+js-sys = "0.3.27"
+cfg-if = "0.1.9"
+log = "0.4.8"
+num-traits = "0.2"
+num-derive = "0.2"
+serde = { version = "1.0.99", features = ["derive"]}
+serde-wasm-bindgen = { version = "0.1.3"}
+wee_alloc = { version = "0.4.5", optional = true }
+console_log = { version = "0.1.2", optional = true }
+console_error_panic_hook = { version = "0.1.6", optional = true }
+
+[features]
+default = ["wee_alloc"]
+dev = ["wee_alloc", "console_log", "console_error_panic_hook"]
