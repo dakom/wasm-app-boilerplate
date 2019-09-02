@@ -11,6 +11,15 @@ Just a simple boilerplate for a web app with the following characteristics:
 * [webgl](src/webgl) is a webgl renderer also via rust/wasm
 * They are all on separate web-workers
 
+# Supported Browsers
+
+Chrome, Firefox, and probably Edge when it's based on Chromium. 
+
+The approach here uses SharedWorker (which isn't available on Safari).
+
+Also, as of right now, an app that uses this approach for performance also probably wants webgl2 support and Safari doesn't support that either :\
+
+
 # Dataflow
 
 It's like this:

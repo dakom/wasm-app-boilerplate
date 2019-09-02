@@ -1,6 +1,6 @@
 #![feature(async_await)]
 
-mod init;
+mod app;
 mod events;
 mod state;
 mod ui;
@@ -40,11 +40,10 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(on_ui_state: &js_sys::Function) -> Result<JsValue, JsValue> {
+pub fn run(on_ui_state: js_sys::Function) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
-    //start is going to want to own the ui state callback so it can call it from anywhere
-    init::start(on_ui_state.clone())
+    app::start(on_ui_state)
 }
 

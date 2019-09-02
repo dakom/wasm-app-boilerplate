@@ -9,7 +9,7 @@ export const results = () => {
 
 const list_results = (results:Array<string>) => html`
     <div class="results">
-        <header>Added so far:</header>
+        <header>Received:</header>
         <ul>
             ${results.map(result => html`
                 <li>${result}</li>
