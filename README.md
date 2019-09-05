@@ -6,19 +6,18 @@
 
 Just a simple boilerplate for a web app with the following characteristics:
 
-* [app](src/app) is state management and business logic via rust/wasm
-* [ui](src/ui) is html/dom rendering via lit-html
-* [webgl](src/webgl) is a webgl renderer also via rust/wasm
-* They are all on separate web-workers
+* [app](src/app): state management and main logic using [shipyard ecs](https://crates.io/crates/shipyard)
+* [ui](src/ui): html/dom rendering via [lit-html](https://lit-html.polymer-project.org)
+* [webgl](src/webgl): webgl renderering made easier by [awsm_web](https://crates.io/crates/awsm_web)
+* [audio](src/audio): audio playback just using pure [web-sys](https://crates.io/crates/web-sys) 
 
-# Supported Browsers
+These are divided into two threads:
+1. `ui`, `webgl`, and `audio` (the main thread)
+2. `app` (the worker)
 
-Chrome, Firefox, and probably Edge when it's based on Chromium. 
+Everything except the `ui` layer and basic worker comms is in Rust/wasm.
 
-The approach here uses SharedWorker (which isn't available on Safari).
-
-Also, as of right now, an app that uses this approach for performance also probably wants webgl2 support and Safari doesn't support that either :\
-
+WebGl and Audio could be split, but requires more widespread support for Canvas and AudioContext in workers.
 
 # Dataflow
 
@@ -36,13 +35,11 @@ Once those are in place (which is a bit of a pain to keep in sync), the whole ev
 
 # Managing application state in WASM
 
-This boilerplate doesn't include a specific choice - it's purposefully kept to a minimum here. However, that's where a lot of the magic would happen in a real app.
+The core mechanism is the Shipyard Enity Component System, and this boilerplate only includes a bare minimum example needed to shuttle the events and state back and forth across all areas.
 
-Any technique should work - statecharts, ecs, frp, ...
+The ECS is updated internally in a game loop - and sends out state updates for all the dependants (`ui`, `webgl`, and `audio`)
 
-It could be updated internally in a game loop, or, like this starting point- driven directly by the calls to `ui_event()`
-
-The only caveat is that it should send back a complete `ui_state` whenever it wants to update it for the html and `gl_state` whenever it wants to update the webgl layer. These does _not_ need to be directly related to the overall application state (but it can be - whatever floats your boat!)
+These state updates are _not_ synonymous with the entire application state (though it can be - whatever floats your boat!)
 
 (note - there are potential avenues to optimize here, like only sending deltas or serializing to a binary format like flatbuffers... but that all comes at a computational cost and would need profiling to see if it's really worthwhile, so neither of those are included here. Rather, it's simple serde-powered JS Objects <-> Rust structs)
 

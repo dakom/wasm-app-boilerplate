@@ -1,11 +1,11 @@
 import {html} from "lit-html";
-import {ui_state} from "ui/state";
+import {get_ui_state} from "ui/state";
 import {ui_event, UiEvent} from "ui/events";
 
 import "./text-input.css";
 
 export const text_input = () => {
-    const value = ui_state().textInput;
+    const value = get_ui_state().textInput;
 
     const onSubmit = () => ui_event(UiEvent.AppendText);
     const onInput = evt => ui_event([UiEvent.UpdateInput, evt.target.value]);

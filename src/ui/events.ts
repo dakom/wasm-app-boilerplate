@@ -21,5 +21,5 @@ export const ui_event = (event:ValidEvents) => {
         ? {event_type: event}
         : {event_type: event[0], data: event[1]};
 
-    wasm_worker.postMessage({ type: "UI_EVENT", data });
+    wasm_worker.postMessage({ type: "EVENT", data });
 }

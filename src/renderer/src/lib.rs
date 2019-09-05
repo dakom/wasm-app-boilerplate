@@ -1,15 +1,12 @@
 #![feature(async_await)]
 
-mod app;
-mod events;
+mod renderer;
 mod state;
-mod ui;
-mod render;
-mod audio;
 
 use cfg_if::cfg_if;
 use log::{info, Level};
 use wasm_bindgen::prelude::*;
+use web_sys::{HtmlCanvasElement};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -42,10 +39,10 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function) -> Result<JsValue, JsValue> {
+pub fn run(canvas:HtmlCanvasElement) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
-    app::start(on_ui_state, on_render_state, on_audio_state)
+    renderer::start(canvas)
 }
 

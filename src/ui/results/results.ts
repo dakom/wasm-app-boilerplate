@@ -1,9 +1,9 @@
 import {html} from "lit-html";
-import {ui_state} from "ui/state";
+import {get_ui_state} from "ui/state";
 import "./results.css";
 
 export const results = () => {
-    const results = ui_state().results;
+    const results = get_ui_state().results;
     return !results.length ? null : list_results(results);
 }
 

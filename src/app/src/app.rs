@@ -2,28 +2,20 @@ use wasm_bindgen::prelude::*;
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
+use awsm_web::tick::{MainLoop, MainLoopOptions};
 use crate::events::{handle_event};
 use crate::state::{State};
 use crate::ui::{Ui};
+use crate::render::{Render};
+use crate::audio::{Audio};
 
-pub fn start(on_ui_state: js_sys::Function) -> Result<JsValue, JsValue> {
+pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function) -> Result<JsValue, JsValue> {
     let state = Rc::new(RefCell::new(State::new()));
 
-    //First - state is used as a source for ui_state which will be sent to the ui thread
-    let render = {
-        let state = Rc::clone(&state);
-        move || {
-            let state = state.borrow();
-            let this = JsValue::NULL;
-            let ui_state = Ui::new(&state);
-            on_ui_state.call1(&this, &ui_state.to_js());
-        }
-    };
-
-    render(); // initial render
-
-    //Second - state is used as a mutable destination to be changed when events come in from the ui thread
-    let _send_ui_event = Closure::wrap(Box::new({
+    //Create a function which allows JS to send us events ad-hoc
+    //We will need to get a handle and forget the Closure
+    //See https://stackoverflow.com/a/53219594/784519
+    let _send_event = Closure::wrap(Box::new({
         let state = Rc::clone(&state);
 
         move |evt_type:u32, data:JsValue| {
@@ -34,17 +26,46 @@ pub fn start(on_ui_state: js_sys::Function) -> Result<JsValue, JsValue> {
                     Err(reason) => info!("Error: {:?}", reason)
                 }
             }
-            render();
         }
     }) as Box<FnMut(u32, JsValue) -> ()>);
 
-    //It must be returned to JS, which means it would be Dropped here
-    //So we need to get a handle and forget the Closure
-    //See https://stackoverflow.com/a/53219594/784519
-    let send_ui_event = _send_ui_event.as_ref().clone();
+    let send_event = _send_event.as_ref().clone();
+    _send_event.forget();
 
-    _send_ui_event.forget();
+    //Main loop callbacks
+    let begin = move |time, delta| {
+    };
 
-    Ok(send_ui_event)
+    let update = {
+        move |delta| {
+        }
+    };
+
+    let draw = {
+        let state = Rc::clone(&state);
+        move |interpolation| {
+            let state = state.borrow();
+            let this = JsValue::NULL;
+            
+            let ui_state = Ui::new(&state, interpolation);
+            on_ui_state.call1(&this, &ui_state.to_js());
+            
+            let render_state = Render::new(&state, interpolation);
+            on_render_state.call1(&this, &render_state.to_js());
+
+            let audio_state = Audio::new(&state, interpolation);
+            on_audio_state.call1(&this, &audio_state.to_js());
+        }
+    };
+
+    let end = move |fps, abort| {
+    };
+
+    //start and forget the loop
+    let main_loop = MainLoop::start(MainLoopOptions::default_worker(), begin, update, draw, end)?;
+    std::mem::forget(Box::new(main_loop));
+
+    //Return the event sender
+    Ok(send_event)
 }
 

@@ -4,18 +4,14 @@ use crate::state::{State};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Ui <'a> {
-    text_input: &'a str,
-    results: &'a [String],
+pub struct Audio {
     interpolation: f64
 }
 
-impl <'a> Ui <'a> {
+impl Audio {
 
-    pub fn new(state:&'a State, interpolation: f64) -> Self {
+    pub fn new(state:&State, interpolation: f64) -> Self {
         Self {
-            text_input: &state.text_input,
-            results: &state.results,
             interpolation
         }
     }
