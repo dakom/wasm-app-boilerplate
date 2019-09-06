@@ -20,11 +20,11 @@
                 "node_modules/@types/*",
                 "*"
               ],
-            "ui/*": ["src/ui/*"],
+            "ui/*": ["src/main/ui/*"],
         },
     },
     "include": [
-        "./src/**/*.ts"
+        "./src/main/**/*.ts"
     ],
     "exclude": [
         "node_modules",

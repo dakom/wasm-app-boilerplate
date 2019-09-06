@@ -5,11 +5,11 @@
  * see the --no-modules flag docs at https://rustwasm.github.io/wasm-bindgen/examples/without-a-bundler.html
  */
 
-self.importScripts("./pkg/my_app.js");
+self.importScripts("./wasm/core/pkg/my_core.js");
 const {run} = wasm_bindgen;
 
 (async () => { 
-    await wasm_bindgen("./pkg/my_app_bg.wasm");
+    await wasm_bindgen("./wasm/core/pkg/my_core_bg.wasm");
 
     let send_event;
 

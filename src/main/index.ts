@@ -4,7 +4,7 @@ import {get_ui_state, set_ui_state} from "ui/state";
 import {set_audio_state, get_audio_state, update_audio} from "./audio/audio";
 
 import {ui} from "ui/ui";
-const app_worker = new Worker("app/worker-shim.js");
+const app_worker = new Worker("core-worker-shim.js");
 const ui_dom_element= document.getElementById("ui");
 const canvas_dom_element= document.getElementById("canvas");
 
@@ -48,7 +48,7 @@ app_worker.onmessage = (msg:MessageEvent) => {
  */
 
 let render:(state:any) => void = () => {};
-import("../_static/renderer/pkg/my_renderer")
+import("../../_static/wasm/renderer/pkg/my_renderer")
     .then(({run}) => {
         render = run(canvas_dom_element);
     });
@@ -77,6 +77,6 @@ const onTick = () => {
         set_audio_state(undefined);
     }
 
-    console.log(performance.now() - now);
+    //console.log(performance.now() - now);
 }
 requestAnimationFrame(onTick);
