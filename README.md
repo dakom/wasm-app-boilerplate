@@ -20,6 +20,7 @@ Everything except the `ui` layer and basic worker comms is in Rust/wasm.
 WebGl and Audio could be split, but requires more widespread support for Canvas and AudioContext in workers.
 
 # Dataflow
+![flowchart](https://i.imgur.com/wT3jy6q.png)
 
 It's like this:
 
