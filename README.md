@@ -2,23 +2,6 @@
 
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
-# What is it?
-
-Just a simple boilerplate for a web app with the following characteristics:
-
-* [app](src/app): state management and main logic using [shipyard ecs](https://crates.io/crates/shipyard)
-* [ui](src/ui): html/dom rendering via [lit-html](https://lit-html.polymer-project.org)
-* [webgl](src/webgl): webgl renderering made easier by [awsm_web](https://crates.io/crates/awsm_web)
-* [audio](src/audio): audio playback just using pure [web-sys](https://crates.io/crates/web-sys) 
-
-These are divided into two threads:
-1. `ui`, `webgl`, and `audio` (the main thread)
-2. `app` (the worker)
-
-Everything except the `ui` layer and basic worker comms is in Rust/wasm.
-
-WebGl and Audio could be split, but requires more widespread support for Canvas and AudioContext in workers.
-
 # Dataflow
 ![flowchart](https://i.imgur.com/FYfEKPf.png)
 
@@ -46,7 +29,7 @@ They also don't need to be sent/extracted at the same frequency as eachother (e.
 
 # HTML rendering of ui state
 
-The DOM is re-rendered every frame-tick if there's a fresh ui state.
+The DOM is re-rendered via lit-html every frame-tick if there's a fresh ui state.
 
 `get_ui_state()` can be queried from anywhere, and `events` can be sent from anywhere. They have no inherent relationship to the dom hierarchy. 
 
@@ -88,6 +71,8 @@ Also `evt.target.value` is different than `value` even though it is bound to it 
 # WebGL / Audio
 
 The same ideas apply to webgl and audio, but of course its a totally different rendering API. The demo here is kept to a minimum, but sky's the limit!
+
+WebGl uses awsm_web to manage gl state
 
 # Directory Structure
 
