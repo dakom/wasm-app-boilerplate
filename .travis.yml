@@ -2,13 +2,19 @@ dist: bionic
 language: rust
 rust: 
     - nightly
-  
-install:
+
+before_install:
+    - wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh
+    - source ~/.nvm/nvm.sh
+    - nvm install node
+    - nvm use node
     - curl -u dakom:"$GITHUB_TOKEN" -s https://api.github.com/repos/WebAssembly/binaryen/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | xargs -I {} wget -c https://github.com/WebAssembly/binaryen/releases/latest/download/binaryen-{}-x86_64-linux.tar.gz -O binaryen.tgz
     - mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
     - export PATH=./binaryen:$PATH
     - rustup target add wasm32-unknown-unknown
     - cargo install wasm-bindgen-cli
+
+install:
     - npm ci
 
 script:
