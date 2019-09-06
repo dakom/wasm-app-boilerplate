@@ -18,9 +18,9 @@ install:
     - npm ci
 
 script:
-    - cd src/app
+    - cd src/crates/core
     - cargo test
-    - cd ../webgl
+    - cd ../renderer
     - cargo test 
     - cd ../..
   
