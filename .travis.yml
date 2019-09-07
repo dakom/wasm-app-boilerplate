@@ -16,6 +16,7 @@ before_install:
 
 install:
     - npm ci
+    - wasm-opt --help
 
 script:
     - cd src/crates/core

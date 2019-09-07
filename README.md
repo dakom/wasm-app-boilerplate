@@ -3,15 +3,17 @@
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
 # Dataflow
-![flowchart](https://i.imgur.com/FYfEKPf.png)
+![flowchart](https://i.imgur.com/tTQ03md.png)
 
-# Events
+# Types for Events and State
 
 In order to keep the type checker happy where it counts, events are managed both in Typescript and in Rust as follows:
 
 1. Update `ValidEvents` and `Event` in [main events](src/main/events/events.ts)
 2. Update `Event` in [worker core events](src/crates/core/src/events.rs)
 3. Create rust structs to match if the event contains a data payload, and give it the serde derives
+
+Same idea with state in their respective directories
 
 Once those are in place, the whole event flow will work with 100% strict compile-time checks both on the typescript side and on rust.
 
@@ -35,9 +37,17 @@ The DOM is re-rendered via lit-html every frame-tick if there's a fresh ui state
 
 In many apps, especially those that are most similar to traditional websites, it makes sense for application state and ui state to be the same thing- and indeed keeping them the same is as simple setting `ui state` from the entire application state on the Rust side - so that is doable from this starting point. However, they are still technically separate, on purpose, since it happens often enough that they aren't 1:1, and I personally found coping with that reality very frustrating in several popular frameworks. 
 
-Note that within all the renderers, `state` must be considered only synchronously! Specifically - there's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
+### Ui State vs. DOM state 
 
-This is a _good_ thing since it avoids data-race conditions and makes it more explicit where values come from. I wish there were a way to enforce this on a compiler level in JS but I don't see how - so it requires knowing the usage pattern explained here.
+Within all the renderers, `state` must be considered only synchronously! Specifically - there's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
+
+Additionally, it's valid to set an element's attribute without affecting its property, and an element maybe updated by user interaction before the latest state is flushed.
+
+These are all _good_ things since it means the ui is more responsive and it avoids data-race conditions by making it more explicit where values come from. I wish there were a way to enforce this on a compiler level in JS but I don't see how - so it requires knowing the usage pattern explained here:
+
+**The rule of thumb is that asynchronous callbacks should never depend on `get_ui_state()`. Either use a locally cached copy or get it from the element.**
+
+A locally cached copy is an _explicit_ choice, and valid, though often not the right one as far as DOM elements are concerned.
 
 Consider the following example... Assume that when this was rendered, `ui_state.textInput` was "hello world" and that the user pressed the "!" key causing an update:
 
@@ -64,15 +74,13 @@ const text_input = () => {
 
 Even though `value` was set from `get_ui_state().textInput`, the latter is now undefined (because it was wiped between the time the function was called and the time the callback was fired).
 
-Also `evt.target.value` is different than `value` even though it is bound to it (because when the component is re-rendered, the dom element is kept as-is and normal html elements allow setting an initial value while still allowing the user to change the contents. This is _not_ the case if `value` were somehow changed, e.g. if `onInput` sent an event which caused both `ui_state` to change _and_ a re-render of the dom)
-
-**The rule of thumb is that asynchronous callbacks should never depend on `get_ui_state()`. Either use a locally cached copy or get it from the element.**
+Also `evt.target.value` is different than `value` even though it is bound to it. If `onInput` sends a state change, then perhaps it would have matched `value`, but there's a small window of possible difference. Better to use the `evt.target.value`, after all - that's the actual event data! 
 
 # WebGL / Audio
 
-The same ideas apply to webgl and audio, but of course its a totally different rendering API. The demo here is kept to a minimum, but sky's the limit!
+WebGl uses awsm_web to manage gl state but it's kept to a very small proof of concept here. Of course, sky's the limit!
 
-WebGl uses awsm_web to manage gl state
+Same idea applies to audio (though audio is handled on the typescript side here)
 
 # Directory Structure
 
@@ -80,10 +88,19 @@ The only real gotcha is that it's a nicer IDE experience to jump into the indivi
 
 # Build Scripts 
 
-Some cargo binaries are expected to be there, like watchexec and wasm-bindgen-cli
-Also rust, the toolchain, etc.
+Some cargo binaries are expected to be there, like watchexec and wasm-bindgen-cli (installed via cargo install)
 
-Other than that, see package.json and all the scripts that don't start with an underscore. Namely `npm start` and `npm bundle:local` (or `npm bundle:ci` for ci integration)
+Also rust, the toolchain, wasm target, etc.
+
+Lastly - `wasm-opt` should be on the path. Simplest is to download and extract from the [binaryen releases](https://github.com/WebAssembly/binaryen/releases) and add it to your path.
+
+Other than that, `npm` is used as the task runner. There's lots of minutia handled via sub-scripts and those are prefaced with an underscore.
+
+The only ones that are really run directly are those without an underscore (e.g. `npm start`)
+
+To do a complete build including copying to a dist folder, `npm run bundle:local`, but in a CI environment the copy step might be different (hence the additional bundle option) 
+
+All if this is setup in Travis for simple CI/CD to `gh-pages`, just set the `GITHUB_TOKEN` as an environment variable
 
 
 ## Development 
