@@ -19,13 +19,17 @@ Once those are in place, the whole event flow will work with 100% strict compile
 
 # Managing application state in WASM
 
-The core mechanism is the Shipyard Enity Component System, and this boilerplate only includes a bare minimum example needed to shuttle the events and state back and forth across all areas.
+The core mechanism in the demo here is the Shipyard Enity Component System, and with just a bare minimum example needed to shuttle the events and state back and forth across all areas.
 
-The ECS is updated internally in a game loop - and sends out state updates for all the dependants (`ui`, `webgl renderer`, and `audio`)
+The ECS could easily be swapped with a different approach altogether - functional reactive programming, statecharts, etc.
+
+Whatever it is, it's updated internally in a game loop - and ultimately sends out discrete state updates for all the dependants (`ui`, `webgl renderer`, and `audio`)
 
 These state updates are _not_ synonymous with the entire application state (though it can be - whatever floats your boat!)
 
 They also don't need to be sent/extracted at the same frequency as eachother (e.g. the ui could be sent when events come in as opposed to a raf loop)
+
+It might be tempting to consider completely different state managements, each in their own worker, but it's more likely that there needs to be some coherence between them (e.g. audio gets triggered on collision, UI sends an event to update inventory, etc.) so there is one "Source of Truth" and the split is done before sending. 
 
 (note - there are potential avenues to optimize here, like only sending deltas or serializing to a binary format like flatbuffers... but that all comes at a computational cost and would need profiling to see if it's really worthwhile, so neither of those are included here. Rather, it's simple serde-powered JS Objects <-> Rust structs)
 
@@ -39,15 +43,17 @@ In many apps, especially those that are most similar to traditional websites, it
 
 ### Ui State vs. DOM state 
 
-Within all the renderers, `state` must be considered only synchronously! Specifically - there's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
-
-Additionally, it's valid to set an element's attribute without affecting its property, and an element maybe updated by user interaction before the latest state is flushed.
-
-These are all _good_ things since it means the ui is more responsive and it avoids data-race conditions by making it more explicit where values come from. I wish there were a way to enforce this on a compiler level in JS but I don't see how - so it requires knowing the usage pattern explained here:
+The following really applies everywhere, but it's only necessary to show it in terms of UI and it can then be extrapolated for WebGL, audio, etc.:
 
 **The rule of thumb is that asynchronous callbacks should never depend on `get_ui_state()`. Either use a locally cached copy or get it from the element.**
 
-A locally cached copy is an _explicit_ choice, and valid, though often not the right one as far as DOM elements are concerned.
+In other words, `state` must be considered only synchronously! There's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
+
+Additionally, the html spec allows setting an element's attribute without affecting its property, and an element may be updated by user interaction before the latest state is flushed.
+
+These are all _good_ things since it means the ui is more responsive and it avoids data-race conditions by making it more explicit where values come from. I wish there were a way to enforce this on a compiler level in JS but I don't see how - so it requires knowing the usage pattern explained here:
+
+A locally cached copy is an _explicit_ choice, and valid, though often not the right one as far as DOM elements are concerned... it's usually better to use the event itself if that's the intended target.
 
 Consider the following example... Assume that when this was rendered, `ui_state.textInput` was "hello world" and that the user pressed the "!" key causing an update:
 
