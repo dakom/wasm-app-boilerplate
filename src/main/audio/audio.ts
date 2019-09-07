@@ -10,14 +10,27 @@ export const set_audio_state = (_state:AudioState) => {
 
 export const get_audio_state = () => state;
 
+
+let previous:AudioState;
 export const update_audio = () => {
-    if(state) {
-        //See if need to play audio
+
+    const diff = get_audio_diff();
+    if(diff) {
+        //console.log("DOING AUDIO STUFF", diff);
+        previous = Object.assign({}, state);
     }
 }
 
-interface AudioUpdate {
-    flag: boolean;
+const get_audio_diff = ():Partial<AudioState> => {
+    if(!previous) {
+        return {
+            ...state
+        }
+    } else {
+        if(previous.interpolation !== state.interpolation) {
+            return {
+                interpolation: state.interpolation
+            }
+        }
+    }
 }
-
-let update:AudioUpdate;

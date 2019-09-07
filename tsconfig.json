@@ -20,7 +20,7 @@
                 "node_modules/@types/*",
                 "*"
               ],
-            "ui/*": ["src/main/ui/*"],
+            "~/*": ["src/main/*"],
         },
     },
     "include": [

@@ -1,14 +1,14 @@
 import {html} from "lit-html";
-import {get_ui_state} from "ui/state";
-import {ui_event, UiEvent} from "ui/events";
+import {get_ui_state} from "~/ui/ui";
+import {send_event, CoreEvent} from "~/events/events";
 
 import "./text-input.css";
 
 export const text_input = () => {
     const value = get_ui_state().textInput;
 
-    const onSubmit = () => ui_event(UiEvent.AppendText);
-    const onInput = evt => ui_event([UiEvent.UpdateInput, evt.target.value]);
+    const onSubmit = () => send_event(CoreEvent.AppendText);
+    const onInput = evt => send_event([CoreEvent.UpdateInput, evt.target.value]);
     const onKeyUp = ({key}) => {
         if(key === "Enter") {
             onSubmit();

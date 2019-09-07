@@ -1,22 +1,22 @@
 /**
- * Customize this for all the ui types
+ * Customize this for all the event types
  * If there are any complex objects, create structs on the Rust side too!
  */
 type ValidEvents = 
-    UiEvent.AppendText 
-    | [UiEvent.UpdateInput, string]
+    CoreEvent.AppendText 
+    | [CoreEvent.UpdateInput, string]
 
 //The order of these must match the Rust UiEvent!
-export enum UiEvent {
+export enum CoreEvent {
     AppendText,
     UpdateInput,
 }
 
 let wasm_worker:Worker;
 
-export const init_ui_events = (_wasm_worker:Worker) => wasm_worker = _wasm_worker;
+export const init_events= (_wasm_worker:Worker) => wasm_worker = _wasm_worker;
 
-export const ui_event = (event:ValidEvents) => {
+export const send_event = (event:ValidEvents) => {
     const data = typeof event === "number" 
         ? {event_type: event}
         : {event_type: event[0], data: event[1]};

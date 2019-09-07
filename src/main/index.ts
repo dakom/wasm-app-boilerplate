@@ -1,21 +1,21 @@
 import {render as renderHtml} from "lit-html";
-import {init_ui_events} from "ui/events";
-import {get_ui_state, set_ui_state} from "ui/state";
-import {set_audio_state, get_audio_state, update_audio} from "./audio/audio";
+import {init_events} from "~/events/events";
+import {get_ui_state, set_ui_state, ui} from "~/ui/ui";
+import {set_audio_state, get_audio_state, update_audio} from "~/audio/audio";
 
-import {ui} from "ui/ui";
 const app_worker = new Worker("core-worker-shim.js");
 const ui_dom_element= document.getElementById("ui");
 const canvas_dom_element= document.getElementById("canvas");
 
-//this really just exists in Rust
-//only reason we need it here is because rendering has to be on main thread
-//so we need to shuttle it between worker and wasm
-let render_state:any;
 /**
  * Tell the event sender where we're sending to
  */
-init_ui_events(app_worker);
+init_events(app_worker);
+
+//this really just exists in Rust
+//only reason we need it here is because rendering has to be on main thread
+//so we need to shuttle it between worker and wasm
+let webgl_render_state:any;
 
 /**
  * Initialize communication with the worker
@@ -33,7 +33,7 @@ app_worker.onmessage = (msg:MessageEvent) => {
         } else if(msg.data.type === "UI_STATE") {
             set_ui_state(msg.data.data);
         } else if(msg.data.type === "RENDER_STATE") {
-            render_state = msg.data.data;
+            webgl_render_state = msg.data.data;
         } else if(msg.data.type === "AUDIO_STATE") {
             set_audio_state(msg.data.data);
         }
@@ -62,9 +62,9 @@ const onTick = () => {
 
     const now = performance.now();
 
-    if(render_state) {
-        render(render_state);
-        render_state = undefined;
+    if(webgl_render_state) {
+        render(webgl_render_state);
+        webgl_render_state = undefined;
     }
 
     if(get_ui_state()) {

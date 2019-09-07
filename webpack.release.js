@@ -60,7 +60,7 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js", ".css"],
         alias: {
-            "ui": path.resolve(__dirname, "src/main/ui/"),
+            "~": path.resolve(__dirname, "src/main/"),
         }
     }
 };
