@@ -1,7 +1,6 @@
 #![feature(async_await)]
 
 mod renderer;
-mod state;
 
 use cfg_if::cfg_if;
 use log::{info, Level};
@@ -39,10 +38,10 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(canvas:HtmlCanvasElement) -> Result<JsValue, JsValue> {
+pub fn run(canvas:HtmlCanvasElement, window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
-    renderer::start(canvas)
+    renderer::start(canvas, window_width, window_height)
 }
 

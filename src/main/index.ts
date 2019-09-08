@@ -1,5 +1,5 @@
 import {render as renderHtml} from "lit-html";
-import {init_events} from "~/events/events";
+import {init_events, send_event, CoreEvent} from "~/events/events";
 import {get_ui_state, set_ui_state, ui} from "~/ui/ui";
 import {set_audio_state, get_audio_state, update_audio} from "~/audio/audio";
 
@@ -17,18 +17,32 @@ init_events(app_worker);
 //so we need to shuttle it between worker and wasm
 let webgl_render_state:any;
 
+//just a helper
+const get_window_size = () => ({
+    width: window.innerWidth,
+    height: window.innerHeight
+});
+
 /**
  * Initialize communication with the worker
  * Only two types of incoming events are processed:
  * 1. READY - just to kick things off
- * 2. UI_STATE - when the worker has sent us a new ui state
+ * 2. STATE (for each state type) - when the worker has sent us a new state that needs to be dispatched
  * 
  */
 app_worker.onmessage = (msg:MessageEvent) => {
     if(msg.data) {
         if(msg.data.type === "READY") {
+            window.onresize = () => {
+                const windowSize = get_window_size();
+                send_event([CoreEvent.WindowSize, windowSize]);
+            }
+
+
+            const windowSize = get_window_size();
             app_worker.postMessage({
-                type: "READY"
+                type: "READY",
+                windowSize
             });
         } else if(msg.data.type === "UI_STATE") {
             set_ui_state(msg.data.data);
@@ -50,7 +64,8 @@ app_worker.onmessage = (msg:MessageEvent) => {
 let render:(state:any) => void = () => {};
 import("../../_static/wasm/renderer/pkg/my_renderer")
     .then(({run}) => {
-        render = run(canvas_dom_element);
+        const {width, height} = get_window_size();
+        render = run(canvas_dom_element, width, height);
     });
 
 /**

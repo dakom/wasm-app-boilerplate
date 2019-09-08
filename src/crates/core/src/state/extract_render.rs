@@ -1,23 +1,14 @@
 use wasm_bindgen::prelude::*;
 use serde::Serialize;
-use crate::state::{State};
+use super::{State};
+use shared::renderer::{State as RenderState};
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Render {
-    speed: f64,
-    interpolation: f64
+pub fn extract_render_state_js(state:&State, interpolation:f64) -> JsValue {
+    serde_wasm_bindgen::to_value(&extract_render_state_struct(state, interpolation)).unwrap()
 }
-
-impl Render {
-
-    pub fn new(state:&State, interpolation: f64) -> Self {
-        Self {
-            speed: state.speed,
-            interpolation
-        }
-    }
-    pub fn to_js(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&self).unwrap()
+pub fn extract_render_state_struct(state:&State, interpolation:f64) -> RenderState {
+    RenderState {
+        window_size: state.window_size,
+        ball_position: state.ball_position
     }
 }

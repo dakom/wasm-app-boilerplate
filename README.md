@@ -3,19 +3,27 @@
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
 # Dataflow
-![flowchart](https://i.imgur.com/tTQ03md.png)
+![flowchart](https://i.imgur.com/Cnfn9ii.png)
 
 # Types for Events and State
 
 In order to keep the type checker happy where it counts, events are managed both in Typescript and in Rust as follows:
 
-1. Update `ValidEvents` and `Event` in [main events](src/main/events/events.ts)
-2. Update `Event` in [worker core events](src/crates/core/src/events.rs)
-3. Create rust structs to match if the event contains a data payload, and give it the serde derives
+### Events
+1. Update `ValidEvents` and `CoreEvent` in [main events](src/main/events/events.ts)
+2. Update `Event` in [worker core events](src/crates/core/src/events/events.rs)
 
-Same idea with state in their respective directories
+Note - the events are unified in that they are all sent TO one place (core)
 
-Once those are in place, the whole event flow will work with 100% strict compile-time checks both on the typescript side and on rust.
+### State
+1. There is a local-only crate called [shared](src/crates/shared) which has feature flags for state that each crate needs to know about 
+2. Core should have them all enabled (it sends state TO every other crate)
+3. Each other crate only needs to enable its specific feature (in Cargo.toml where it lists the `shared` crate as a dependency)
+2. Ui must be updated [in typescript](src/main/ui/ui.ts)
+
+It takes some effort to keep these in sync, but once it's all setup, the whole state and event flow will work with 100% strict compile-time checks both on the typescript side and on rust!
+
+(note - if using a serialization format like flatbuffers, then the above could be obsolete as the per-language definitions are generated from the common files)
 
 # Managing application state in WASM
 
@@ -86,7 +94,7 @@ Also `evt.target.value` is different than `value` even though it is bound to it.
 
 WebGl uses awsm_web to manage gl state but it's kept to a very small proof of concept here. Of course, sky's the limit!
 
-Same idea applies to audio (though audio is handled on the typescript side here)
+Same idea applies to audio 
 
 # Directory Structure
 

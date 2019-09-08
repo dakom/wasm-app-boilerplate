@@ -4,10 +4,10 @@ use std::cell::{RefCell};
 use log::{info};
 use awsm_web::tick::{MainLoop, MainLoopOptions};
 use crate::events::{handle_event};
-use crate::state::{State, Ui, Audio, Render};
+use crate::state::{State, Ui, Audio, extract_render_state_js};
 
-pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function) -> Result<JsValue, JsValue> {
-    let state = Rc::new(RefCell::new(State::new()));
+pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function, window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
+    let state = Rc::new(RefCell::new(State::new(window_width, window_height)));
 
     //Create a function which allows JS to send us events ad-hoc
     //We will need to get a handle and forget the Closure
@@ -18,6 +18,7 @@ pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on
         move |evt_type:u32, data:JsValue| {
             {
                 let mut state = state.borrow_mut();
+                //The actual handling of events is in this function
                 match handle_event(evt_type, data, &mut state) {
                     Ok(_) => {},
                     Err(reason) => info!("Error: {:?}", reason)
@@ -47,8 +48,8 @@ pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on
             let ui_state = Ui::new(&state);
             on_ui_state.call1(&this, &ui_state.to_js());
             
-            let render_state = Render::new(&state, interpolation);
-            on_render_state.call1(&this, &render_state.to_js());
+            let render_state = extract_render_state_js(&state, interpolation);
+            on_render_state.call1(&this, &render_state);
 
             let audio_state = Audio::new(&state, interpolation);
             on_audio_state.call1(&this, &audio_state.to_js());

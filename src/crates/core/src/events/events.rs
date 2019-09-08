@@ -4,6 +4,7 @@ use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use log::{info};
 use crate::state::{State};
+use shared::renderer::{WindowSize};
 
 /**
  * `FromPrimitive` can be applied only to unitary enums and newtypes,
@@ -14,7 +15,8 @@ use crate::state::{State};
 #[repr(u32)]
 pub enum CoreEvent {
     ToggleAudio,
-    SetSpeed
+    SetSpeed,
+    WindowSize 
 }
 
 #[derive(Deserialize)]
@@ -30,6 +32,11 @@ pub fn handle_event(in_evt:u32, data: JsValue, state:&mut State) -> Result<(), J
         {
             let speed:Speed = serde_wasm_bindgen::from_value(data)?;
             state.speed = speed.0;
+        },
+        Some(CoreEvent::WindowSize) =>
+        {
+            let window_size:WindowSize = serde_wasm_bindgen::from_value(data)?;
+            state.window_size = window_size; 
         },
         _ => 
         {

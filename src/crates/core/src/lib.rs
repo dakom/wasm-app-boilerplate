@@ -40,10 +40,10 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function) -> Result<JsValue, JsValue> {
+pub fn run(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function, window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
-    core_loop::start(on_ui_state, on_render_state, on_audio_state)
+    core_loop::start(on_ui_state, on_render_state, on_audio_state, window_width, window_height)
 }
 

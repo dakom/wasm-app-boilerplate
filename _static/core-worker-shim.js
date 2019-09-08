@@ -22,7 +22,7 @@ const {run} = wasm_bindgen;
     self.onmessage = msg => {
         if(msg.data) {
             if(msg.data.type === "READY") {
-                send_event = run(on_ui_state, on_render_state, on_audio_state);
+				send_event = run(on_ui_state, on_render_state, on_audio_state, msg.data.windowSize.width, msg.data.windowSize.height);
             } else if(msg.data.type === "EVENT") {
                 if(msg.data.data.event_type == null) {
                     console.warn("MISSING event_type!");
