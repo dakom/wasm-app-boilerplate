@@ -20,7 +20,7 @@
     "_rust:renderer:package:release": "npm run _rust:renderer:build:release && npm run _rust:renderer:bindgen:release && npm run _rust:renderer:opt",
     "_rust:renderer:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown --manifest-path ./src/crates/renderer/Cargo.toml",
     "_rust:renderer:bindgen:release": "wasm-bindgen ./src/crates/renderer/target/wasm32-unknown-unknown/release/my_renderer.wasm --target bundler --out-dir ./_static/wasm/renderer/pkg",
-    "_rust:renderer:opt": "wasm-opt -Os -o ./_static/wasm/renderer/pkg/my_renderer_bg.wasm ./_static/wasm/renderer/pkg/my_renderer_bg.wasm",
+    "_rust:renderer:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/renderer/pkg/my_renderer_bg.wasm ./_static/wasm/renderer/pkg/my_renderer_bg.wasm",
 
     "_rust:core:clean": "rimraf ./_static/wasm/core/pkg && rimraf ./src/crates/core/pkg && rimraf ./src/crates/core/target",
     "_rust:core:start": "watchexec -w ./src/crates/core/src npm run _rust:core:package:dev",
@@ -30,7 +30,7 @@
     "_rust:core:package:release": "npm run _rust:core:build:release && npm run _rust:core:bindgen:release && npm run _rust:core:opt",
     "_rust:core:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown --manifest-path ./src/crates/core/Cargo.toml",
     "_rust:core:bindgen:release": "wasm-bindgen ./src/crates/core/target/wasm32-unknown-unknown/release/my_core.wasm --no-typescript --target no-modules --out-dir ./_static/wasm/core/pkg",
-    "_rust:core:opt": "wasm-opt -Os -o ./_static/wasm/core/pkg/my_core_bg.wasm ./_static/wasm/core/pkg/my_core_bg.wasm",
+    "_rust:core:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/core/pkg/my_core_bg.wasm ./_static/wasm/core/pkg/my_core_bg.wasm",
 
     "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../dist/wasm --cwd=_static/wasm --parents"
   },
