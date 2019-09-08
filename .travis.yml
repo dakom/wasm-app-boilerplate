@@ -17,7 +17,6 @@ before_install:
 
 install:
     - npm ci
-    - wasm-opt --help
 
 script:
     - cd src/crates/core
@@ -28,8 +27,8 @@ script:
   
 after_success:
     - npm run bundle:ci
-    - la -la _static
-    - cp -R _static/* dist/
+    - ls -la ./_static
+    - cp -R ./_static/* ./dist/
 
 deploy:
     local_dir: dist
