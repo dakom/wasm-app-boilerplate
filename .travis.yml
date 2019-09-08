@@ -28,6 +28,7 @@ script:
   
 after_success:
     - npm run bundle:ci
+    - la -la _static
     - cp -R _static/* dist/
 
 deploy:
