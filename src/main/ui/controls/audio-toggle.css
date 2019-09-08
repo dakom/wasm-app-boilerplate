@@ -1,0 +1,10 @@
+.audio-toggle {
+    width: 100%;
+    text-align: right;
+    padding-top: 10px;
+    padding-right: 10px;
+}
+
+.audio-toggle > *:hover {
+    cursor: pointer;
+}

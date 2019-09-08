@@ -1,12 +1,17 @@
 import {html} from "lit-html";
-import {text_input} from "~/ui/text-input/text-input";
-import {results} from "~/ui/results/results";
+import {velocity_slider} from "~/ui/controls/velocity-slider";
+import {audio_toggle} from "~/ui/controls/audio-toggle";
+import "./home-page.css";
 
 export const home = () => html`
-    <div class="container">
-        <div class="content">
-            ${text_input()}
-            ${results()}
+    <div>
+        <div class="home-page-header">
+            ${audio_toggle()}
+        </div>
+        <div class="home-page-container">
+            <div class="home-page-contents">
+                ${velocity_slider()}
+            </div>
         </div>
     </div>
 `;

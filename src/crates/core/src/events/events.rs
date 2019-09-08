@@ -5,31 +5,31 @@ use num_traits::FromPrimitive;
 use log::{info};
 use crate::state::{State};
 
+/**
+ * `FromPrimitive` can be applied only to unitary enums and newtypes,
+ * therefore we need to split the event type vs. event data
+ */
+
 #[derive(FromPrimitive)]
 #[repr(u32)]
 pub enum CoreEvent {
-    AppendText,
-    UpdateInput
+    ToggleAudio,
+    SetSpeed
 }
 
 #[derive(Deserialize)]
-struct UpdateInput(String);
+struct Speed(f64);
 
 pub fn handle_event(in_evt:u32, data: JsValue, state:&mut State) -> Result<(), JsValue> {
     match FromPrimitive::from_u32(in_evt) {
-        Some(CoreEvent::AppendText) =>
+        Some(CoreEvent::ToggleAudio) =>
         {
-            if !state.text_input.is_empty() {
-                state.results.push(state.text_input.clone());
-                state.text_input = "".to_owned();
-            } else {
-                info!("no text waiting to be added!");
-            }
+            state.audio_active = !state.audio_active;
         },
-        Some(CoreEvent::UpdateInput) =>
+        Some(CoreEvent::SetSpeed) =>
         {
-            let text_input:UpdateInput = serde_wasm_bindgen::from_value(data)?;
-            state.text_input = text_input.0;
+            let speed:Speed = serde_wasm_bindgen::from_value(data)?;
+            state.speed = speed.0;
         },
         _ => 
         {

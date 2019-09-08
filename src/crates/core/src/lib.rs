@@ -1,11 +1,9 @@
 #![feature(async_await)]
 
-mod app;
+mod components;
 mod events;
 mod state;
-mod ui;
-mod render;
-mod audio;
+mod core_loop;
 
 use cfg_if::cfg_if;
 use log::{info, Level};
@@ -46,6 +44,6 @@ pub fn run(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_a
     init_panic();
     init_log();
 
-    app::start(on_ui_state, on_render_state, on_audio_state)
+    core_loop::start(on_ui_state, on_render_state, on_audio_state)
 }
 

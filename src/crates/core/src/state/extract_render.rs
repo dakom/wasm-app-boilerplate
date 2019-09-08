@@ -5,6 +5,7 @@ use crate::state::{State};
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Render {
+    speed: f64,
     interpolation: f64
 }
 
@@ -12,6 +13,7 @@ impl Render {
 
     pub fn new(state:&State, interpolation: f64) -> Self {
         Self {
+            speed: state.speed,
             interpolation
         }
     }

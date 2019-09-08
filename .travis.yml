@@ -23,12 +23,10 @@ script:
     - cargo test
     - cd ../renderer
     - cargo test 
-    - cd ../..
+    - cd ../../..
   
 after_success:
     - npm run bundle:ci
-    - ls -la ./
-    - ls -la ./_static
     - cp -R ./_static/* ./dist/
 
 deploy:

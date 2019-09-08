@@ -1,0 +1,30 @@
+.velocity-slider {
+    width: 70vw;
+    height: 50px;
+}
+.velocity-slider > input[type="range"] {
+    -webkit-appearance:none;
+    appearance: none;
+    overflow:hidden;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    background-color:#80201B;
+}
+
+.velocity-slider > input[type="range"]::-webkit-slider-thumb, .velocity-slider > input[type="range"]::-moz-range-thumb {
+    -webkit-appearance:none;
+    appearance: none;
+    overflow:hidden;
+    outline: none;
+    width: 5%;
+    height: 100%;
+
+    background-color: #CC332B;
+    box-shadow:0 0 5px 0 rgba(0,0,0,0.3);
+}
+
+.velocity-slider > .label {
+    font-size: xx-large;
+    margin-bottom: 10px;
+}

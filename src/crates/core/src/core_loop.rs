@@ -4,10 +4,7 @@ use std::cell::{RefCell};
 use log::{info};
 use awsm_web::tick::{MainLoop, MainLoopOptions};
 use crate::events::{handle_event};
-use crate::state::{State};
-use crate::ui::{Ui};
-use crate::render::{Render};
-use crate::audio::{Audio};
+use crate::state::{State, Ui, Audio, Render};
 
 pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function) -> Result<JsValue, JsValue> {
     let state = Rc::new(RefCell::new(State::new()));
@@ -47,7 +44,7 @@ pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on
             let state = state.borrow();
             let this = JsValue::NULL;
             
-            let ui_state = Ui::new(&state, interpolation);
+            let ui_state = Ui::new(&state);
             on_ui_state.call1(&this, &ui_state.to_js());
             
             let render_state = Render::new(&state, interpolation);

@@ -2,9 +2,8 @@ import {home} from "~/ui/pages/home-page"
 import "./ui.css";
 
 export interface UiState {
-    textInput: string;
-    results: Array<string>;
-    interpolation: number;
+    audioActive: boolean;
+    speed: number;
 }
 
 let state:UiState;

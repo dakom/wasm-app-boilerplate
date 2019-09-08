@@ -1,0 +1,21 @@
+.home-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.home-page-contents {
+    display: relative;
+    margin-top: -33vh;
+}
+
+
+.home-page-header {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+
+}

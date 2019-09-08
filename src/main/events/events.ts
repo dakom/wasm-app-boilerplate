@@ -3,13 +3,13 @@
  * If there are any complex objects, create structs on the Rust side too!
  */
 type ValidEvents = 
-    CoreEvent.AppendText 
-    | [CoreEvent.UpdateInput, string]
+    CoreEvent.ToggleAudio
+    | [CoreEvent.SetVelocity, number]
 
 //The order of these must match the Rust UiEvent!
 export enum CoreEvent {
-    AppendText,
-    UpdateInput,
+    ToggleAudio,
+    SetVelocity,
 }
 
 let wasm_worker:Worker;

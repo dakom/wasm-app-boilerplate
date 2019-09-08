@@ -5,6 +5,7 @@ use crate::state::{State};
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Audio {
+    is_active: bool,
     interpolation: f64
 }
 
@@ -12,6 +13,7 @@ impl Audio {
 
     pub fn new(state:&State, interpolation: f64) -> Self {
         Self {
+            is_active: state.audio_active,
             interpolation
         }
     }
