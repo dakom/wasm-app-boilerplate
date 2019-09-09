@@ -95,7 +95,9 @@ Same idea applies to audio
 
 # Directory Structure
 
-The only real gotcha is that it's a nicer IDE experience to jump into the individual folders, and getting typescript to play nicely meant copying an additional tsconfig.json into `src/main/`. No biggie though.
+I think it's pretty self-explanatory... 
+
+One gotcha is that it's a nicer IDE experience to jump into the individual folders, and getting typescript to play nicely meant copying an additional tsconfig.json into some sub-folders. No biggie though.
 
 # Build Scripts 
 
