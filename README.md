@@ -2,26 +2,23 @@
 
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
+# NOTE - NOT READY YET! COME BACK IN A WEEK OR SO :)
+
 # Dataflow
 ![flowchart](https://i.imgur.com/u4GFKsM.png)
 
 # Types for Events and State
 
-In order to keep the type checker happy where it counts, events are managed both in Typescript and in Rust as follows:
+We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also shared between crates and modules.
 
-### Events
-1. Update `ValidEvents` and `CoreEvent` in [main events](src/main/events/events.ts)
-2. Update `Event` in [worker core events](src/crates/core/src/events/events.rs)
+Therefore they're kept in two shared locations:
 
-Note - the events are unified in that they are all sent TO one place (core)
+* Rust: [shared crate](src/crates/shared/src)
+* Typescript: [shared folder](src/typescript/shared)
 
-### State
-1. There is a local-only crate called [shared](src/crates/shared) which has feature flags for state that each crate needs to know about 
-2. Core should have them all enabled (it sends state TO every other crate)
-3. Each other crate only needs to enable its specific feature (in Cargo.toml where it lists the `shared` crate as a dependency)
-2. Ui must be updated [in typescript](src/main/ui/ui.ts)
+Keeping these in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
 
-It takes some effort to keep these in sync, but once it's all setup, the whole state and event flow will work with 100% strict compile-time checks both on the typescript side and on rust!
+One thing to keep in mind is that the events are all unified as CoreEvent (i.e. they are sent TO only one place) while state is different for each destination (e.g. renderer, ui, audio)
 
 (note - if using a serialization format like flatbuffers, then the above could be obsolete as the per-language definitions are generated from the common files)
 
