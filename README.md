@@ -3,7 +3,7 @@
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
 # Dataflow
-![flowchart](https://i.imgur.com/Cnfn9ii.png)
+![flowchart](https://i.imgur.com/u4GFKsM.png)
 
 # Types for Events and State
 
