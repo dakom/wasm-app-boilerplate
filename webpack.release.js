@@ -13,7 +13,7 @@ module.exports = {
 		})]
     },
     context: process.cwd(), // to automatically find tsconfig.json
-    entry: "./src/main/index.ts",
+    entry: "./src/typescript/entry/index.ts",
     output: {
         path: path.join(process.cwd(), 'dist'),
         filename: '[name].js',
@@ -27,7 +27,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             hash: true,
             inject: true,
-            template: 'src/main/index.html',
+            template: 'src/typescript/entry/index.html',
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -60,7 +60,8 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js", ".css"],
         alias: {
-            "~": path.resolve(__dirname, "src/main/"),
+            "@events": path.resolve(__dirname, "src/typescript/shared/events"),
+            "@ui": path.resolve(__dirname, "src/typescript/ui"),
         }
     }
 };

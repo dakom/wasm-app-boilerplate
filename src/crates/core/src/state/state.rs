@@ -1,4 +1,4 @@
-use shared::renderer::{WindowSize, Position};
+use shared::state::renderer::{WindowSize, Position};
 pub struct State {
     pub audio_active: bool,
     pub speed: f64,

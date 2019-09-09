@@ -1,4 +1,4 @@
-import {home} from "~/ui/pages/home-page"
+import {home} from "@ui/pages/home-page"
 import "./ui.css";
 
 export interface UiState {

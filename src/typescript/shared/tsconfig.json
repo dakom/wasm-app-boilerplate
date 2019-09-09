@@ -20,12 +20,13 @@
                 "node_modules/@types/*",
                 "*"
               ],
-            "@events/*": ["src/typescript/shared/events/*"],
-            "@ui/*": ["src/typescript/ui/*"],
+
+            "@events/*": ["./events/*"],
+            "@ui/*": ["../ui/*"],
         },
     },
     "include": [
-        "./src/typescript/**/*.ts"
+        "./**/*.ts"
     ],
     "exclude": [
         "node_modules",

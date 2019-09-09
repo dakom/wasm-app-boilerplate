@@ -8,8 +8,11 @@ edition = "2018"
 
 [dependencies]
 serde = { version = "1.0.99", features = ["derive"] }
+num-traits = "0.2.8"
+num-derive = "0.2.5"
 
 [features]
 default = []
 renderer = []
 audio = []
+ui = []

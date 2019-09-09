@@ -4,7 +4,8 @@ use web_sys::{HtmlCanvasElement};
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
-use shared::renderer::{State};
+use shared::state::renderer::{State};
+use shared::consts;
 
 use wasm_bindgen_futures::futures_0_3::future_to_promise;
 use awsm_web::loaders::fetch;
@@ -68,6 +69,8 @@ impl Renderer {
 
     pub fn render(&mut self, state:State) {
         self.pre_render(state.window_size.width, state.window_size.height);
+
+        //info!("ball radius: {}, position: {:?}", consts::ball.radius, state.ball_position);
     }
 
 }

@@ -1,6 +1,6 @@
 import {html} from "lit-html";
-import {velocity_slider} from "~/ui/controls/velocity-slider";
-import {audio_toggle} from "~/ui/controls/audio-toggle";
+import {velocity_slider} from "@ui/controls/velocity-slider";
+import {audio_toggle} from "@ui/controls/audio-toggle";
 import "./home-page.css";
 
 export const home = () => html`

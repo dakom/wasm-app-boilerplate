@@ -1,7 +1,7 @@
 import {render as renderHtml} from "lit-html";
-import {init_events, send_event, CoreEvent} from "~/events/events";
-import {get_ui_state, set_ui_state, ui} from "~/ui/ui";
-import {set_audio_state, get_audio_state, update_audio} from "~/audio/audio";
+import {init_events, send_event, CoreEvent} from "@events/events";
+import {get_ui_state, set_ui_state, ui} from "@ui/ui";
+//import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
 const app_worker = new Worker("core-worker-shim.js");
 const ui_dom_element= document.getElementById("ui");
@@ -12,10 +12,14 @@ const canvas_dom_element= document.getElementById("canvas");
  */
 init_events(app_worker);
 
-//this really just exists in Rust
+//these really just exists in Rust
 //only reason we need it here is because rendering has to be on main thread
 //so we need to shuttle it between worker and wasm
 let webgl_render_state:any;
+let renderWebGl:(state:any) => void = () => {};
+
+let audio_state:any;
+let renderAudio:(state:any) => void = () => {};
 
 //just a helper
 const get_window_size = () => ({
@@ -49,7 +53,7 @@ app_worker.onmessage = (msg:MessageEvent) => {
         } else if(msg.data.type === "RENDER_STATE") {
             webgl_render_state = msg.data.data;
         } else if(msg.data.type === "AUDIO_STATE") {
-            set_audio_state(msg.data.data);
+            audio_state = msg.data.data;
         }
     }
 }
@@ -61,24 +65,30 @@ app_worker.onmessage = (msg:MessageEvent) => {
  * Every tick, if there's a fresh render_state
  */
 
-let render:(state:any) => void = () => {};
-import("../../_static/wasm/renderer/pkg/my_renderer")
+import("../../../_static/wasm/renderer/pkg/my_renderer")
     .then(({run}) => {
         const {width, height} = get_window_size();
-        render = run(canvas_dom_element, width, height);
+        renderWebGl = run(canvas_dom_element, width, height);
+    });
+
+//same with audio
+import("../../../_static/wasm/audio/pkg/my_audio")
+    .then(({run}) => {
+        renderAudio = run();
     });
 
 /**
  * The main graphics loop 
  * If there are fresh renderer or ui states (received from app thread), render and wipe them 
  */
-const onTick = () => {
+let last = performance.now();
+const onTick = (now) => {
     requestAnimationFrame(onTick);
 
-    const now = performance.now();
+    let local_last = performance.now();
 
     if(webgl_render_state) {
-        render(webgl_render_state);
+        renderWebGl(webgl_render_state);
         webgl_render_state = undefined;
     }
 
@@ -87,11 +97,18 @@ const onTick = () => {
         set_ui_state(undefined);
     }
 
-    if(get_audio_state()) {
-        update_audio();
-        set_audio_state(undefined);
+    if(audio_state) {
+        renderAudio(audio_state);
+        audio_state = undefined;
     }
 
-    //console.log(performance.now() - now);
+    const local_now = performance.now();
+    const frame_time = now - last;
+    const local_time = local_now - local_last;
+    //rough remaining frame budget.. don't take too literally to the millisecond, but if it's <3 or so, watch out!
+    //console.log(frame_time - local_time);
+
+    last = now;
+    local_last = local_now;
 }
 requestAnimationFrame(onTick);

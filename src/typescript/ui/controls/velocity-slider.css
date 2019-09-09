@@ -12,7 +12,22 @@
     background-color:#80201B;
 }
 
-.velocity-slider > input[type="range"]::-webkit-slider-thumb, .velocity-slider > input[type="range"]::-moz-range-thumb {
+/*Can't use comma to separate these selectors, unfortunately, so gotta repeat*/
+
+.velocity-slider > input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance:none;
+    appearance: none;
+    overflow:hidden;
+    outline: none;
+    width: calc(.05 * 70vw);
+    height: 50px;
+
+    background-color: #CC332B;
+    border: 0px;
+    box-shadow:0 0 5px 0 rgba(0,0,0,0.3);
+}
+
+.velocity-slider > input[type="range"]::-moz-range-thumb {
     -webkit-appearance:none;
     appearance: none;
     overflow:hidden;

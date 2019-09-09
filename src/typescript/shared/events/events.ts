@@ -1,3 +1,4 @@
+
 /**
  * Customize this for all the event types
  * If there are any complex objects, create structs on the Rust side too!

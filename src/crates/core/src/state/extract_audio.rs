@@ -1,23 +1,14 @@
 use wasm_bindgen::prelude::*;
 use serde::Serialize;
 use crate::state::{State};
+use shared::state::audio;
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Audio {
-    is_active: bool,
-    interpolation: f64
+pub fn extract_audio_state_js(state:&State, interpolation:f64) -> JsValue {
+    serde_wasm_bindgen::to_value(&extract_audio_state_struct(state, interpolation)).unwrap()
 }
-
-impl Audio {
-
-    pub fn new(state:&State, interpolation: f64) -> Self {
-        Self {
-            is_active: state.audio_active,
-            interpolation
-        }
-    }
-    pub fn to_js(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&self).unwrap()
+pub fn extract_audio_state_struct(state:&State, interpolation:f64) -> audio::State {
+    audio::State {
+        is_active: state.audio_active,
+        interpolation
     }
 }
