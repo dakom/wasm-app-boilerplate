@@ -43,7 +43,7 @@
     "_rust:core:bindgen:release": "wasm-bindgen ./src/crates/core/target/wasm32-unknown-unknown/release/my_core.wasm --no-typescript --target no-modules --out-dir ./_static/wasm/core/pkg",
     "_rust:core:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/core/pkg/my_core_bg.wasm ./_static/wasm/core/pkg/my_core_bg.wasm",
 
-    "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../dist/wasm --cwd=_static/wasm --parents"
+    "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../../dist/wasm/core --cwd=_static/wasm/core --parents"
   },
   "repository": {
     "type": "git",
