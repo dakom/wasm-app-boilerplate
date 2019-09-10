@@ -38,10 +38,10 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(canvas:HtmlCanvasElement, window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
+pub fn run(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, send_event: js_sys::Function) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
-    renderer::start(canvas, window_width, window_height)
+    renderer::start(canvas, window_width, window_height, send_event)
 }
 

@@ -25,7 +25,7 @@ pub fn start(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on
                 }
             }
         }
-    }) as Box<FnMut(u32, JsValue) -> ()>);
+    }) as Box<dyn FnMut(u32, JsValue) -> ()>);
 
     let send_event = _send_event.as_ref().clone();
     _send_event.forget();

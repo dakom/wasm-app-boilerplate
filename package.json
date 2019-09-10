@@ -5,13 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run _rust:core:build:dev && npm run _rust:renderer:build:dev && npm run _rust:audio:build:dev && npm-run-all -p _webpack:start _rust:core:start _rust:renderer:start _rust:audio:start",
-    "clean": "rimraf ./dist && npm run _rust:core:clean && npm run _rust:renderer:clean && npm run _rust:audio:clean", 
+    "clean": "rimraf ./dist && npm run _rust:core:clean && npm run _rust:renderer:clean && npm run _rust:audio:clean",
     "bundle:ci": "npm run clean && npm run _rust:core:package:release && npm run _rust:renderer:package:release && npm run _rust:audio:package:release && npm run _webpack:build",
     "bundle:local": "npm run bundle:ci && npm run _copy:static",
-
     "_webpack:build": "webpack --progress --color --mode production --config webpack.release.js",
     "_webpack:start": "webpack-dev-server --progress --color --mode development --config webpack.dev.js",
-
     "_rust:renderer:clean": "rimraf ./_static/wasm/renderer/pkg && rimraf ./src/crates/renderer/pkg && rimraf ./src/crates/renderer/target",
     "_rust:renderer:start": "watchexec -w ./src/crates/renderer/src -w ./src/crates/shared/src npm run _rust:renderer:package:dev",
     "_rust:renderer:package:dev": "npm run _rust:renderer:build:dev && npm run _rust:renderer:bindgen:dev",
@@ -21,8 +19,6 @@
     "_rust:renderer:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown --manifest-path ./src/crates/renderer/Cargo.toml",
     "_rust:renderer:bindgen:release": "wasm-bindgen ./src/crates/renderer/target/wasm32-unknown-unknown/release/my_renderer.wasm --target bundler --out-dir ./_static/wasm/renderer/pkg",
     "_rust:renderer:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/renderer/pkg/my_renderer_bg.wasm ./_static/wasm/renderer/pkg/my_renderer_bg.wasm",
-
-
     "_rust:audio:clean": "rimraf ./_static/wasm/audio/pkg && rimraf ./src/crates/audio/pkg && rimraf ./src/crates/audio/target",
     "_rust:audio:start": "watchexec -w ./src/crates/audio/src -w ./src/crates/shared/src npm run _rust:audio:package:dev",
     "_rust:audio:package:dev": "npm run _rust:audio:build:dev && npm run _rust:audio:bindgen:dev",
@@ -32,7 +28,6 @@
     "_rust:audio:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown --manifest-path ./src/crates/audio/Cargo.toml",
     "_rust:audio:bindgen:release": "wasm-bindgen ./src/crates/audio/target/wasm32-unknown-unknown/release/my_audio.wasm --target bundler --out-dir ./_static/wasm/audio/pkg",
     "_rust:audio:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/audio/pkg/my_audio_bg.wasm ./_static/wasm/audio/pkg/my_audio_bg.wasm",
-
     "_rust:core:clean": "rimraf ./_static/wasm/core/pkg && rimraf ./src/crates/core/pkg && rimraf ./src/crates/core/target",
     "_rust:core:start": "watchexec -w ./src/crates/core/src -w ./src/crates/shared/src npm run _rust:core:package:dev",
     "_rust:core:package:dev": "npm run _rust:core:build:dev && npm run _rust:core:bindgen:dev",
@@ -42,7 +37,6 @@
     "_rust:core:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown --manifest-path ./src/crates/core/Cargo.toml",
     "_rust:core:bindgen:release": "wasm-bindgen ./src/crates/core/target/wasm32-unknown-unknown/release/my_core.wasm --no-typescript --target no-modules --out-dir ./_static/wasm/core/pkg",
     "_rust:core:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/core/pkg/my_core_bg.wasm ./_static/wasm/core/pkg/my_core_bg.wasm",
-
     "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../../dist/wasm/core --cwd=_static/wasm/core --parents"
   },
   "repository": {
@@ -57,7 +51,7 @@
   "homepage": "https://github.com/dakom/my_app#readme",
   "devDependencies": {
     "cpy-cli": "^2.0.0",
-    "cross-env": "^5.2.0",
+    "cross-env": "^5.2.1",
     "css-loader": "^3.2.0",
     "eslint": "^6.3.0",
     "fork-ts-checker-notifier-webpack-plugin": "^1.0.2",
@@ -70,7 +64,7 @@
     "tslib": "^1.10.0",
     "typescript": "^3.6.2",
     "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.7",
+    "webpack-cli": "^3.3.8",
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {

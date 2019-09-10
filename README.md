@@ -18,7 +18,13 @@ Therefore they're kept in two shared locations:
 
 Keeping these in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
 
-One thing to keep in mind is that the events are all unified as CoreEvent (i.e. they are sent TO only one place) while state is different for each destination (e.g. renderer, ui, audio)
+One thing to keep in mind is that the events are all unified as CoreEvent (i.e. they are sent TO only one place) 
+
+State is different for each destination (e.g. renderer, ui, audio)
+
+Also, to keep things idiomatic in both languages, events are enums that own their data when going from Rust, and index-based enums when going from JS
+
+It will seem super complicated at first, but it's really not so bad thanks to the type checking - edit the shared folders and let the compiler be your guide :)
 
 (note - if using a serialization format like flatbuffers, then the above could be obsolete as the per-language definitions are generated from the common files)
 

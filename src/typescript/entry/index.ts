@@ -1,5 +1,5 @@
 import {render as renderHtml} from "lit-html";
-import {init_events, send_event, CoreEvent} from "@events/events";
+import {init_events, send_event, send_event_unchecked, CoreEvent} from "@events/events";
 import {get_ui_state, set_ui_state, ui} from "@ui/ui";
 //import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
@@ -48,6 +48,27 @@ app_worker.onmessage = (msg:MessageEvent) => {
                 type: "READY",
                 windowSize
             });
+
+
+            /**
+             * 
+             * Load the renderer WASM into this thread
+             * It'll give us the render function which we call
+             * Every tick, if there's a fresh render_state
+             */
+
+            import("../../../_static/wasm/renderer/pkg/my_renderer")
+                .then(({run}) => {
+                    const {width, height} = get_window_size();
+                    renderWebGl = run(canvas_dom_element, width, height, send_event_unchecked);
+                });
+
+            //same with audio
+            import("../../../_static/wasm/audio/pkg/my_audio")
+                .then(({run}) => {
+                    renderAudio = run(send_event_unchecked);
+                });
+
         } else if(msg.data.type === "UI_STATE") {
             set_ui_state(msg.data.data);
         } else if(msg.data.type === "RENDER_STATE") {
@@ -58,24 +79,6 @@ app_worker.onmessage = (msg:MessageEvent) => {
     }
 }
 
-/**
- * 
- * Load the renderer WASM into this thread
- * It'll give us the render function which we call
- * Every tick, if there's a fresh render_state
- */
-
-import("../../../_static/wasm/renderer/pkg/my_renderer")
-    .then(({run}) => {
-        const {width, height} = get_window_size();
-        renderWebGl = run(canvas_dom_element, width, height);
-    });
-
-//same with audio
-import("../../../_static/wasm/audio/pkg/my_audio")
-    .then(({run}) => {
-        renderAudio = run();
-    });
 
 /**
  * The main graphics loop 

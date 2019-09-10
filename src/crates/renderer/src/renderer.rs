@@ -5,6 +5,7 @@ use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
 use shared::state::renderer::{State};
+use shared::events::{CoreEvent, CoreEventSender, Speed};
 use shared::consts;
 
 use wasm_bindgen_futures::futures_0_3::future_to_promise;
@@ -20,12 +21,13 @@ use awsm_web::webgl::{
 
 
 pub struct Renderer {
+    event_sender: CoreEventSender,
     renderer:WebGl1Renderer,
     program_id: Option<Id>
 }
 
 impl Renderer {
-    pub fn new(canvas:HtmlCanvasElement) -> Result<Self, JsValue> {
+    pub fn new(canvas:HtmlCanvasElement, send_event: js_sys::Function) -> Result<Self, JsValue> {
         //not using any webgl2 features so might as well stick with v1
         let gl = get_webgl_context_1(&canvas, Some(&WebGlContextOptions {
             alpha: false,
@@ -34,9 +36,10 @@ impl Renderer {
 
         let renderer = WebGl1Renderer::new(gl)?;
 
-
+        let event_sender = CoreEventSender::new(send_event);
 
         Ok(Self {
+            event_sender,
             renderer,
             program_id: None
         })
@@ -57,7 +60,11 @@ impl Renderer {
 */
     }
 
-    fn pre_render(&mut self, window_width: u32, window_height: u32) {
+    pub fn send_event(&self, evt:&CoreEvent) {
+        self.event_sender.send(evt);
+    }
+
+    pub fn pre_render(&mut self, window_width: u32, window_height: u32) {
         //This is checked in awsm to skip if it's the same as last tick
         self.renderer.resize(window_width, window_height);
         self.renderer.gl.clear_color(1.0, 1.0, 1.0, 1.0);
@@ -75,10 +82,12 @@ impl Renderer {
 
 }
 
-pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
-    let mut renderer = Renderer::new(canvas)?;
+pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, send_event:js_sys::Function) -> Result<JsValue, JsValue> {
+    let mut renderer = Renderer::new(canvas, send_event)?;
 
     renderer.pre_render(window_width, window_height);
+
+    // renderer.send_event(&CoreEvent::SetSpeed(Speed(0.3)));
 
     let renderer = Rc::new(RefCell::new(renderer));
 

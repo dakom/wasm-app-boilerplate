@@ -12,7 +12,7 @@ lto = true
 opt-level = 's'
 
 [dependencies]
-shared = { path="../shared", features = ["audio"]}
+shared = { path="../shared", features = ["audio", "events_from_rust"]}
 wasm-bindgen = "0.2.50"
 js-sys = "0.3.27"
 cfg-if = "0.1.9"

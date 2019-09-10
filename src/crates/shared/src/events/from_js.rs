@@ -4,28 +4,32 @@ use num_traits::FromPrimitive;
 use std::convert::TryFrom;
 
 /**
- * `FromPrimitive` can be applied only to unitary enums and newtypes,
- * therefore we need to split the event type vs. event data
+ * It's simplest for core to match on a single event_type 
+ * rather than try to deserialize against all possibilities
+ * 
+ * getting event_type automatically means splitting it since
+ * `FromPrimitive` cannot be impled for enums that hold data 
+ *  
  */
 
-//All the core event types:
+//the order must match typescript!
 #[derive(FromPrimitive)]
 #[repr(u32)]
-pub enum CoreEvent {
+pub enum CoreEventIndex {
     ToggleAudio,
     SetSpeed,
-    WindowSize 
+    WindowSize,
+    TexturesLoaded,
+    AudioLoaded
 }
 
-//All the core event data:
-#[derive(Deserialize)]
-pub struct Speed(pub f64);
 
 //Let's us get a CoreEvent from the number which is sent from JS
-impl TryFrom<u32> for CoreEvent {
+impl TryFrom<u32> for CoreEventIndex {
     type Error = &'static str;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         FromPrimitive::from_u32(value).ok_or("CoreEvent: outside of range!")
     }
 }
+

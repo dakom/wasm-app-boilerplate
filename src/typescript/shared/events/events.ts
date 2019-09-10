@@ -8,7 +8,9 @@
 export enum CoreEvent {
     ToggleAudio,
     SetVelocity,
-    WindowSize 
+    WindowSize,
+    TexturesLoaded,
+    AudioLoaded
 }
 
 type ValidEvents = 
@@ -27,9 +29,13 @@ let wasm_worker:Worker;
 export const init_events= (_wasm_worker:Worker) => wasm_worker = _wasm_worker;
 
 export const send_event = (event:ValidEvents) => {
-    const data = typeof event === "number" 
-        ? {event_type: event}
-        : {event_type: event[0], data: event[1]};
+    if(typeof event === "number") {
+        send_event_unchecked(event);
+    } else {
+        send_event_unchecked(event[0], event[1]);
+    }
+}
 
-    wasm_worker.postMessage({ type: "EVENT", data });
+export const send_event_unchecked = (evt_type:CoreEvent, evt_data?:any) => {
+    wasm_worker.postMessage({ type: "EVENT", evt_type, evt_data});
 }

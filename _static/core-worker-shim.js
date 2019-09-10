@@ -24,12 +24,7 @@ const {run} = wasm_bindgen;
             if(msg.data.type === "READY") {
 				send_event = run(on_ui_state, on_render_state, on_audio_state, msg.data.windowSize.width, msg.data.windowSize.height);
             } else if(msg.data.type === "EVENT") {
-                if(msg.data.data.event_type == null) {
-                    console.warn("MISSING event_type!");
-                } else {
-                    const {event_type, data} = msg.data.data;
-                    send_event(event_type, data);
-                }
+				send_event(msg.data.evt_type, msg.data.evt_data);
             }
         }
     };

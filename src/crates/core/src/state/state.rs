@@ -6,7 +6,7 @@ pub struct State {
     pub ball_position: Position,
 }
 
-
+//Initial state
 impl State {
     pub fn new(window_width: u32, window_height: u32) -> Self {
         Self {
