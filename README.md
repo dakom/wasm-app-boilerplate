@@ -7,7 +7,19 @@
 # Dataflow
 ![flowchart](https://i.imgur.com/u4GFKsM.png)
 
-# Types for Events and State
+# Preliminary note
+
+There's a lot going on here, with nuanced little gotchas and a zillion potential footguns.
+
+The point of this boiler plate is _not_ to understand how it all fits together so it can be adapted - but rather, to not have to think about it at all
+
+Just run `npm start --silent` and then open an IDE in your favorite directory (or the project as a whole) and go for it.
+
+# Directory structure
+
+Don't mess with it. Just expand from it. media goes in `_static/media`. Sources go where they go.
+
+# Shared types for Events and State
 
 We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also shared between crates and modules.
 
@@ -18,6 +30,8 @@ Therefore they're kept in two shared locations:
 
 Keeping these in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
 
+This is somewhat annoying, but short of using a language-agnostic solution like flatbuffers (which would introduce its own issues), it's necessary
+
 One thing to keep in mind is that the events are all unified as CoreEvent (i.e. they are sent TO only one place) 
 
 State is different for each destination (e.g. renderer, ui, audio)
@@ -26,7 +40,7 @@ Also, to keep things idiomatic in both languages, events are enums that own thei
 
 It will seem super complicated at first, but it's really not so bad thanks to the type checking - edit the shared folders and let the compiler be your guide :)
 
-(note - if using a serialization format like flatbuffers, then the above could be obsolete as the per-language definitions are generated from the common files)
+(serialization / deserialization is via serde Rust <> JS Objects... if flatbuffers were used, it could be an optimization here due to Transferable objects, or it could be a performance cost due to the runtime impact. Profile and see before pulling the trigger!)
 
 # Managing application state in WASM
 
@@ -36,21 +50,19 @@ The ECS could easily be swapped with a different approach altogether - functiona
 
 Whatever it is, it's updated internally in a game loop - and ultimately sends out discrete state updates for all the dependants (`ui`, `webgl renderer`, and `audio`)
 
-These state updates are _not_ synonymous with the entire application state (though it can be - whatever floats your boat!)
+These state updates are _not_ synonymous with the entire application state. Application state is conceptually just one giant thing (here, kept by the ECS).
 
-They also don't need to be sent/extracted at the same frequency as eachother (e.g. the ui could be sent when events come in as opposed to a raf loop)
+The discrete updates don't need to be sent/extracted at the same frequency as eachother (e.g. the ui could be sent when events come in as opposed to a raf loop)
 
 It might be tempting to consider completely different state managements, each in their own worker, but it's more likely that there needs to be some coherence between them (e.g. audio gets triggered on collision, UI sends an event to update inventory, etc.) so there is one "Source of Truth" and the split is done before sending. 
 
-(note - there are potential avenues to optimize here, like only sending deltas or serializing to a binary format like flatbuffers... but that all comes at a computational cost and would need profiling to see if it's really worthwhile, so neither of those are included here. Rather, it's simple serde-powered JS Objects <-> Rust structs)
-
 # HTML rendering of ui state
 
-The DOM is re-rendered via lit-html every frame-tick if there's a fresh ui state.
+The DOM is re-rendered via lit-html every frame-tick if there's a fresh ui state. This is fast since lit-html doesn't need to diff (short summary - the dynamic parts only need to check against _themselves_ to see if they're dirty, and if they are they know where and what to write)
 
 `get_ui_state()` can be queried from anywhere, and `events` can be sent from anywhere. They have no inherent relationship to the dom hierarchy. 
 
-In many apps, especially those that are most similar to traditional websites, it makes sense for application state and ui state to be the same thing- and indeed keeping them the same is as simple setting `ui state` from the entire application state on the Rust side - so that is doable from this starting point. However, they are still technically separate, on purpose, since it happens often enough that they aren't 1:1, and I personally found coping with that reality very frustrating in several popular frameworks. 
+In many apps, especially those that are most similar to traditional websites, it makes sense for application state and ui state to be the same thing- and indeed keeping them the same is very easy here. However, they are still technically separate, on purpose, since it happens often enough that they aren't 1:1, and I personally found coping with that reality very frustrating in several popular frameworks. 
 
 ### Ui State vs. DOM state 
 
@@ -99,13 +111,7 @@ WebGl uses awsm_web to manage gl state but it's kept to a very small proof of co
 
 Same idea applies to audio 
 
-# Directory Structure
-
-I think it's pretty self-explanatory... 
-
-One gotcha is that it's a nicer IDE experience to jump into the individual folders, and getting typescript to play nicely meant copying an additional tsconfig.json into some sub-folders. No biggie though.
-
-# Build Scripts 
+# Requirements 
 
 Some cargo binaries are expected to be there, like watchexec and wasm-bindgen-cli (installed via cargo install)
 
@@ -123,6 +129,8 @@ All if this is setup in Travis for simple CI/CD to `gh-pages`, just set the `GIT
 
 
 ## Development 
+
+Basically, `npm start --silent` (silent makes it nicer to not get NPM errors when we're already getting Rust/TS errors)
 
 On first run, the sources will need to compile which will take a while. Subsequent recompiles are _much_ faster.
 

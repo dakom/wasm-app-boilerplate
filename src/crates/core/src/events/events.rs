@@ -23,6 +23,15 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, state:&mut State) -> Result
             let window_size:WindowSize = serde_wasm_bindgen::from_value(evt_data)?;
             state.window_size = window_size; 
         },
+
+        CoreEventIndex::AudioLoaded => {
+            state.audio_loaded = true;
+        },
+
+        CoreEventIndex::RendererLoaded=> {
+            state.renderer_loaded = true;
+        },
+
         _ => 
         {
             info!("unknown event!");

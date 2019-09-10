@@ -1,6 +1,7 @@
 #![feature(async_await)]
 
 mod renderer;
+mod assets;
 
 use cfg_if::cfg_if;
 use log::{info, Level};

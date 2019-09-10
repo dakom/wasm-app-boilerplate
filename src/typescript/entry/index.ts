@@ -1,6 +1,8 @@
 import {render as renderHtml} from "lit-html";
 import {init_events, send_event, send_event_unchecked, CoreEvent} from "@events/events";
-import {get_ui_state, set_ui_state, ui} from "@ui/ui";
+import {get_ui_state, set_ui_state} from "@ui/state";
+import {ui} from "@ui/ui";
+
 //import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
 const app_worker = new Worker("core-worker-shim.js");
@@ -55,6 +57,8 @@ app_worker.onmessage = (msg:MessageEvent) => {
              * Load the renderer WASM into this thread
              * It'll give us the render function which we call
              * Every tick, if there's a fresh render_state
+             * 
+             * It's only imported once the worker is ready so it can send events right away
              */
 
             import("../../../_static/wasm/renderer/pkg/my_renderer")

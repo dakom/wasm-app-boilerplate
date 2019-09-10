@@ -9,6 +9,7 @@ pub fn extract_ui_state_js(state:&State, interpolation:f64) -> JsValue {
 pub fn extract_ui_state_struct(state:&State, interpolation:f64) -> ui::State {
     ui::State {
         audio_active: state.audio_active, 
-        speed: state.speed
+        speed: state.speed,
+        all_loaded: state.audio_loaded && state.renderer_loaded
     }
 }

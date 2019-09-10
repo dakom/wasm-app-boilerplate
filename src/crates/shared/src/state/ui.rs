@@ -4,5 +4,6 @@ use serde::{Serialize, Deserialize};
 #[serde(rename_all = "camelCase")]
 pub struct State {
     pub audio_active: bool, 
-    pub speed: f64 
+    pub speed: f64,
+    pub all_loaded: bool 
 }

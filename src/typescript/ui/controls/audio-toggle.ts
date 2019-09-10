@@ -1,5 +1,5 @@
 import {html} from "lit-html";
-import {get_ui_state} from "@ui/ui";
+import {get_ui_state} from "@ui/state";
 import {send_event, CoreEvent} from "@events/events";
 
 import "./audio-toggle.css";

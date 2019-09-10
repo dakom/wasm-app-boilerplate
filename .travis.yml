@@ -30,6 +30,7 @@ after_success:
     - mkdir ./dist/wasm
     - cp ./_static/* ./dist/
     - cp -R ./_static/wasm/core ./dist/wasm/core
+    - cp -R ./_static/media ./dist/media
 
 deploy:
     local_dir: dist

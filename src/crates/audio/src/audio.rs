@@ -5,22 +5,24 @@ use std::cell::{RefCell};
 use log::{info};
 use shared::events::{CoreEvent, CoreEventSender, Speed};
 use shared::state::audio::{State};
-
+use web_sys::{AudioContext};
 use wasm_bindgen_futures::futures_0_3::future_to_promise;
 use awsm_web::loaders::fetch;
+use super::assets::load_assets;
 
-
-pub struct AudioSequencer {
+pub struct Sequencer {
+    pub ctx: AudioContext,
+    pub is_active: bool,
     event_sender: CoreEventSender,
-    is_active: bool,
 }
 
-impl AudioSequencer {
+impl Sequencer {
     pub fn new(send_event: js_sys::Function) -> Result<Self, JsValue> {
-
+        let ctx: AudioContext = AudioContext::new()?;
         let event_sender = CoreEventSender::new(send_event);
 
         Ok(Self{
+            ctx,
             event_sender, 
             is_active: true
         })
@@ -40,11 +42,12 @@ impl AudioSequencer {
 }
 
 pub fn start(send_event:js_sys::Function) -> Result<JsValue, JsValue> {
-    let mut sequencer = AudioSequencer::new(send_event)?;
+    let mut sequencer = Sequencer::new(send_event)?;
 
     //sequencer.send_event(&CoreEvent::SetSpeed(Speed(0.3)));
 
     let sequencer = Rc::new(RefCell::new(sequencer));
+    load_assets(Rc::clone(&sequencer));
 
     //Create a function which allows JS to call us for rendering
     //We will need to get a handle and forget the Closure

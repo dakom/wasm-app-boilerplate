@@ -9,7 +9,7 @@ export enum CoreEvent {
     ToggleAudio,
     SetVelocity,
     WindowSize,
-    TexturesLoaded,
+    RendererLoaded,
     AudioLoaded
 }
 

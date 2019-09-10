@@ -9,7 +9,7 @@ pub enum CoreEvent {
     ToggleAudio,
     SetSpeed(Speed),
     WindowSize,
-    TexturesLoaded,
+    RendererLoaded,
     AudioLoaded
 }
 
@@ -29,7 +29,7 @@ impl CoreEventSender {
             CoreEvent::ToggleAudio => (CoreEventIndex::ToggleAudio, None),
             CoreEvent::SetSpeed(data) => (CoreEventIndex::SetSpeed, Some(data)),
             CoreEvent::WindowSize => (CoreEventIndex::WindowSize, None),
-            CoreEvent::TexturesLoaded=> (CoreEventIndex::TexturesLoaded, None),
+            CoreEvent::RendererLoaded=> (CoreEventIndex::RendererLoaded, None),
             CoreEvent::AudioLoaded => (CoreEventIndex::AudioLoaded, None),
         };
 

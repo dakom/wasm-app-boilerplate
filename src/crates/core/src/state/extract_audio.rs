@@ -9,6 +9,5 @@ pub fn extract_audio_state_js(state:&State, interpolation:f64) -> JsValue {
 pub fn extract_audio_state_struct(state:&State, interpolation:f64) -> audio::State {
     audio::State {
         is_active: state.audio_active,
-        interpolation
     }
 }
