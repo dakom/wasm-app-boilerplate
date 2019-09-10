@@ -11,7 +11,7 @@
 
 There's a lot going on here, with nuanced little gotchas and a zillion potential footguns.
 
-The point of this boiler plate is _not_ to understand how it all fits together so it can be adapted - but rather, to not have to think about it at all
+The point of this boiler plate is to not have to think about it at all
 
 Just run `npm start --silent` and then open an IDE in your favorite directory (or the project as a whole) and go for it.
 
@@ -23,20 +23,22 @@ Don't mess with it. Just expand from it. media goes in `_static/media`. Sources 
 
 We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also shared between crates and modules.
 
-Therefore they're kept in two shared locations:
+The shared locations are:
 
-* Rust: [shared crate](src/crates/shared/src)
-* Typescript: [shared folder](src/typescript/shared)
+* Rust state and events: [shared crate](src/crates/shared/src) 
+* Typescript events only: [shared folder](src/typescript/shared)
 
-Keeping these in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
+The reason the typescript state is not in shared is because there is only one destination for typescript state: ui
+
+More generally, events are all unified as CoreEvent (i.e. they are sent TO only one place), while state is different for each destination (e.g. renderer, ui, audio)
+
+Keeping all this in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
 
 This is somewhat annoying, but short of using a language-agnostic solution like flatbuffers (which would introduce its own issues), it's necessary
 
-One thing to keep in mind is that the events are all unified as CoreEvent (i.e. they are sent TO only one place) 
-
-State is different for each destination (e.g. renderer, ui, audio)
-
 Also, to keep things idiomatic in both languages, events are enums that own their data when going from Rust, and index-based enums when going from JS
+
+Fun!
 
 It will seem super complicated at first, but it's really not so bad thanks to the type checking - edit the shared folders and let the compiler be your guide :)
 
