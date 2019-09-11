@@ -19,11 +19,11 @@ install:
     - npm ci
 
 script:
-    - cd src/crates/core
+    - cd crates/core
     - cargo test
     - cd ../renderer
     - cargo test 
-    - cd ../../..
+    - cd ../..
   
 after_success:
     - npm run bundle:ci
