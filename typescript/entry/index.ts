@@ -89,31 +89,30 @@ app_worker.onmessage = (msg: MessageEvent) => {
  * If there are fresh renderer or ui states (received from app thread), render and wipe them 
  */
 const onTick = () => {
-
     requestAnimationFrame(onTick);
 
-    const start = performance.now();
-
+    //const start = performance.now();
     if(webgl_render_state) {
         renderWebGl(webgl_render_state);
         webgl_render_state = undefined;
-    }
-    if(ui_state) {
-        renderUi(ui_state);
-        ui_state = undefined;
     }
 
     if(audio_state) {
         renderAudio(audio_state);
         audio_state = undefined;
     }
-
+    if(ui_state) {
+        renderUi(ui_state);
+        ui_state = undefined;
+    }
+    /*
     //not perfect but gives rough idea
     const budget = 1000 / 60;
     const taken = performance.now() - start;
     const perc_taken = (taken / budget) * 100;
     const perc_remaining = 100 - perc_taken;
-    console.log(Math.round(perc_remaining) + "% of the frame budget left");
+    */
+    //console.log(Math.round(perc_remaining) + "% of the frame budget left");
 
 }
 requestAnimationFrame(onTick);

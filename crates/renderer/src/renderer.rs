@@ -38,7 +38,7 @@ pub struct Renderer {
 impl Renderer {
     pub fn new(canvas:HtmlCanvasElement, send_event: js_sys::Function) -> Result<Self, JsValue> {
         //not using any webgl2 features so might as well stick with v1
-        let gl = get_webgl_context_1(&canvas, Some(&WebGlContextOptions {
+        let gl = get_webgl_context_1(&canvas, Some(&WebGlContextOptions{
             alpha: false,
             ..WebGlContextOptions::default()
         }))?;
@@ -177,4 +177,3 @@ pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, se
     //Return the event sender
     Ok(render)
 }
-

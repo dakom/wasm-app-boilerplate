@@ -37,5 +37,5 @@ export const send_event = (event:ValidEvents) => {
 }
 
 export const send_event_unchecked = (evt_type:CoreEvent, evt_data?:any) => {
-    wasm_worker.postMessage({ type: "EVENT", evt_type, evt_data});
+    wasm_worker.postMessage({ type: "EVENT", evt_type, evt_data})
 }

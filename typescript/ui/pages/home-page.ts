@@ -8,7 +8,7 @@ import { readSync } from "fs";
 export const home = () => 
     !get_ui_state().allLoaded 
         ? html`
-            <div>
+            <div class="ui">
                 <div class="home-page-container">
                     <div class="home-page-contents">
                         <h1>Loading...</h1>
@@ -17,7 +17,7 @@ export const home = () =>
             </div>
             `
         : html`
-            <div>
+            <div class="ui">
                 <div class="home-page-header">
                     ${audio_toggle()}
                 </div>
