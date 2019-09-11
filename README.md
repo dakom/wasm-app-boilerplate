@@ -9,11 +9,11 @@
 
 # Preliminary note
 
-There's a lot going on here, with nuanced little gotchas and a zillion potential footguns.
+There's a lot going on here compared to a typical web project....
 
-The point of this boiler plate is to not have to think about it at all
+The point of this boiler plate is to not have to think about it at all. The info below is just in case ;)
 
-Just run `npm start --silent` and then open an IDE in your favorite directory (or the project as a whole) and go for it.
+To get started, run `npm start --silent` and then open an IDE in your favorite directory (or the project as a whole) and go for it.
 
 # Directory structure
 
