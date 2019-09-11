@@ -85,7 +85,7 @@ impl Renderer {
     pub fn on_state(&mut self, state:State) {
         self.pre_render(state.window_size.width, state.window_size.height);
 
-        let size_changed = match self.prev_state {
+        let size_changed = match &self.prev_state {
             None => true,
             Some(prev_state) => state.window_size.height != prev_state.window_size.height || state.window_size.width != prev_state.window_size.width
         };
@@ -94,7 +94,9 @@ impl Renderer {
             self.update_camera(state.window_size.width, state.window_size.height);
         }
 
-        self.render(state);
+        self.render(&state);
+
+        self.prev_state = Some(state);
         //info!("ball radius: {}, position: {:?}", consts::ball.radius, state.ball_position);
     }
 
@@ -109,10 +111,10 @@ impl Renderer {
         );
     }
 
-    fn render(&mut self, state:State) {
+    fn render(&mut self, state:&State) {
         self.webgl.activate_program(self.program_id.unwrap()).unwrap();
 
-        let pos = match self.prev_state {
+        let pos = match &self.prev_state {
             None => (state.ball_position.x as f32, state.ball_position.y as f32),
             Some(prev_state) => {
                 let v1 = Vector2::new(prev_state.ball_position.x, prev_state.ball_position.y);
