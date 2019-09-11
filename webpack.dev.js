@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     context: process.cwd(), // to automatically find tsconfig.json
-    entry: "./src/typescript/entry/index.ts",
+    entry: "./typescript/entry/index.ts",
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
@@ -20,7 +20,7 @@ module.exports = {
         new ForkTsCheckerNotifierWebpackPlugin({ title: 'TypeScript', excludeWarnings: false }),
         new HtmlWebpackPlugin({
             inject: true,
-            template: 'src/typescript/entry/index.html'
+            template: 'typescript/entry/index.html'
         }),
         new webpack.HotModuleReplacementPlugin()
     ],
@@ -41,8 +41,9 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js", ".css"],
         alias: {
-            "@events": path.resolve(__dirname, "src/typescript/shared/events"),
-            "@ui": path.resolve(__dirname, "src/typescript/ui"),
+            "@events": path.resolve(__dirname, "typescript/events"),
+            "@state": path.resolve(__dirname, "typescript/state"),
+            "@ui": path.resolve(__dirname, "typescript/ui"),
         }
     },
     devtool: 'inline-source-map',

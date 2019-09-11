@@ -25,8 +25,8 @@ We want the events and state to be checked by the compiler on both the Typescrip
 
 The shared locations are:
 
-* Rust state and events: [shared crate](src/crates/shared/src) 
-* Typescript events only: [shared folder](src/typescript/shared)
+* Rust state and events: [shared crate](crates/shared/src) 
+* Typescript events only: [shared folder](typescript/shared)
 
 The reason the typescript state is not in shared is because there is only one destination for typescript state: ui
 
