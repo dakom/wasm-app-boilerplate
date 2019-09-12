@@ -31,6 +31,7 @@ Everything else is a starting point and ready to be worked on:
 * [typescript/events](typescript/events) - the events sent FROM typescript TO core worker
 * [typescript/state](typescript/state) - the state sent FROM core worker TO typescript (primarily ui state)
 * [typescript/ui](typescript/ui) - the rendering of ui state
+* [_static/media](_static/media) - static media 
 
 
 # Shared types for Events and State
