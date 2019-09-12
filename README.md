@@ -119,13 +119,13 @@ Also `evt.target.value` is different than `value` even though it is bound to it.
 
 # WebGL / Audio
 
-WebGl uses awsm_web to manage gl state but it's kept to a very small proof of concept here. Of course, sky's the limit!
+WebGl uses [awsm_web](https://github.com/dakom/awsm) to manage gl state but it's kept to a very small proof of concept here. Of course, sky's the limit!
 
-Same idea applies to audio 
+Audio uses straight web-sys/bindgen/js-sys etc. One gotcha is that user interaction must happen before an AudioContext can be created, and an AudioContext is required for loading AudioBuffers. That's setup to work properly here via the start button callback (which does _not_ hold back the renderer from loading images).
 
 # Requirements 
 
-Some cargo binaries are expected to be there, like watchexec and wasm-bindgen-cli (installed via cargo install)
+Some cargo binaries are expected to be there, like `watchexec` and `wasm-bindgen-cli` (installed via cargo install)
 
 Also rust, the toolchain, wasm target, etc.
 
