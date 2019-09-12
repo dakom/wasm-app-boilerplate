@@ -163,7 +163,7 @@ pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, se
                 match state {
                     Ok(state) => {
                         let mut renderer = renderer.borrow_mut();
-                        if(state.has_loaded) {
+                        if(state.is_active) {
                             renderer.on_state(state);
                         }
                     },

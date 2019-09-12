@@ -20,7 +20,8 @@ pub enum CoreEventIndex {
     SetSpeed,
     WindowSize,
     RendererLoaded,
-    AudioLoaded
+    AudioLoaded,
+    Started
 }
 
 

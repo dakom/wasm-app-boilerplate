@@ -35,10 +35,10 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(send_event: js_sys::Function) -> Result<JsValue, JsValue> {
+pub fn run(send_event: js_sys::Function, ctx:web_sys::AudioContext) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
-    audio::start(send_event)
+    audio::start(send_event, ctx)
 }
 

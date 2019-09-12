@@ -1,40 +1,10 @@
 use shipyard::*;
 use shared::state::renderer;
 use shared::consts;
-use crate::world::{Position, Speed, Direction};
+use log::{info};
+use crate::components::*;
 
-/*
-#[system(Render)]
-fn run(pos: &Position, speed: &Speed, dir: &Direction) {
-    /*
-    renderer::State {
-        window_size: state.window_size,
-        //The ball position is considered the midpoint for physics
-        //So drawing should also expect it as the midpoint
-        ball_position: Position {
-            x: state.ball_position.x - consts::ball.radius,
-            y: state.ball_position.y - consts::ball.radius
-        },
-        interpolation,
-        has_loaded: state.renderer_loaded
-    }
-    */
-
-    let mut ball_position = renderer::Position { x: 0.0, y: 0.0 };
-
-    for (pos) in (pos).iter() {
-
-    }
-}
-
-pub fn register(world:&World) {
-    world.add_workload("Render", Render);
-}
-*/
-
-pub fn extract_render_state(world:&World, interpolation:f64) -> renderer::State {
-
-    let mut state = renderer::State::new();
+pub fn extract_render_state(world:&World, interpolation:f64, state:&mut renderer::State) {
 
     world.run::<(&Position), _>(|(positions)| {
         if let Some(pos) = positions.iter().next() {
@@ -43,5 +13,19 @@ pub fn extract_render_state(world:&World, interpolation:f64) -> renderer::State 
         }
     });
 
-    state
+    world.run::<(&WindowSize), _>(|(window_size)| {
+        if let Some(window_size) = window_size.iter().next() {
+            state.window_size = window_size.clone();
+        }
+    });
+
+    world.run::<(&InitState), _>(|(init_state)| {
+        if let Some(init_state) = init_state.iter().next() {
+            if init_state.phase == InitPhase::Ready {
+                state.is_active = true;
+            }
+        }
+    });
+    state.interpolation = interpolation;
+
 }

@@ -17,8 +17,7 @@ pub struct Sequencer {
 }
 
 impl Sequencer {
-    pub fn new(send_event: js_sys::Function) -> Result<Self, JsValue> {
-        let ctx: AudioContext = AudioContext::new()?;
+    pub fn new(send_event: js_sys::Function, ctx:AudioContext) -> Result<Self, JsValue> {
         let event_sender = CoreEventSender::new(send_event);
 
         Ok(Self{
@@ -41,8 +40,8 @@ impl Sequencer {
 
 }
 
-pub fn start(send_event:js_sys::Function) -> Result<JsValue, JsValue> {
-    let mut sequencer = Sequencer::new(send_event)?;
+pub fn start(send_event:js_sys::Function, ctx:AudioContext) -> Result<JsValue, JsValue> {
+    let mut sequencer = Sequencer::new(send_event, ctx)?;
 
     //sequencer.send_event(&CoreEvent::SetSpeed(Speed(0.3)));
 

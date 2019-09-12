@@ -1,7 +1,18 @@
+/**
+ * Make sure this matches state in rust shared!
+ */
+
 export interface State {
     audioActive: boolean;
     speed: number;
-    allLoaded: boolean;
+    initPhase: number;
+}
+
+//These need to match the order on the rust side
+export enum InitPhase {
+    Waiting,
+    Loading,
+    Ready
 }
 
 let state:State;

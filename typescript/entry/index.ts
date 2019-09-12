@@ -1,3 +1,4 @@
+
 import {init_events, send_event, send_event_unchecked, CoreEvent} from "@events/events";
 import {get_ui_state, set_ui_state, State as UiState} from "@state/state";
 import {ui, renderUi} from "@ui/ui";
@@ -69,11 +70,6 @@ app_worker.onmessage = (msg: MessageEvent) => {
                         renderWebGl = run(canvas_dom_element, width, height, send_event_unchecked);
                     });
 
-                //same with audio
-                import("../../_static/wasm/audio/pkg/my_audio")
-                    .then(({ run }) => {
-                        renderAudio = run(send_event_unchecked);
-                    });
             } break;
 
             case "UI_STATE": ui_state = msg.data.data; break;
@@ -83,7 +79,21 @@ app_worker.onmessage = (msg: MessageEvent) => {
     }
 }
 
+//AudioContext must be created through explicit user action
+//So this callback is passed down to UI
+//Loading audio also depends on the context... but the renderer loading isn't held up by this
+export const onStarted= () => {
+    const ctor = (window as any).AudioContext || (window as any).webkitAudioContext;
+    const ctx = new ctor();
 
+    //same with audio
+    import("../../_static/wasm/audio/pkg/my_audio")
+        .then(({ run }) => {
+            renderAudio = run(send_event_unchecked, ctx);
+        });
+
+    send_event(CoreEvent.Started);
+}
 /**
  * The main graphics loop 
  * If there are fresh renderer or ui states (received from app thread), render and wipe them 
@@ -91,7 +101,7 @@ app_worker.onmessage = (msg: MessageEvent) => {
 const onTick = () => {
     requestAnimationFrame(onTick);
 
-    //const start = performance.now();
+    const start = performance.now();
     if(webgl_render_state) {
         renderWebGl(webgl_render_state);
         webgl_render_state = undefined;
@@ -105,13 +115,11 @@ const onTick = () => {
         renderUi(ui_state);
         ui_state = undefined;
     }
-    /*
     //not perfect but gives rough idea
     const budget = 1000 / 60;
     const taken = performance.now() - start;
     const perc_taken = (taken / budget) * 100;
     const perc_remaining = 100 - perc_taken;
-    */
     //console.log(Math.round(perc_remaining) + "% of the frame budget left");
 
 }

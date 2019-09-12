@@ -11,44 +11,53 @@
 
 There's a lot going on here compared to a typical web project....
 
-The point of this boiler plate is to not have to think about it at all. The info below is just in case ;)
-
 To get started, run `npm start --silent` and then open an IDE in your favorite directory (or the project as a whole) and go for it.
 
-# Directory structure
+# Files and directories
 
-Don't mess with it. Just expand from it. media goes in `_static/media`. Sources go where they go.
+There's probably no need to mess with any of these:
+
+* root config files (webpack, tsconfig.json, cargo.toml, package.json, etc.)
+* everything in [_static](_static) other than the media folder
+* everything in [typescript/entry](typescript/entry)
+
+Everything else is a starting point and ready to be worked on:
+
+* [crates/core/src](crates/core/src) - the worker core (driven by shipyard ECS) 
+* [crates/renderer/src](crates/renderer/src) - webgl renderer output (driven by awsm_web) 
+* [crates/audio/src](crates/audio/src) - audio output (plain web-sys) 
+* [crates/shared/src/state](crates/shared/src/state) - the state sent FROM core TO wasm outputs
+* [crates/shared/src/events](crates/shared/src/events) - the events sent FROM wasm outputs TO core worker
+* [typescript/events](typescript/events) - the events sent FROM typescript TO core worker
+* [typescript/state](typescript/state) - the state sent FROM core worker TO typescript (primarily ui state)
+* [typescript/ui](typescript/ui) - the rendering of ui state
+
 
 # Shared types for Events and State
 
-We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also shared between crates and modules.
+We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also sometimes shared between crates and modules.
 
-The shared locations are:
-
-* Rust state and events: [shared crate](crates/shared/src) 
-* Typescript events only: [shared folder](typescript/shared)
-
-The reason the typescript state is not in shared is because there is only one destination for typescript state: ui
-
-More generally, events are all unified as CoreEvent (i.e. they are sent TO only one place), while state is different for each destination (e.g. renderer, ui, audio)
+Events are all unified as CoreEvent (i.e. they are sent TO only one place), while state is different for each destination (e.g. renderer, ui, audio)
 
 Keeping all this in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
 
 This is somewhat annoying, but short of using a language-agnostic solution like flatbuffers (which would introduce its own issues), it's necessary
 
-Also, to keep things idiomatic in both languages, events are enums that own their data when going from Rust, and index-based enums when going from JS
+Another gotcha is that, for the sake of efficiency, enums should be serialized as simple integers. This is setup with examples in both directions (see event type and init phase) 
+
+To keep things idiomatic in both languages, events are enums that own their data when going from Rust, and index-based enums with sidecar data when going from JS.
 
 Fun!
 
-It will seem super complicated at first, but it's really not so bad thanks to the type checking - edit the shared folders and let the compiler be your guide :)
+It will seem super complicated at first, but it's really not so bad thanks to the type checking - let the compiler be your guide :)
 
 (serialization / deserialization is via serde Rust <> JS Objects... if flatbuffers were used, it could be an optimization here due to Transferable objects, or it could be a performance cost due to the runtime impact. Profile and see before pulling the trigger!)
 
 # Managing application state in WASM
 
-The core mechanism in the demo here is the Shipyard Enity Component System, and with just a bare minimum example needed to shuttle the events and state back and forth across all areas.
+The core mechanism in the demo here is the [Shipyard Enity Component System](https://github.com/leudz/shipyard), and with just a bare minimum example needed to shuttle the events and state back and forth across all areas and kick the tires where they need kickin'.
 
-The ECS could easily be swapped with a different approach altogether - functional reactive programming, statecharts, etc.
+The ECS could easily be swapped with a different approach altogether - functional reactive programming, statecharts, etc. but ECS is great!
 
 Whatever it is, it's updated internally in a game loop - and ultimately sends out discrete state updates for all the dependants (`ui`, `webgl renderer`, and `audio`)
 
@@ -68,11 +77,11 @@ In many apps, especially those that are most similar to traditional websites, it
 
 ### Ui State vs. DOM state 
 
-The following really applies everywhere, but it's only necessary to show it in terms of UI and it can then be extrapolated for WebGL, audio, etc.:
+The following really applies everywhere, but it's only necessary to show it in terms of UI and it can then be extrapolated for WebGL, audio, etc. Plus I think it's more of a footgun when it comes to UI:
 
 **The rule of thumb is that asynchronous callbacks should never depend on `get_ui_state()`. Either use a locally cached copy or get it from the element.**
 
-In other words, `state` must be considered only synchronously! There's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
+In other words, `get_ui_state()` must be considered only synchronously! There's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
 
 Additionally, the html spec allows setting an element's attribute without affecting its property, and an element may be updated by user interaction before the latest state is flushed.
 
@@ -143,6 +152,8 @@ When the Rust/WASM recompiles, it places the wasm in the static directory too. T
 Webpack is configured to watch for changes in the static dir (this is a speedup compared to having webpack watch rust sources).
 
 Lastly, Rust is setup via its own watcher (watchexec) to recompile when its sources change, and this is configured as an npm script
+
+The wasm which is imported via the entry (not worker) is imported as a module.
 
 So there are multiple processes that run in parallel and both are launched at `npm start`:
 

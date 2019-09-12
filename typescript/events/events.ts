@@ -10,11 +10,13 @@ export enum CoreEvent {
     SetVelocity,
     WindowSize,
     RendererLoaded,
-    AudioLoaded
+    AudioLoaded,
+    Started
 }
 
 type ValidEvents = 
     CoreEvent.ToggleAudio
+    | CoreEvent.Started
     | [CoreEvent.SetVelocity, number]
     | [CoreEvent.WindowSize, WindowSize]
 

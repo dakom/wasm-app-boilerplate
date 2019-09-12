@@ -8,7 +8,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-shared = { path="../shared", features = ["renderer", "events_from_rust"]}
+shared = { path="../shared", features = ["events_from_rust"]}
 nalgebra = "^0.18.1"
 wasm-bindgen = "0.2.50"
 js-sys = "0.3.27"

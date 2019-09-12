@@ -54,6 +54,9 @@ module.exports = {
         open: true,
         historyApiFallback: true,
         stats: 'errors-only',
+        watchOptions: {
+            ignored: ['node_modules', 'target', 'pkg', '**/*.rs']
+        },
         watchContentBase: true,
     }
 };

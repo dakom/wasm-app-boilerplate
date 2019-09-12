@@ -10,7 +10,8 @@ pub enum CoreEvent {
     SetSpeed(Speed),
     WindowSize,
     RendererLoaded,
-    AudioLoaded
+    AudioLoaded,
+    Started
 }
 
 pub struct CoreEventSender {
@@ -31,6 +32,7 @@ impl CoreEventSender {
             CoreEvent::WindowSize => (CoreEventIndex::WindowSize, None),
             CoreEvent::RendererLoaded=> (CoreEventIndex::RendererLoaded, None),
             CoreEvent::AudioLoaded => (CoreEventIndex::AudioLoaded, None),
+            CoreEvent::Started => (CoreEventIndex::Started, None)
         };
 
         //Even though we're ultimately going from Rust -> rustc

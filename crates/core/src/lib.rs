@@ -4,16 +4,15 @@ mod components;
 mod systems;
 mod events;
 mod world;
+mod game_loop;
 
 use cfg_if::cfg_if;
 use log::{info, Level};
 use wasm_bindgen::prelude::*;
 use std::rc::{Rc};
 use std::cell::{RefCell};
-use awsm_web::tick::{MainLoop, MainLoopOptions};
 use crate::events::{handle_event};
 use crate::world::init_world;
-use crate::systems::render::{extract_render_state};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -47,11 +46,6 @@ pub fn run(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_a
     init_panic();
     init_log();
 
-    start_loop(on_ui_state, on_render_state, on_audio_state, window_width, window_height)
-}
-
-
-fn start_loop(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, on_audio_state:js_sys::Function, window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
     let world = Rc::new(init_world(window_width, window_height));
 
     //Create a function which allows JS to send us events ad-hoc
@@ -74,53 +68,9 @@ fn start_loop(on_ui_state: js_sys::Function, on_render_state:js_sys::Function, o
     let send_event = _send_event.as_ref().clone();
     _send_event.forget();
 
-    //Main loop callbacks
-    let begin = {
-        let world = Rc::clone(&world);
-        move |time, delta| {
-        }
-    };
+    game_loop::start(world, on_ui_state, on_render_state, on_audio_state)?;
 
-    let update = {
-        let world = Rc::clone(&world);
-        move |delta| {
-        }
-    };
-
-    let draw = {
-        let world = Rc::clone(&world);
-        move |interpolation| {
-            let this = JsValue::NULL;
-
-            let render_state = extract_render_state(&world, interpolation);
-            let render_state = serde_wasm_bindgen::to_value(&render_state).unwrap();
-            on_render_state.call1(&this, &render_state);
-
-            /* 
-            let ui_state = extract_ui_state_js(&state, interpolation);
-            on_ui_state.call1(&this, &ui_state);
-            
-            let render_state = extract_render_state_js(&state, interpolation);
-            on_render_state.call1(&this, &render_state);
-
-            let audio_state = extract_audio_state_js(&state, interpolation);
-            on_audio_state.call1(&this, &audio_state);
-            */
-        }
-    };
-
-    let end = {
-        let world = Rc::clone(&world);
-        move |fps, abort| {
-        }
-    };
-
-    //start and forget the loop
-    let main_loop = MainLoop::start(MainLoopOptions::default_worker(), begin, update, draw, end)?;
-    std::mem::forget(Box::new(main_loop));
-
+    //Start the game loop
     //Return the event sender
     Ok(send_event)
 }
-
-
