@@ -23,8 +23,8 @@ There's probably no need to mess with any of these:
 
 Everything else is a starting point and ready to be worked on:
 
-* [crates/core/src](crates/core/src) - the worker core (driven by shipyard ECS) 
-* [crates/renderer/src](crates/renderer/src) - webgl renderer output (driven by awsm_web) 
+* [crates/core/src](crates/core/src) - the worker core (driven by [shipyard ECS](https://github.com/leudz/shipyard)) 
+* [crates/renderer/src](crates/renderer/src) - webgl renderer output (driven by [awsm_web](https://github.com/dakom/awsm)) 
 * [crates/audio/src](crates/audio/src) - audio output (plain web-sys) 
 * [crates/shared/src/state](crates/shared/src/state) - the state sent FROM core TO wasm outputs
 * [crates/shared/src/events](crates/shared/src/events) - the events sent FROM wasm outputs TO core worker
