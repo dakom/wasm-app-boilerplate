@@ -7,10 +7,6 @@ edition = "2018"
 [lib]
 crate-type = ["cdylib"]
 
-[dev-dependencies]
-console_log = "0.1.2"
-console_error_panic_hook = "0.1.6"
-
 [dependencies]
 shared = { path="../shared", features = ["renderer", "events_from_rust"]}
 nalgebra = "^0.18.1"
@@ -26,3 +22,10 @@ wee_alloc = "0.4.5"
 awsm_web = { version = "0.0.8", features = ["webgl", "loaders"], default-features = false }
 # awsm_web = { path="../../../../awsm/crates/web", features = ["webgl", "loaders"], default-features = false }
 
+console_log = { version = "0.1.2", optional = true}
+console_error_panic_hook = {version = "0.1.6", optional = true}
+
+[features]
+# TODO - remove these when we can really use dev feature (see https://users.rust-lang.org/t/dependencies-based-on-profile/32386/4)
+default = ["console_log", "console_error_panic_hook"]
+dev = ["console_log", "console_error_panic_hook"]

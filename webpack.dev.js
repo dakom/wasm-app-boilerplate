@@ -49,6 +49,7 @@ module.exports = {
     devtool: 'inline-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, './_static'),
+        compress: true,
         clientLogLevel: 'warning',
         open: true,
         historyApiFallback: true,

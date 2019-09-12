@@ -11,12 +11,12 @@
 
     "//WEBPACK": "",
     "_webpack:release": "webpack --progress --color --mode production --config webpack.release.js",
-    "_webpack:start": "webpack-dev-server --progress --color --mode development --config webpack.dev.js",
+    "_webpack:start": "webpack-dev-server --mode development --config webpack.dev.js",
 
     "//RUST-DEV": "",
     "_rust:start": "watchexec -w ./crates/renderer/src -w ./crates/audio/src -w ./crates/core/src -w ./crates/shared/src npm run _rust:buildandbind:dev",
     "_rust:buildandbind:dev": "npm run _rust:build:dev && npm run _rust:bindgen:dev",
-    "_rust:build:dev": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --target wasm32-unknown-unknown",
+    "_rust:build:dev": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --target wasm32-unknown-unknown --features dev",
     "_rust:bindgen:dev": "npm-run-all -p _rust:renderer:bindgen:dev _rust:audio:bindgen:dev _rust:core:bindgen:dev",
 
 

@@ -20,7 +20,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 // enable logging only during debug builds
 cfg_if! {
-    if #[cfg(feature = "console_log")] {
+    if #[cfg(all(feature = "console_log", debug_assertions))] {
         fn init_log() {
             use console_log;
             console_log::init_with_level(Level::Trace).expect("error initializing log");
@@ -32,7 +32,7 @@ cfg_if! {
 
 // enable panic hook only during debug builds
 cfg_if! {
-    if #[cfg(feature = "console_error_panic_hook")] {
+    if #[cfg(all(feature = "console_error_panic_hook", debug_assertions))] {
         fn init_panic() {
             console_error_panic_hook::set_once();
         }
