@@ -2,11 +2,13 @@
 import {init_events, send_event, send_event_unchecked, CoreEvent} from "@events/events";
 import {get_ui_state, set_ui_state, State as UiState} from "@state/state";
 import {ui, renderUi} from "@ui/ui";
+import {get_window_size} from "@utils/window";
+import {get_audio_context} from "@utils/audio";
+import {load_wasm} from "@utils/wasm";
 
 //import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
 const app_worker = new Worker("core-worker-shim.js");
-const canvas_dom_element= document.getElementById("canvas");
 
 /**
  * Tell the event sender where we're sending to
@@ -25,11 +27,6 @@ let renderAudio:(state:any) => void = () => {};
 //this is legitimately used in this thread
 let ui_state:UiState;
 
-//just a helper
-const get_window_size = () => ({
-    width: window.innerWidth,
-    height: window.innerHeight
-});
 
 /**
  * Initialize communication with the worker
@@ -64,11 +61,13 @@ app_worker.onmessage = (msg: MessageEvent) => {
                  * It's only imported once the worker is ready so it can send events right away
                  */
 
-                import("../../_static/wasm/renderer/pkg/my_renderer")
-                    .then(({ run }) => {
+                load_wasm("wasm/renderer/pkg/my_renderer", "wasm_renderer")
+                    .then(run => {
+                        const canvas_dom_element = document.getElementById("canvas");
                         const { width, height } = get_window_size();
-                        renderWebGl = run(canvas_dom_element, width, height, send_event_unchecked);
-                    });
+                        return run(canvas_dom_element, width, height, send_event_unchecked)
+                    })
+                    .then(_renderWebGl => renderWebGl = _renderWebGl);
 
             } break;
 
@@ -83,14 +82,11 @@ app_worker.onmessage = (msg: MessageEvent) => {
 //So this callback is passed down to UI
 //Loading audio also depends on the context... but the renderer loading isn't held up by this
 export const onStarted= () => {
-    const ctor = (window as any).AudioContext || (window as any).webkitAudioContext;
-    const ctx = new ctor();
-
-    //same with audio
-    import("../../_static/wasm/audio/pkg/my_audio")
-        .then(({ run }) => {
-            renderAudio = run(send_event_unchecked, ctx);
-        });
+    load_wasm("wasm/audio/pkg/my_audio", "wasm_audio")
+        .then(run => 
+            run(send_event_unchecked, get_audio_context())
+        )
+        .then(_renderAudio => renderAudio = _renderAudio);
 
     send_event(CoreEvent.Started);
 }

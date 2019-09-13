@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run _rust:build:dev && npm-run-all -p _webpack:start _rust:start",
-    "clean": "rimraf ./dist && rimraf ./target && rimraf ./_static/wasm/renderer/pkg && rimraf ./_static/wasm/core/pkg && rimraf ./_static/wasm/audio/pkg && rimraf ./crates/renderer/target && rimraf ./crates/core/target && rimraf ./crates/audio/target && rimraf ./crates/shared/target && rimraf ./crates/renderer/pkg && rimraf ./crates/core/pkg && rimraf ./crates/audio/pkg && rimraf ./crates/shared/pkg",
+    "clean": "rimraf ./dist && rimraf ./target && npm-run-all -p _rust:renderer:clean _rust:audio:clean _rust:core:clean _rust:shared:clean", 
     "bundle:ci": "npm run clean && npm run _rust:release && npm run _webpack:release",
     "bundle:local": "npm run bundle:ci && npm run _copy:static",
 
@@ -27,22 +27,28 @@
     "_rust:opt": "npm-run-all -p _rust:renderer:opt _rust:audio:opt _rust:core:opt",
 
     "//RUST-RENDERER": "",
-    "_rust:renderer:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_renderer.wasm --target bundler --out-dir ./_static/wasm/renderer/pkg",
-    "_rust:renderer:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_renderer.wasm --target bundler --out-dir ./_static/wasm/renderer/pkg",
+    "_rust:renderer:clean": "rimraf ./_static/wasm/renderer/pkg && rimraf ./crates/renderer/target && rimraf ./crates/renderer/pkg",
+    "_rust:renderer:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_renderer.wasm --no-typescript --target no-modules --no-modules-global wasm_renderer --out-dir ./_static/wasm/renderer/pkg",
+    "_rust:renderer:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_renderer.wasm --no-typescript --target no-modules --no-modules-global wasm_renderer --out-dir ./_static/wasm/renderer/pkg",
     "_rust:renderer:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/renderer/pkg/my_renderer_bg.wasm ./_static/wasm/renderer/pkg/my_renderer_bg.wasm",
 
     "//RUST-AUDIO": "",
-    "_rust:audio:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_audio.wasm --target bundler --out-dir ./_static/wasm/audio/pkg",
-    "_rust:audio:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_audio.wasm --target bundler --out-dir ./_static/wasm/audio/pkg",
+    "_rust:audio:clean": "rimraf ./_static/wasm/audio/pkg && rimraf ./crates/audio/target && rimraf ./crates/audio/pkg",
+    "_rust:audio:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_audio.wasm --no-typescript --target no-modules --no-modules-global wasm_audio --out-dir ./_static/wasm/audio/pkg",
+    "_rust:audio:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_audio.wasm --no-typescript --target no-modules --no-modules-global wasm_audio --out-dir ./_static/wasm/audio/pkg",
     "_rust:audio:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/audio/pkg/my_audio_bg.wasm ./_static/wasm/audio/pkg/my_audio_bg.wasm",
 
-    "//RUST-CORE (note - not a module!)": "",
-    "_rust:core:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_core.wasm --no-typescript --target no-modules --out-dir ./_static/wasm/core/pkg",
-    "_rust:core:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_core.wasm --no-typescript --target no-modules --out-dir ./_static/wasm/core/pkg",
+    "//RUST-CORE": "",
+    "_rust:core:clean": "rimraf ./_static/wasm/core/pkg && rimraf ./crates/core/target && rimraf ./crates/core/pkg",
+    "_rust:core:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_core.wasm --no-typescript --target no-modules --no-modules-global wasm_core --out-dir ./_static/wasm/core/pkg",
+    "_rust:core:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_core.wasm --no-typescript --target no-modules --no-modules-global wasm_core --out-dir ./_static/wasm/core/pkg",
     "_rust:core:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/core/pkg/my_core_bg.wasm ./_static/wasm/core/pkg/my_core_bg.wasm",
 
+    "//RUST-SHARED": "",
+    "_rust:shared:clean": "rimraf ./_static/wasm/shared/pkg && rimraf ./crates/shared/target && rimraf ./crates/shared/pkg",
+
     "//COPY": "",
-    "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../../dist/wasm/core --cwd=_static/wasm/core --parents && cpy **/* ../../dist/media --cwd=_static/media --parents"
+    "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../dist/wasm --cwd=_static/wasm --parents && cpy **/* ../../dist/media --cwd=_static/media --parents"
   },
   "repository": {
     "type": "git",

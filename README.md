@@ -17,9 +17,9 @@ To get started, run `npm start --silent` and then open an IDE in your favorite d
 
 There's probably no need to mess with any of these:
 
-* root config files (webpack, tsconfig.json, cargo.toml, package.json, etc.)
-* everything in [_static](_static) other than the media folder
-* everything in [typescript/entry](typescript/entry)
+* dev config files (webpack, tsconfig.json, cargo.toml, package.json, etc.)
+* [_static](_static) other than the `media` folder
+* [typescript/entry](typescript/entry)
 
 Everything else is a starting point and ready to be worked on:
 
@@ -31,6 +31,7 @@ Everything else is a starting point and ready to be worked on:
 * [typescript/events](typescript/events) - the events sent FROM typescript TO core worker
 * [typescript/state](typescript/state) - the state sent FROM core worker TO typescript (primarily ui state)
 * [typescript/ui](typescript/ui) - the rendering of ui state
+* [typescript/utils](typescript/utils) - utils for typescript 
 * [_static/media](_static/media) - static media 
 
 

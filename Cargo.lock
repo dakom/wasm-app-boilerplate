@@ -725,7 +725,7 @@ dependencies = [
 [[package]]
 name = "shipyard"
 version = "0.2.0"
-source = "git+https://github.com/leudz/shipyard.git#4cdb85cf6082bfea7d3ba34ee9d95425d342c9ec"
+source = "git+https://github.com/leudz/shipyard.git#5fbcda5632405fee4ebd3a7c16ed87174d260dac"
 dependencies = [
  "shipyard_proc 0.1.0 (git+https://github.com/leudz/shipyard.git)",
 ]
@@ -733,7 +733,7 @@ dependencies = [
 [[package]]
 name = "shipyard_proc"
 version = "0.1.0"
-source = "git+https://github.com/leudz/shipyard.git#4cdb85cf6082bfea7d3ba34ee9d95425d342c9ec"
+source = "git+https://github.com/leudz/shipyard.git#5fbcda5632405fee4ebd3a7c16ed87174d260dac"
 dependencies = [
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",

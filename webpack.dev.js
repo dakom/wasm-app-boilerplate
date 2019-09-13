@@ -44,6 +44,7 @@ module.exports = {
             "@events": path.resolve(__dirname, "typescript/events"),
             "@state": path.resolve(__dirname, "typescript/state"),
             "@ui": path.resolve(__dirname, "typescript/ui"),
+            "@utils": path.resolve(__dirname, "typescript/utils"),
         }
     },
     devtool: 'inline-source-map',

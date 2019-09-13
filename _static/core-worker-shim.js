@@ -3,13 +3,14 @@
  * and the default wasm_bindgen is to use proper es modules
  * so this little shim essentially allows loading the wasm as a worker
  * see the --no-modules flag docs at https://rustwasm.github.io/wasm-bindgen/examples/without-a-bundler.html
+ * also note that it's build with --no-modules-global-var wasm_core to avoid global namespace collisions
  */
 
 self.importScripts("./wasm/core/pkg/my_core.js");
-const {run} = wasm_bindgen;
+const {run} = wasm_core;
 
 (async () => { 
-    await wasm_bindgen("./wasm/core/pkg/my_core_bg.wasm");
+    await wasm_core("./wasm/core/pkg/my_core_bg.wasm");
 
     let send_event;
 

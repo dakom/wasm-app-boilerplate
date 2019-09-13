@@ -23,6 +23,7 @@
             "@events/*": ["typescript/events/*"],
             "@state/*": ["typescript/state/*"],
             "@ui/*": ["typescript/ui/*"],
+            "@utils/*": ["typescript/utils/*"],
         },
     },
     "include": [
