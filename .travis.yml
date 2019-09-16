@@ -28,9 +28,7 @@ script:
 after_success:
     - npm run bundle:ci
     - mkdir ./dist/wasm
-    - cp ./_static/* ./dist/
-    - cp -R ./_static/wasm/core ./dist/wasm/core
-    - cp -R ./_static/media ./dist/media
+    - cp -R ./_static/* ./dist/
 
 deploy:
     local_dir: dist
