@@ -5,24 +5,9 @@
 # NOTE - NOT READY YET! COME BACK IN A WEEK OR SO :)
 
 # Dataflow
-
-![flowchart](https://i.imgur.com/tTzShn7.png)
-
-# Preliminary note
-
-There's a lot going on here compared to a typical web project....
-
-To get started, run `npm start --silent` and then open an IDE in your favorite directory (or the project as a whole) and go for it.
+![flowchart](https://i.imgur.com/qbOaEUn.png)
 
 # Files and directories
-
-No need to mess with any of these:
-
-* dev config files (webpack, tsconfig.json, cargo.toml, package.json, etc.)
-* [_static](_static) other than the `media` folder
-* [typescript/entry](typescript/entry)
-
-Everything else is a starting point and ready to be worked on:
 
 * [crates/core/src](crates/core/src) - the worker core (driven by [shipyard ECS](https://github.com/leudz/shipyard)) 
 * [crates/renderer/src](crates/renderer/src) - webgl renderer output (driven by [awsm_web](https://github.com/dakom/awsm)) 
@@ -35,6 +20,11 @@ Everything else is a starting point and ready to be worked on:
 * [typescript/config](typescript/config) - config for typescript 
 * [_static/media](_static/media) - static media 
 
+These are pretty much locked and won't need editing:
+
+* dev config files (webpack, tsconfig.json, cargo.toml, package.json, etc.)
+* [_static](_static) other than the `media` folder
+* [typescript/entry](typescript/entry)
 
 # Shared types for Events and State
 
