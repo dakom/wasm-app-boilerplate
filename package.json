@@ -5,48 +5,39 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run _rust:build:dev && npm-run-all -p _webpack:start _rust:start",
-    "clean": "rimraf ./dist && rimraf ./target && npm-run-all -p _rust:renderer:clean _rust:audio:clean _rust:core:clean _rust:shared:clean", 
+    "clean": "rimraf ./dist && rimraf ./target && npm-run-all -p _rust:renderer:clean _rust:audio:clean _rust:core:clean _rust:shared:clean",
     "bundle:ci": "npm run clean && npm run _rust:release && npm run _webpack:release",
     "bundle:local": "npm run bundle:ci && npm run _copy:static",
-
     "//WEBPACK": "",
     "_webpack:release": "webpack --progress --color --mode production --config webpack.release.js",
     "_webpack:start": "webpack-dev-server --mode development --config webpack.dev.js",
-
     "//RUST-DEV": "",
     "_rust:start": "watchexec -w ./crates/renderer/src -w ./crates/audio/src -w ./crates/core/src -w ./crates/shared/src npm run _rust:buildandbind:dev",
     "_rust:buildandbind:dev": "npm run _rust:build:dev && npm run _rust:bindgen:dev",
     "_rust:build:dev": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --target wasm32-unknown-unknown --features dev",
     "_rust:bindgen:dev": "npm-run-all -p _rust:renderer:bindgen:dev _rust:audio:bindgen:dev _rust:core:bindgen:dev",
-
-
     "//RUST-RELEASE": "",
     "_rust:release": "npm run _rust:build:release && npm run _rust:bindgen:release && npm run _rust:opt",
     "_rust:build:release": "cross-env RUSTFLAGS=\"-A warnings\" cargo +nightly build --release --target wasm32-unknown-unknown",
     "_rust:bindgen:release": "npm-run-all -p _rust:renderer:bindgen:release _rust:audio:bindgen:release _rust:core:bindgen:release",
     "_rust:opt": "npm-run-all -p _rust:renderer:opt _rust:audio:opt _rust:core:opt",
-
     "//RUST-RENDERER": "",
     "_rust:renderer:clean": "rimraf ./_static/wasm/renderer/pkg && rimraf ./crates/renderer/target && rimraf ./crates/renderer/pkg",
     "_rust:renderer:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_renderer.wasm --no-typescript --target no-modules --no-modules-global wasm_renderer --out-dir ./_static/wasm/renderer/pkg",
     "_rust:renderer:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_renderer.wasm --no-typescript --target no-modules --no-modules-global wasm_renderer --out-dir ./_static/wasm/renderer/pkg",
     "_rust:renderer:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/renderer/pkg/my_renderer_bg.wasm ./_static/wasm/renderer/pkg/my_renderer_bg.wasm",
-
     "//RUST-AUDIO": "",
     "_rust:audio:clean": "rimraf ./_static/wasm/audio/pkg && rimraf ./crates/audio/target && rimraf ./crates/audio/pkg",
     "_rust:audio:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_audio.wasm --no-typescript --target no-modules --no-modules-global wasm_audio --out-dir ./_static/wasm/audio/pkg",
     "_rust:audio:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_audio.wasm --no-typescript --target no-modules --no-modules-global wasm_audio --out-dir ./_static/wasm/audio/pkg",
     "_rust:audio:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/audio/pkg/my_audio_bg.wasm ./_static/wasm/audio/pkg/my_audio_bg.wasm",
-
     "//RUST-CORE": "",
     "_rust:core:clean": "rimraf ./_static/wasm/core/pkg && rimraf ./crates/core/target && rimraf ./crates/core/pkg",
     "_rust:core:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_core.wasm --no-typescript --target no-modules --no-modules-global wasm_core --out-dir ./_static/wasm/core/pkg",
     "_rust:core:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_core.wasm --no-typescript --target no-modules --no-modules-global wasm_core --out-dir ./_static/wasm/core/pkg",
     "_rust:core:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/core/pkg/my_core_bg.wasm ./_static/wasm/core/pkg/my_core_bg.wasm",
-
     "//RUST-SHARED": "",
     "_rust:shared:clean": "rimraf ./_static/wasm/shared/pkg && rimraf ./crates/shared/target && rimraf ./crates/shared/pkg",
-
     "//COPY": "",
     "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../dist/wasm --cwd=_static/wasm --parents && cpy **/* ../../dist/media --cwd=_static/media --parents"
   },
@@ -79,6 +70,7 @@
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
-    "lit-html": "^1.1.2"
+    "lit-html": "^1.1.2",
+    "mainloop.js": "^1.0.4"
   }
 }

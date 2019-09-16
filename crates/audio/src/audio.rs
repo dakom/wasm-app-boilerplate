@@ -3,8 +3,8 @@ use wasm_bindgen::JsCast;
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
-use shared::events::{CoreEvent, CoreEventSender, Speed};
-use shared::state::audio::{State};
+use super::events::*;
+use shared::state::{State};
 use web_sys::{AudioContext};
 use wasm_bindgen_futures::futures_0_3::future_to_promise;
 use awsm_web::loaders::fetch;
@@ -13,12 +13,12 @@ use super::assets::load_assets;
 pub struct Sequencer {
     pub ctx: AudioContext,
     pub is_active: bool,
-    event_sender: CoreEventSender,
+    event_sender: EventSender,
 }
 
 impl Sequencer {
     pub fn new(send_event: js_sys::Function, ctx:AudioContext) -> Result<Self, JsValue> {
-        let event_sender = CoreEventSender::new(send_event);
+        let event_sender = EventSender::new(send_event);
 
         Ok(Self{
             ctx,
@@ -27,14 +27,14 @@ impl Sequencer {
         })
     }
 
-    pub fn send_event(&self, evt:&CoreEvent) {
+    pub fn send_event(&self, evt:&Event) {
         self.event_sender.send(evt);
     }
 
     pub fn on_state(&mut self, state:State) {
-        if self.is_active != state.is_active {
-            self.is_active = state.is_active;
-            info!("audio set to: {}", state.is_active);
+        if self.is_active != state.audio_active {
+            self.is_active = state.audio_active;
+            info!("audio set to: {}", state.audio_active);
         }
     }
 
@@ -43,7 +43,7 @@ impl Sequencer {
 pub fn start(send_event:js_sys::Function, ctx:AudioContext) -> Result<JsValue, JsValue> {
     let mut sequencer = Sequencer::new(send_event, ctx)?;
 
-    //sequencer.send_event(&CoreEvent::SetSpeed(Speed(0.3)));
+    //sequencer.send_event(&IoEvent::SetSpeed(Speed(0.3)));
 
     let sequencer = Rc::new(RefCell::new(sequencer));
     load_assets(Rc::clone(&sequencer));

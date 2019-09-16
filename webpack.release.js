@@ -64,6 +64,7 @@ module.exports = {
             "@state": path.resolve(__dirname, "typescript/state"),
             "@ui": path.resolve(__dirname, "typescript/ui"),
             "@utils": path.resolve(__dirname, "typescript/utils"),
+            "@config": path.resolve(__dirname, "typescript/config"),
         }
     }
 };

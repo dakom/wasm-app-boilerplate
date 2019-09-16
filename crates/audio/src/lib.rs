@@ -2,6 +2,7 @@
 
 mod audio;
 mod assets;
+mod events;
 
 use cfg_if::cfg_if;
 use log::{info, Level};

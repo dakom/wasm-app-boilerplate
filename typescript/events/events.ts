@@ -4,10 +4,14 @@
  * If there are any complex objects, create structs on the Rust side too!
  */
 
-//The order of these must match the Rust UiEvent!
-export enum CoreEvent {
+//The order of these must match the Rust IoEventIndex!
+export enum IoEvent {
+    LoopBegin,
+    LoopUpdate,
+    LoopDraw,
+    LoopEnd,
     ToggleAudio,
-    SetVelocity,
+    Speed,
     WindowSize,
     RendererLoaded,
     AudioLoaded,
@@ -15,10 +19,14 @@ export enum CoreEvent {
 }
 
 type ValidEvents = 
-    CoreEvent.ToggleAudio
-    | CoreEvent.Started
-    | [CoreEvent.SetVelocity, number]
-    | [CoreEvent.WindowSize, WindowSize]
+    [IoEvent.LoopBegin, [number, number]]
+    | [IoEvent.LoopUpdate, number]
+    | [IoEvent.LoopDraw, number]
+    | [IoEvent.LoopEnd, [number, boolean]]
+    | IoEvent.ToggleAudio
+    | IoEvent.Started
+    | [IoEvent.Speed, number]
+    | [IoEvent.WindowSize, WindowSize]
 
 interface WindowSize{
     width: number;
@@ -38,6 +46,6 @@ export const send_event = (event:ValidEvents) => {
     }
 }
 
-export const send_event_unchecked = (evt_type:CoreEvent, evt_data?:any) => {
+export const send_event_unchecked = (evt_type:IoEvent, evt_data?:any) => {
     wasm_worker.postMessage({ type: "EVENT", evt_type, evt_data})
 }

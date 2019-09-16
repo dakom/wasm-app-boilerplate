@@ -2,6 +2,7 @@
 
 mod renderer;
 mod assets;
+mod events;
 
 use cfg_if::cfg_if;
 use log::{info, Level};
@@ -49,4 +50,3 @@ pub fn run(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, send
 
     renderer::start(canvas, window_width, window_height, send_event)
 }
-

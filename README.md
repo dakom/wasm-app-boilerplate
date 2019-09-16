@@ -28,10 +28,11 @@ Everything else is a starting point and ready to be worked on:
 * [crates/audio/src](crates/audio/src) - audio output (plain web-sys) 
 * [crates/shared/src/state](crates/shared/src/state) - the state sent FROM core TO wasm outputs
 * [crates/shared/src/events](crates/shared/src/events) - the events sent FROM wasm outputs TO core worker
+* [typescript/ui](typescript/ui) - the rendering of ui state
 * [typescript/events](typescript/events) - the events sent FROM typescript TO core worker
 * [typescript/state](typescript/state) - the state sent FROM core worker TO typescript (primarily ui state)
-* [typescript/ui](typescript/ui) - the rendering of ui state
 * [typescript/utils](typescript/utils) - utils for typescript 
+* [typescript/config](typescript/config) - config for typescript 
 * [_static/media](_static/media) - static media 
 
 

@@ -1,10 +1,12 @@
-pub use shared::state::renderer::{WindowSize, Position};
-pub use shared::events::{Speed};
-pub use shared::state::ui::{InitPhase};
+pub use shared::events::{Speed, WindowSize};
+pub use shared::state::{InitPhase};
 
 pub struct AudioActive(pub bool);
 pub struct Direction {pub x: f64, pub y: f64}
-
+pub struct Position {
+    pub x: f64,
+    pub y: f64 
+}
 pub struct InitState {
     pub phase: InitPhase,
     pub renderer_loaded: bool,

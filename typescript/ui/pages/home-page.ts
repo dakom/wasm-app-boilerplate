@@ -1,16 +1,16 @@
 import {html} from "lit-html";
-import {velocity_slider} from "@ui/controls/velocity-slider";
+import {speed_slider} from "@ui/controls/speed-slider";
 import {audio_toggle} from "@ui/controls/audio-toggle";
-import {onStarted} from "../../entry";
-import {get_ui_state, InitPhase} from "@state/state";
+import {get_state, InitPhase} from "@state/state";
+import {start_button} from "@ui/controls/start-button";
 import "./home-page.css";
 import { readSync } from "fs";
 
 export const home = () => html`
     <div class="ui">
     ${
-        get_ui_state().initPhase === InitPhase.Waiting ? waiting()
-        : get_ui_state().initPhase === InitPhase.Loading ? loading()
+        get_state().init_phase === InitPhase.Waiting ? waiting()
+        : get_state().init_phase === InitPhase.Loading ? loading()
         : ready()
     }
     </div>
@@ -19,7 +19,7 @@ export const home = () => html`
 const waiting= () => html`
     <div class="home-page-container">
         <div class="home-page-contents">
-            <div class="start" @click=${onStarted}>START</div>
+            ${start_button()}
         </div>
     </div>
 `
@@ -38,7 +38,7 @@ const ready = () => html`
         </div>
         <div class="home-page-container">
             <div class="home-page-contents">
-                ${velocity_slider()}
+                ${speed_slider()}
             </div>
         </div>
     </div>

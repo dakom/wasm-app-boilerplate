@@ -1,8 +1,7 @@
 use shipyard::*;
+use shared::consts;
 use crate::components::*;
-use shared::state::audio;
-use shared::state::ui;
-use shared::state::renderer;
+use shared::state::*;
 
 pub fn init_world(window_width: u32, window_height: u32) -> World {
     let world = World::default();
@@ -29,7 +28,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
             (&mut pos, &mut speed, &mut dir), 
             (
                 Position { x: (window_width as f64) / 2.0, y: (window_height as f64) / 2.0},
-                Speed(ui::State::default().speed),
+                Speed(consts::INITIAL_SPEED),
                 Direction {x: 1.0, y: 1.0}
             )
         );
@@ -49,7 +48,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
         entities.add_entity(
             (&mut audio_active), 
             (
-                AudioActive(audio::State::default().is_active)
+                AudioActive(State::default().audio_active)
             )
         );
     });

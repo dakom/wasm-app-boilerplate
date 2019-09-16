@@ -1,12 +1,12 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use super::events::*;
 use wasm_bindgen_futures::futures_0_3::future_to_promise;
 use web_sys::{HtmlCanvasElement};
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
-use shared::state::renderer::{State};
-use shared::events::{CoreEvent, CoreEventSender, Speed};
+use shared::state::*;
 use shared::consts;
 use awsm_web::loaders::fetch;
 use awsm_web::webgl::{
@@ -85,7 +85,7 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>) {
                 renderer.vao_id = Some(vao_id);
 
                 //DONE - tell core :)
-                renderer.send_event(&CoreEvent::RendererLoaded);
+                renderer.send_event(&Event::Loaded);
 
                 Ok(JsValue::null())
             }

@@ -24,6 +24,7 @@
             "@state/*": ["typescript/state/*"],
             "@ui/*": ["typescript/ui/*"],
             "@utils/*": ["typescript/utils/*"],
+            "@config/*": ["typescript/config/*"],
         },
     },
     "include": [

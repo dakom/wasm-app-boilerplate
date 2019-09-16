@@ -22,7 +22,7 @@ module.exports = {
             inject: true,
             template: 'typescript/entry/index.html'
         }),
-        new webpack.HotModuleReplacementPlugin()
+        //new webpack.HotModuleReplacementPlugin()
     ],
     module: {
         rules: [
@@ -45,6 +45,7 @@ module.exports = {
             "@state": path.resolve(__dirname, "typescript/state"),
             "@ui": path.resolve(__dirname, "typescript/ui"),
             "@utils": path.resolve(__dirname, "typescript/utils"),
+            "@config": path.resolve(__dirname, "typescript/config"),
         }
     },
     devtool: 'inline-source-map',

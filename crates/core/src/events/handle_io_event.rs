@@ -1,16 +1,45 @@
 use wasm_bindgen::prelude::*;
 use log::{info};
+use std::rc::Rc;
+use std::cell::RefCell;
 use std::convert::TryInto;
-use shared::state::renderer::{WindowSize};
-use shared::events::{CoreEventIndex};
+use awsm_web::tick::{MainLoop};
+use shared::events::{IoEventIndex, Timestamp};
+use shared::state::State;
+use crate::systems;
 use crate::components::*;
 use shipyard::*;
 
-pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(), JsValue> {
-    let evt_type:CoreEventIndex = evt_type.try_into()?;
+//if result is Ok(true) then send the updated state back
+pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, state:&mut State) -> Result<bool, JsValue> 
+{
+    let evt_type:IoEventIndex = evt_type.try_into()?;
 
     match evt_type {
-        CoreEventIndex::ToggleAudio =>
+        IoEventIndex::LoopBegin =>
+        {
+            let (timestamp, delta):(f64, f64) = serde_wasm_bindgen::from_value(evt_data)?;
+            //info!("{} {}", timestamp, delta);
+        },
+        IoEventIndex::LoopUpdate =>
+        {
+            let delta:f64 = serde_wasm_bindgen::from_value(evt_data)?;
+            systems::motion::update_motion(&world, delta);
+            //info!("{}", delta);
+        },
+        IoEventIndex::LoopDraw =>
+        {
+            let interpolation:f64 = serde_wasm_bindgen::from_value(evt_data)?;
+            systems::state::extract_state(&world,interpolation, state);
+            return Ok(true);
+            //info!("{}", interpolation);
+        },
+        IoEventIndex::LoopEnd=>
+        {
+            let (fps, end):(f64, bool) = serde_wasm_bindgen::from_value(evt_data)?;
+            //info!("{} {}", fps, end);
+        },
+        IoEventIndex::ToggleAudio =>
         {
             world.run::<(EntitiesMut, &mut AudioActive), _>(|(mut entities, mut a)| {
                 if let Some(a) = a.iter().next() {
@@ -19,7 +48,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
                 }
             });
         },
-        CoreEventIndex::SetSpeed =>
+        IoEventIndex::Speed =>
         {
             let speed:Speed = serde_wasm_bindgen::from_value(evt_data)?;
 
@@ -32,7 +61,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        CoreEventIndex::WindowSize =>
+        IoEventIndex::WindowSize =>
         {
             let window_size:WindowSize = serde_wasm_bindgen::from_value(evt_data)?;
             world.run::<(EntitiesMut, &mut WindowSize), _>(|(mut entities, mut w)| {
@@ -44,7 +73,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        CoreEventIndex::AudioLoaded => {
+        IoEventIndex::AudioLoaded => {
             world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
                 if let Some(state) = state.iter().next() {
                     state.audio_loaded = true;
@@ -55,7 +84,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        CoreEventIndex::RendererLoaded=> {
+        IoEventIndex::RendererLoaded=> {
             world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
                 if let Some(state) = state.iter().next() {
                     state.renderer_loaded = true;
@@ -66,12 +95,14 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        CoreEventIndex::Started => {
-            world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
-                if let Some(state) = state.iter().next() {
-                    if state.phase == InitPhase::Waiting {
-                        if !state.audio_loaded || !state.renderer_loaded {
-                            state.phase = InitPhase::Loading
+        IoEventIndex::Started => {
+            world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut init_state)| {
+                state.renderer_active = true;
+
+                if let Some(init_state) = init_state.iter().next() {
+                    if init_state.phase == InitPhase::Waiting {
+                        if !init_state.audio_loaded || !init_state.renderer_loaded {
+                            init_state.phase = InitPhase::Loading
                         }
                     }
                 }
@@ -83,5 +114,5 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
         }
     }
 
-    Ok(())
+    Ok(false)
 }

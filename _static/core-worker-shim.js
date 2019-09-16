@@ -23,8 +23,8 @@ const {run} = wasm_core;
     self.onmessage = msg => {
         if(msg.data) {
             if(msg.data.type === "READY") {
-				send_event = run(on_ui_state, on_render_state, on_audio_state, msg.data.windowSize.width, msg.data.windowSize.height);
-            } else if(msg.data.type === "EVENT") {
+				send_event = run(on_draw, msg.data.windowSize.width, msg.data.windowSize.height);
+            } else if(send_event && msg.data.type === "EVENT") {
 				send_event(msg.data.evt_type, msg.data.evt_data);
             }
         }
@@ -36,12 +36,6 @@ const {run} = wasm_core;
     });
 })();
 
-function on_ui_state(data) {
-    self.postMessage({ type: "UI_STATE", data });
-}
-function on_render_state(data) {
-    self.postMessage({ type: "RENDER_STATE", data });
-}
-function on_audio_state(data) {
-    self.postMessage({ type: "AUDIO_STATE", data });
+function on_draw(data) {
+    self.postMessage({ type: "STATE", data });
 }

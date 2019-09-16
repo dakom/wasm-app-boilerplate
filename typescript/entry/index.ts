@@ -1,15 +1,17 @@
 
-import {init_events, send_event, send_event_unchecked, CoreEvent} from "@events/events";
-import {get_ui_state, set_ui_state, State as UiState} from "@state/state";
-import {ui, renderUi} from "@ui/ui";
+import {init_events, send_event, send_event_unchecked, IoEvent} from "@events/events";
+import {State} from "@state/state";
+import {renderUi} from "@ui/ui";
 import {get_window_size} from "@utils/window";
 import {get_audio_context} from "@utils/audio";
 import {load_wasm} from "@utils/wasm";
+import { debugSettings } from "@config/config";
+import MainLoop from "mainloop.js";
 
 //import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
-const app_worker = new Worker("core-worker-shim.js");
 
+const app_worker = new Worker("core-worker-shim.js");
 /**
  * Tell the event sender where we're sending to
  */
@@ -18,15 +20,11 @@ init_events(app_worker);
 //these really just exists in Rust
 //only reason we need it here is because rendering has to be on main thread
 //so we need to shuttle it between worker and wasm
-let webgl_render_state:any;
-let renderWebGl:(state:any) => void = () => {};
+let renderWebGl:(state:State) => void;
+let renderAudio:(state:State) => void;
 
-let audio_state:any;
-let renderAudio:(state:any) => void = () => {};
-
-//this is legitimately used in this thread
-let ui_state:UiState;
-
+//current state
+let state:State;
 
 /**
  * Initialize communication with the worker
@@ -42,7 +40,7 @@ app_worker.onmessage = (msg: MessageEvent) => {
             {
                 window.onresize = () => {
                     const windowSize = get_window_size();
-                    send_event([CoreEvent.WindowSize, windowSize]);
+                    send_event([IoEvent.WindowSize, windowSize]);
                 }
 
                 const windowSize = get_window_size();
@@ -65,15 +63,19 @@ app_worker.onmessage = (msg: MessageEvent) => {
                     .then(run => {
                         const canvas_dom_element = document.getElementById("canvas");
                         const { width, height } = get_window_size();
+
                         return run(canvas_dom_element, width, height, send_event_unchecked)
                     })
                     .then(_renderWebGl => renderWebGl = _renderWebGl);
-
+                
+                startMainLoop();
             } break;
 
-            case "UI_STATE": ui_state = msg.data.data; break;
-            case "RENDER_STATE": webgl_render_state = msg.data.data; break;
-            case "AUDIO_STATE": audio_state = msg.data.data; break;
+            case "STATE": {
+                state = msg.data.data; 
+                break;
+            }
+
         }
     }
 }
@@ -88,35 +90,44 @@ export const onStarted= () => {
         )
         .then(_renderAudio => renderAudio = _renderAudio);
 
-    send_event(CoreEvent.Started);
+    send_event([IoEvent.WindowSize, get_window_size()]);
+    send_event(IoEvent.Started);
 }
-/**
- * The main graphics loop 
- * If there are fresh renderer or ui states (received from app thread), render and wipe them 
- */
-const onTick = () => {
-    requestAnimationFrame(onTick);
 
-    const start = performance.now();
-    if(webgl_render_state) {
-        renderWebGl(webgl_render_state);
-        webgl_render_state = undefined;
-    }
-
-    if(audio_state) {
-        renderAudio(audio_state);
-        audio_state = undefined;
-    }
-    if(ui_state) {
-        renderUi(ui_state);
-        ui_state = undefined;
-    }
-    //not perfect but gives rough idea
-    const budget = 1000 / 60;
-    const taken = performance.now() - start;
-    const perc_taken = (taken / budget) * 100;
-    const perc_remaining = 100 - perc_taken;
-    //console.log(Math.round(perc_remaining) + "% of the frame budget left");
-
+if(debugSettings.skipStart) {
+    onStarted();
 }
-requestAnimationFrame(onTick);
+
+//Main game loop
+function startMainLoop() {
+    MainLoop
+        .setBegin((timestamp, delta) => {
+            send_event([IoEvent.LoopBegin, [timestamp, delta]]);
+        })
+        .setUpdate(delta => {
+            send_event([IoEvent.LoopUpdate, delta]);
+        })
+        .setDraw(interpolation => {
+            send_event([IoEvent.LoopDraw, interpolation]);
+            if(state) {
+                if(renderWebGl) {
+                    renderWebGl(state);
+                }
+
+                if(renderAudio) {
+                    renderAudio(state);
+                }
+
+                if(renderUi) {
+                    renderUi(state);
+                }
+            } else {
+                console.log("MISSED FRAME!");
+            }
+            state = undefined;
+        })
+        .setEnd((fps, panic) => {
+            send_event([IoEvent.LoopEnd, [fps, panic]]);
+        })
+        .start();
+}

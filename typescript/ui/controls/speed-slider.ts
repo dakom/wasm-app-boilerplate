@@ -1,14 +1,14 @@
 import {html} from "lit-html";
-import {get_ui_state} from "@state/state";
-import {send_event, CoreEvent} from "@events/events";
+import {get_state} from "@state/state";
+import {send_event, IoEvent} from "@events/events";
 
-import "./velocity-slider.css";
+import "./speed-slider.css";
 
-export const velocity_slider = () => {
-    const {speed} = get_ui_state();
+export const speed_slider = () => {
+    const {speed} = get_state();
 
     const onInput = evt => {
-        send_event([CoreEvent.SetVelocity, parseFloat(evt.target.value)]);
+        send_event([IoEvent.Speed, parseFloat(evt.target.value)]);
     }
 
     return html`

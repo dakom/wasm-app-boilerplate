@@ -5,9 +5,9 @@ use web_sys::{HtmlCanvasElement};
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
-use shared::state::renderer::{State};
-use shared::events::{CoreEvent, CoreEventSender, Speed};
+use shared::state::*;
 use shared::consts;
+use super::events::*;
 use super::assets::load_assets;
 use nalgebra::{Matrix4, Point2, Vector2, Vector3};
 use awsm_web::loaders::fetch;
@@ -28,7 +28,7 @@ pub struct Renderer {
     pub program_id: Option<Id>,
     pub texture_id: Option<Id>,
     pub vao_id: Option<Id>,
-    event_sender: CoreEventSender,
+    event_sender: EventSender,
     prev_state: Option<State>,
 
     camera_mat:Matrix4<f32>,
@@ -45,12 +45,12 @@ impl Renderer {
 
         let webgl = WebGl1Renderer::new(gl)?;
 
-        let event_sender = CoreEventSender::new(send_event);
+        let event_sender = EventSender::new(send_event);
 
 
         let scaling_mat = Matrix4::new_nonuniform_scaling(&Vector3::new(
-                    (consts::ball.radius * 2.0) as f32,
-                    (consts::ball.radius * 2.0) as f32,
+                    (consts::BALL.radius * 2.0) as f32,
+                    (consts::BALL.radius * 2.0) as f32,
                     0.0f32,
         ));
 
@@ -66,7 +66,7 @@ impl Renderer {
         })
     }
 
-    pub fn send_event(&self, evt:&CoreEvent) {
+    pub fn send_event(&self, evt:&Event) {
         self.event_sender.send(evt);
     }
 
@@ -83,15 +83,15 @@ impl Renderer {
     }
 
     pub fn on_state(&mut self, state:State) {
-        self.pre_render(state.window_size.width, state.window_size.height);
+        self.pre_render(state.window_width, state.window_height);
 
         let size_changed = match &self.prev_state {
             None => true,
-            Some(prev_state) => state.window_size.height != prev_state.window_size.height || state.window_size.width != prev_state.window_size.width
+            Some(prev_state) => state.window_height != prev_state.window_height || state.window_width != prev_state.window_width
         };
 
         if size_changed {
-            self.update_camera(state.window_size.width, state.window_size.height);
+            self.update_camera(state.window_width, state.window_height);
         }
 
         self.render(&state);
@@ -114,14 +114,15 @@ impl Renderer {
     fn render(&mut self, state:&State) {
         self.webgl.activate_program(self.program_id.unwrap()).unwrap();
 
-        let pos = match &self.prev_state {
-            None => (state.ball_position.x as f32, state.ball_position.y as f32),
-            Some(prev_state) => {
-                let v1 = Vector2::new(prev_state.ball_position.x, prev_state.ball_position.y);
-                let v2 = Vector2::new(state.ball_position.x, state.ball_position.y);
-                let res = v1.lerp(&v2, state.interpolation);
 
-                (res[0] as f32, res[0] as f32)
+        let pos = match &self.prev_state {
+            None => (state.ball_position_x as f32, state.ball_position_y as f32),
+            Some(prev_state) => {
+                let v1 = Vector2::new(prev_state.ball_position_x, prev_state.ball_position_y);
+                let v2 = Vector2::new(state.ball_position_x, state.ball_position_y);
+                let res = v1.lerp(&v2, state.interpolation);
+                //info!("{} -> {}, {} -> {}", v2[0], res[0], v2[1], res[1]);
+                (res[0] as f32, res[1] as f32)
             }
         };
 
@@ -146,7 +147,7 @@ pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, se
     renderer.webgl.register_extension_vertex_array();
     renderer.pre_render(window_width, window_height);
 
-    // renderer.send_event(&CoreEvent::SetSpeed(Speed(0.3)));
+    // renderer.send_event(&IoEvent::SetSpeed(Speed(0.3)));
 
     let renderer = Rc::new(RefCell::new(renderer));
 
@@ -163,7 +164,7 @@ pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, se
                 match state {
                     Ok(state) => {
                         let mut renderer = renderer.borrow_mut();
-                        if(state.is_active) {
+                        if state.renderer_active {
                             renderer.on_state(state);
                         }
                     },
