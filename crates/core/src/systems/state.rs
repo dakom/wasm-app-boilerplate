@@ -4,7 +4,7 @@ use shared::consts;
 use log::{info};
 use crate::components::*;
 
-pub fn extract_state(world:&World, interpolation:f64, state:&mut State) {
+pub fn extract_state(world:&World, state:&mut State) {
 
     world.run::<(&AudioActive), _>(|(active)| {
         if let Some(active) = active.iter().next() {
@@ -50,6 +50,5 @@ pub fn extract_state(world:&World, interpolation:f64, state:&mut State) {
             entities.delete(&mut all_storages, id);
         });
     }
-    state.interpolation = interpolation;
 
 }

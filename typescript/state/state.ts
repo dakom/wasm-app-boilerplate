@@ -10,7 +10,6 @@ export interface State {
     window_height: number,
     ball_position_x: number,
     ball_position_y: number,
-    interpolation: number 
 }
 
 //These need to match the order on the rust side

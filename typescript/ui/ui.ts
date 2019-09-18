@@ -5,7 +5,7 @@ import "./ui.css";
 
 const ui_dom_element= document.getElementById("ui");
 
-export const renderUi = (state:State) => {
+export const renderUi = (state:State, interpolation:number) => {
     set_state(state);
     render(ui(), ui_dom_element);
 }

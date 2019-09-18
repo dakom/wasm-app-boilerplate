@@ -12,7 +12,6 @@ pub struct State {
     pub window_height: u32,
     pub ball_position_x: f64,
     pub ball_position_y: f64,
-    pub interpolation: f64
 }
 
 impl State {
@@ -32,7 +31,6 @@ impl Default for State {
             window_height: 0,
             ball_position_x: 0.0,
             ball_position_y: 0.0,
-            interpolation: 0.0
         }
     }
 }

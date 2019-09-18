@@ -31,7 +31,7 @@ impl Sequencer {
         self.event_sender.send(evt);
     }
 
-    pub fn on_state(&mut self, state:State) {
+    pub fn on_state(&mut self, state:State, interpolation:f64) {
         if self.is_active != state.audio_active {
             self.is_active = state.audio_active;
             info!("audio set to: {}", state.audio_active);
@@ -53,19 +53,19 @@ pub fn start(send_event:js_sys::Function, ctx:AudioContext) -> Result<JsValue, J
     //See https://stackoverflow.com/a/53219594/784519
     let _render = Closure::wrap(Box::new({
         let sequencer = Rc::clone(&sequencer);
-        move |data:JsValue| {
+        move |data:JsValue, interpolation:f64| {
             {
                 let state:Result<State, serde_wasm_bindgen::Error> = serde_wasm_bindgen::from_value(data);
                 match state {
                     Ok(state) => {
                         let mut sequencer = sequencer.borrow_mut();
-                        sequencer.on_state(state);
+                        sequencer.on_state(state, interpolation);
                     },
                     Err(reason) => info!("Error: {:?}", reason)
                 }
             }
         }
-    }) as Box<FnMut(JsValue) -> ()>);
+    }) as Box<FnMut(JsValue, f64) -> ()>);
 
     let render = _render.as_ref().clone();
     _render.forget();

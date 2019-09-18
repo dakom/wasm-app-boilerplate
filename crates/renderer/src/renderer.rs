@@ -82,7 +82,7 @@ impl Renderer {
         ]);
     }
 
-    pub fn on_state(&mut self, state:State) {
+    pub fn on_state(&mut self, state:State, interpolation:f64) {
         self.pre_render(state.window_width, state.window_height);
 
         let size_changed = match &self.prev_state {
@@ -94,7 +94,7 @@ impl Renderer {
             self.update_camera(state.window_width, state.window_height);
         }
 
-        self.render(&state);
+        self.render(&state, interpolation);
 
         self.prev_state = Some(state);
         //info!("ball radius: {}, position: {:?}", consts::ball.radius, state.ball_position);
@@ -111,7 +111,7 @@ impl Renderer {
         );
     }
 
-    fn render(&mut self, state:&State) {
+    fn render(&mut self, state:&State, interpolation: f64) {
         self.webgl.activate_program(self.program_id.unwrap()).unwrap();
 
 
@@ -120,7 +120,7 @@ impl Renderer {
             Some(prev_state) => {
                 let v1 = Vector2::new(prev_state.ball_position_x, prev_state.ball_position_y);
                 let v2 = Vector2::new(state.ball_position_x, state.ball_position_y);
-                let res = v1.lerp(&v2, state.interpolation);
+                let res = v1.lerp(&v2, interpolation);
                 //info!("{} -> {}, {} -> {}", v2[0], res[0], v2[1], res[1]);
                 (res[0] as f32, res[1] as f32)
             }
@@ -158,21 +158,21 @@ pub fn start(canvas:HtmlCanvasElement, window_width: u32, window_height: u32, se
     //See https://stackoverflow.com/a/53219594/784519
     let _render = Closure::wrap(Box::new({
         let renderer = Rc::clone(&renderer);
-        move |data:JsValue| {
+        move |data:JsValue, interpolation:f64| {
             {
                 let state:Result<State, serde_wasm_bindgen::Error> = serde_wasm_bindgen::from_value(data);
                 match state {
                     Ok(state) => {
                         let mut renderer = renderer.borrow_mut();
                         if state.renderer_active {
-                            renderer.on_state(state);
+                            renderer.on_state(state, interpolation);
                         }
                     },
                     Err(reason) => info!("Error: {:?}", reason)
                 }
             }
         }
-    }) as Box<FnMut(JsValue) -> ()>);
+    }) as Box<FnMut(JsValue, f64) -> ()>);
 
     let render = _render.as_ref().clone();
     _render.forget();

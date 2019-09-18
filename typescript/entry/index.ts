@@ -7,6 +7,7 @@ import {get_audio_context} from "@utils/audio";
 import {load_wasm} from "@utils/wasm";
 import { debugSettings } from "@config/config";
 import MainLoop from "mainloop.js";
+import "./index.css";
 
 //import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
@@ -20,8 +21,8 @@ init_events(app_worker);
 //these really just exists in Rust
 //only reason we need it here is because rendering has to be on main thread
 //so we need to shuttle it between worker and wasm
-let renderWebGl:(state:State) => void;
-let renderAudio:(state:State) => void;
+let renderWebGl:(state:State, interpolation:number) => void;
+let renderAudio:(state:State, interpolation:number) => void;
 
 //current state
 let state:State;
@@ -108,18 +109,18 @@ function startMainLoop() {
             send_event([IoEvent.LoopUpdate, delta]);
         })
         .setDraw(interpolation => {
-            send_event([IoEvent.LoopDraw, interpolation]);
+            //send_event([IoEvent.LoopDraw, interpolation]);
             if(state) {
                 if(renderWebGl) {
-                    renderWebGl(state);
+                    renderWebGl(state, interpolation);
                 }
 
                 if(renderAudio) {
-                    renderAudio(state);
+                    renderAudio(state, interpolation);
                 }
 
                 if(renderUi) {
-                    renderUi(state);
+                    renderUi(state, interpolation);
                 }
             } else {
                 console.log("MISSED FRAME!");

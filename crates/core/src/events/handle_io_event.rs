@@ -25,15 +25,17 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, state:&mut St
         {
             let delta:f64 = serde_wasm_bindgen::from_value(evt_data)?;
             systems::motion::update_motion(&world, delta);
+            systems::state::extract_state(&world,state);
+            return Ok(true);
             //info!("{}", delta);
         },
+        /*
         IoEventIndex::LoopDraw =>
         {
             let interpolation:f64 = serde_wasm_bindgen::from_value(evt_data)?;
-            systems::state::extract_state(&world,interpolation, state);
-            return Ok(true);
             //info!("{}", interpolation);
         },
+        */
         IoEventIndex::LoopEnd=>
         {
             let (fps, end):(f64, bool) = serde_wasm_bindgen::from_value(evt_data)?;
