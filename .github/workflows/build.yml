@@ -17,7 +17,7 @@ jobs:
     - name: add binaryen to path
       uses: dakom/actions-path@master
       with:
-        path: "$GITHUB_WORKSPACE/binaryen"
+        path: "./binaryen"
     - name: show path
       run: echo $PATH
     - name: debug
