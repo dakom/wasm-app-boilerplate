@@ -14,6 +14,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: extract binaryen to folder 
       run: mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
+    - name: add binaryen to path
+      uses: dakom/actions-path
+      with:
+        path: "${{HOME}}/binaryen"
+    - name: show path
+      run: echo $PATH
     - name: move binaryen binaries here so they are in path 
       run: mv binaryen/* ./
     - name: debug
