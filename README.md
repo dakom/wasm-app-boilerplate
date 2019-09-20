@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dakom/wasm-app-boilerplate.svg?branch=master)](https://travis-ci.org/dakom/wasm-app-boilerplate)
+[![Build Status](https://github.com/dakom/wasm-app-boilerplate/workflows/Test%2C%20Build%2C%20and%20Deploy/badge.svg)](https://github.com/dakom/wasm-app-boilerplate/actions)
 
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
@@ -147,10 +147,6 @@ So there are multiple processes that run in parallel and both are launched at `n
 
 In this way, the typescript reloading can be super fast and take advantage of HMR, and the Rust won't trigger false positives as the source changes and has compiler errors.
 
-## Deployment
+## Test, Build, Deploy
 
-The dev server used the static dir via a configuration option, at deployment its copied manually
-This happens via the `cpy` npm script for local sanity checks, but it's a little finicky for production
-Rather, shell scripts are used in Travis (or whatever CI) with the couple lines to copy the required folders into `dist`
-
-The production settings for both typescript and rust are optimized for the deployment version too.
+All via Github Actions - currently deploys to Github pages on the `gh-pages` branch :)
