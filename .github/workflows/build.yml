@@ -35,9 +35,9 @@ jobs:
         path: dist 
 
   deploy:
-  runs-on: ubuntu-latest
-  needs: bundle
-  steps:
+    runs-on: ubuntu-latest
+    needs: bundle
+    steps:
     - name: checkout repo
       uses: actions/checkout@v1
     - name: download artifacts
