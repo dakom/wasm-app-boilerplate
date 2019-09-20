@@ -17,11 +17,9 @@ jobs:
     - name: add binaryen to path
       uses: dakom/actions-path@master
       with:
-        path: "${{env.HOME}}/binaryen"
+        path: "$GITHUB_WORKSPACE/binaryen"
     - name: show path
       run: echo $PATH
-    - name: move binaryen binaries here so they are in path 
-      run: mv binaryen/* ./
     - name: debug
       run: wasm-opt --help
     - name: install node
