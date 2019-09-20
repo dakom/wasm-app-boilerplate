@@ -15,7 +15,7 @@ jobs:
     - name: extract binaryen to folder 
       run: mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
     - name: add binaryen to path
-      uses: dakom/actions-path
+      uses: dakom/actions-path@master
       with:
         path: "${{HOME}}/binaryen"
     - name: show path
