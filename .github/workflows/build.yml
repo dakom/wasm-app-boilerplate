@@ -20,6 +20,10 @@ jobs:
       uses: actions/setup-node@v1
     - name: install npm deps
       run: npm ci
+    - name: install rust nightly
+      run: rustup toolchain install nightly
+    - name: make nightly the default
+      run: rustup default nightly
     - name: add rust target
       run: rustup target add wasm32-unknown-unknown
     - name: install wasm-bindgen
