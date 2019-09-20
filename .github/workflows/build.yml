@@ -1,0 +1,24 @@
+name: Rust
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repo
+      uses: actions/checkout@v1
+    - name: download binaryen release
+      run: curl -u dakom:"${{GITHUB_TOKEN}}" -s https://api.github.com/repos/WebAssembly/binaryen/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | xargs -I {} wget -c https://github.com/WebAssembly/binaryen/releases/latest/download/binaryen-{}-x86_64-linux.tar.gz -O binaryen.tgz
+    - name: extract binaryen to folder 
+      run: mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
+    - name: add binaryen to path
+    - run: export PATH=./binaryen:$PATH
+    - name: install node
+      uses: actions/setup-node@v1
+    - name: install npm deps
+      run: npm ci
+    - name: add rust target
+      run: rustup target add wasm32-unknown-unknown
+    - name: install wasm-bindgen
+      run: cargo install wasm-bindgen-cli
