@@ -31,7 +31,7 @@ jobs:
     - name: bundle
       run: echo $PATH && npm run bundle
       env:
-        PATH: ./binaryen:$PATH
+        PATH: ./binaryen:${{PATH}}
     - name: upload artifacts
       uses: actions/upload-artifact@master
       with:
