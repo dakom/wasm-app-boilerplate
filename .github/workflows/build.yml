@@ -15,7 +15,7 @@ jobs:
     - name: extract binaryen to folder 
       run: mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
     - name: add binaryen to path
-    - run: export PATH=./binaryen:$PATH
+      run: export PATH=./binaryen:$PATH
     - name: install node
       uses: actions/setup-node@v1
     - name: install npm deps
