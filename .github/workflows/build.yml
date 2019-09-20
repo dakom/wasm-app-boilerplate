@@ -18,7 +18,7 @@ jobs:
       uses: dakom/actions-path@master
       with:
         path: "./binaryen"
-    - name: show path
+    - name: show path for debug
       run: echo $PATH
     - name: debug
       run: wasm-opt --help
