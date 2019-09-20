@@ -16,8 +16,8 @@ jobs:
       run: mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
     - name: move binaryen binaries here so they are in path 
       run: mv binaryen/* ./
-    - name: list stuff
-      run: ls -la
+    - name: debug
+      run: wasm-opt --help
     - name: install node
       uses: actions/setup-node@v1
     - name: install npm deps
