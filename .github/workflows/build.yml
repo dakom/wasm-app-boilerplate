@@ -14,6 +14,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: extract binaryen to folder 
       run: mkdir binaryen && tar -zxvf ./binaryen.tgz -C binaryen --strip-components 1
+    - name: move binaryen binaries here so they are in path 
+      run: mv binaryen/* ./
     - name: install node
       uses: actions/setup-node@v1
     - name: install npm deps
@@ -31,7 +33,7 @@ jobs:
     - name: bundle
       run: echo $PATH && npm run bundle
       env:
-        PATH: ./binaryen:${{env.PATH}}
+        PATH: "./binaryen:$PATH"
     - name: upload artifacts
       uses: actions/upload-artifact@master
       with:
