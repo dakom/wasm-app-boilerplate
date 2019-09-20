@@ -49,3 +49,4 @@ jobs:
       uses: maxheld83/ghpages@master
       env:
         BUILD_DIR: "dist/"
+        GH_PAT: ${{ secrets.GH_PAT }}
