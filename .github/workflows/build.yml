@@ -9,7 +9,7 @@ jobs:
     - name: checkout repo
       uses: actions/checkout@v1
     - name: download binaryen release
-      run: curl -u dakom:"${{GITHUB_TOKEN}}"" -s https://api.github.com/repos/WebAssembly/binaryen/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | xargs -I {} wget -c https://github.com/WebAssembly/binaryen/releases/latest/download/binaryen-{}-x86_64-linux.tar.gz -O binaryen.tgz
+      run: curl -u dakom:"$GITHUB_TOKEN" -s https://api.github.com/repos/WebAssembly/binaryen/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | xargs -I {} wget -c https://github.com/WebAssembly/binaryen/releases/latest/download/binaryen-{}-x86_64-linux.tar.gz -O binaryen.tgz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: extract binaryen to folder 
