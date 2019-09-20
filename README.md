@@ -5,7 +5,7 @@
 # NOTE - NOT READY YET! COME BACK IN A WEEK OR SO :)
 
 # Dataflow
-![flowchart](https://i.imgur.com/Dadd6Z3.png)
+![flowchart](https://i.imgur.com/7tJoLKg.png)
 
 # Files and directories
 
