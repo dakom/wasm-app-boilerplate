@@ -31,9 +31,7 @@ jobs:
     - name: test everything
       run: npm test
     - name: bundle
-      run: echo $PATH && npm run bundle
-      env:
-        PATH: "./binaryen:$PATH"
+      run: npm run bundle
     - name: upload artifacts
       uses: actions/upload-artifact@master
       with:
