@@ -20,8 +20,6 @@ jobs:
         path: "./binaryen"
     - name: show path for debug
       run: echo $PATH
-    - name: debug
-      run: wasm-opt --help
     - name: install node
       uses: actions/setup-node@v1
     - name: install npm deps
@@ -38,6 +36,8 @@ jobs:
       run: npm test
     - name: bundle
       run: npm run bundle
+    - name: list debug
+      run: ls -la dist
     - name: upload artifacts
       uses: actions/upload-artifact@master
       with:
@@ -55,6 +55,8 @@ jobs:
       with:
         name: dist 
         path: dist
+    - name: list debug
+      run: ls -la dist
     - name: deploy to gh_pages
       uses: maxheld83/ghpages@master
       env:
