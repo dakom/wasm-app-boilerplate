@@ -36,6 +36,8 @@ jobs:
       run: npm test
     - name: bundle
       run: npm run bundle
+    - name: copy static
+      run: cp -R ./_static/* ./dist/
     - name: list debug
       run: ls -la dist
     - name: upload artifacts
