@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npm run _rust:build:dev && npm-run-all -p _webpack:start _rust:start",
     "clean": "rimraf ./dist && rimraf ./target && npm-run-all -p _rust:renderer:clean _rust:audio:clean _rust:core:clean _rust:shared:clean",
-    "bundle": "npm run _bundle:ci && npm run _copy:static",
+    "bundle": "npm run _bundle:ci",
+    "//bundle": "npm run _bundle:ci && npm run _copy:static",
     "test": "npm-run-all -p _typescript:test _rust:renderer:test _rust:audio:test _rust:core:test",
     "//CI": "",
     "_bundle:ci": "npm run clean && npm run _rust:release && npm run _webpack:release",
