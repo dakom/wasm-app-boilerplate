@@ -13,6 +13,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
     world.register::<WindowSize>();
     world.register::<AudioActive>();
     world.register::<InitState>();
+    world.register::<Collision>();
 
     world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut init_state)| {
         entities.add_entity(
@@ -52,5 +53,6 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
             )
         );
     });
+
     world
 }

@@ -1,6 +1,7 @@
 pub use shared::events::{Speed, WindowSize};
 pub use shared::state::{InitPhase};
 
+pub struct Collision {}
 pub struct AudioActive(pub bool);
 pub struct Direction {pub x: f64, pub y: f64}
 pub struct Position {

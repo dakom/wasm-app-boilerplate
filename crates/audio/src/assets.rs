@@ -21,7 +21,8 @@ pub fn load_assets(sequencer:Rc<RefCell<Sequencer>>) {
                 };
                 let one_shot_buffer = fetch::audio("media/audio/oneshot.mp3", &ctx).await?;
 
-                let sequencer = sequencer.borrow();
+                let mut sequencer = sequencer.borrow_mut();
+                sequencer.one_shot_buffer = Some(one_shot_buffer);
                 sequencer.send_event(&Event::Loaded);
 
                 Ok(JsValue::null())

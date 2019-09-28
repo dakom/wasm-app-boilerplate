@@ -32,6 +32,14 @@ pub fn extract_state(world:&World, state:&mut State) {
         }
     });
 
+    world.run::<(&Collision), _>(|(collision)| {
+        if let Some(collision) = collision.iter().next() {
+            state.collision = true;
+        } else {
+            state.collision = false;
+        }
+    });
+
     let mut entity_to_delete:Option<Key> = None;
     //can't get AllStorages here, so defer the delete
     world.run::<(&InitState), _>(|init_state| {
