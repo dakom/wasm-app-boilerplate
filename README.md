@@ -2,8 +2,6 @@
 
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
-# NOTE - NOT READY YET! COME BACK IN A WEEK OR SO :)
-
 # Dataflow
 ![flowchart](https://i.imgur.com/7tJoLKg.png)
 
