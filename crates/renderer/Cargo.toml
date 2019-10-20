@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 [dependencies]
 shared = { path="../shared"}
 nalgebra = "^0.18.1"
-wasm-bindgen = "0.2.50"
+wasm-bindgen = "0.2.51"
 js-sys = "0.3.27"
 cfg-if = "0.1.9"
 log = "0.4.8"
