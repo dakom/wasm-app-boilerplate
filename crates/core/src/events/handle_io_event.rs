@@ -3,7 +3,6 @@ use log::{info};
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::convert::TryInto;
-use awsm_web::tick::{MainLoop};
 use shared::events::{IoEventIndex, Timestamp};
 use shared::state::State;
 use crate::systems;
