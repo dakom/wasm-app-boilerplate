@@ -2,4 +2,6 @@
 
 mod renderer;
 mod assets;
-mod events;
+
+
+pub use self::renderer::*;

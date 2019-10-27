@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
-use shared::events::{IoEventIndex};
+use super::{IoEventIndex};
 
 //when going from rust - use enums and only what we need!
 #[derive(Serialize, Deserialize)]
@@ -21,7 +21,7 @@ impl EventSender {
 
     pub fn send(&self, evt:&Event) {
         let (evt_type, evt_data) = match evt {
-            Event::Loaded => (IoEventIndex::AudioLoaded, JsValue::UNDEFINED),
+            Event::Loaded => (IoEventIndex::RendererLoaded, JsValue::UNDEFINED),
         };
 
         //Even though we're ultimately going from Rust -> rustc

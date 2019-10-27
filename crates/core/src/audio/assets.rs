@@ -4,8 +4,8 @@ use wasm_bindgen_futures::futures_0_3::future_to_promise;
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
-use super::events::*; 
-use shared::consts;
+use crate::events::*; 
+use crate::consts;
 use awsm_web::loaders::fetch;
 use super::audio::Sequencer;
 

@@ -8,7 +8,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = "0.2.51"
+wasm-bindgen = "0.2.52"
 js-sys = "0.3.27"
 cfg-if = "0.1.9"
 log = "0.4.8"
@@ -19,7 +19,7 @@ num-traits = "0.2.8"
 num-derive = "0.2.5"
 wee_alloc = "0.4.5"
 shipyard = { git= "https://github.com/leudz/shipyard.git", features = ["proc"], default-features = false}
-awsm_web = { version = "0.0.9", features = ["tick", "webgl", "loaders"], default-features = false }
+awsm_web = { version = "0.0.9", features = ["tick", "webgl", "loaders", "audio"], default-features = false }
 wasm-bindgen-futures= { version = "0.3.27", features = ["futures_0_3"] }
 console_log = { version = "0.1.2", optional = true}
 console_error_panic_hook = {version = "0.1.6", optional = true}
