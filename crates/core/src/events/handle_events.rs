@@ -3,7 +3,7 @@ use log::{info};
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::convert::TryInto;
-use super::{IoEventIndex, Timestamp};
+use super::{BridgeEventIndex, Timestamp};
 use crate::systems;
 use crate::components::*;
 use shipyard::*;
@@ -11,34 +11,34 @@ use shipyard::*;
 //if result is Ok(true) then send the updated state back
 pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(), JsValue> 
 {
-    let evt_type:IoEventIndex = evt_type.try_into()?;
+    let evt_type:BridgeEventIndex = evt_type.try_into()?;
 
     match evt_type {
         /*
-        IoEventIndex::LoopBegin =>
+        BridgeEventIndex::LoopBegin =>
         {
             let (timestamp, delta):(f64, f64) = serde_wasm_bindgen::from_value(evt_data)?;
             //info!("{} {}", timestamp, delta);
         },
-        IoEventIndex::LoopUpdate =>
+        BridgeEventIndex::LoopUpdate =>
         {
             let delta:f64 = serde_wasm_bindgen::from_value(evt_data)?;
             systems::motion::update_motion(&world, delta);
             systems::state::extract_state(&world,state);
             //info!("{}", delta);
         },
-        IoEventIndex::LoopDraw =>
+        BridgeEventIndex::LoopDraw =>
         {
             let interpolation:f64 = serde_wasm_bindgen::from_value(evt_data)?;
             //info!("{}", interpolation);
         },
-        IoEventIndex::LoopEnd=>
+        BridgeEventIndex::LoopEnd=>
         {
             let (fps, end):(f64, bool) = serde_wasm_bindgen::from_value(evt_data)?;
             //info!("{} {}", fps, end);
         },
         */
-        IoEventIndex::ToggleAudio =>
+        BridgeEventIndex::ToggleAudio =>
         {
             world.run::<(EntitiesMut, &mut AudioActive), _>(|(mut entities, mut a)| {
                 if let Some(a) = a.iter().next() {
@@ -47,7 +47,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
                 }
             });
         },
-        IoEventIndex::Speed =>
+        BridgeEventIndex::Speed =>
         {
             let speed:Speed = serde_wasm_bindgen::from_value(evt_data)?;
 
@@ -60,7 +60,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        IoEventIndex::WindowSize =>
+        BridgeEventIndex::WindowSize =>
         {
             let window_size:WindowSize = serde_wasm_bindgen::from_value(evt_data)?;
             world.run::<(EntitiesMut, &mut WindowSize), _>(|(mut entities, mut w)| {
@@ -72,7 +72,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        IoEventIndex::AudioLoaded => {
+        BridgeEventIndex::AudioLoaded => {
             world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
                 if let Some(state) = state.iter().next() {
                     state.audio_loaded = true;
@@ -83,7 +83,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        IoEventIndex::RendererLoaded=> {
+        BridgeEventIndex::RendererLoaded=> {
             world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
                 if let Some(state) = state.iter().next() {
                     state.renderer_loaded = true;
@@ -94,7 +94,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        IoEventIndex::Started => {
+        BridgeEventIndex::Started => {
             world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut init_state)| {
                 if let Some(init_state) = init_state.iter().next() {
                     if init_state.phase == InitPhase::Waiting {

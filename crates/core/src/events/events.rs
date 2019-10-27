@@ -6,7 +6,7 @@ use std::convert::TryFrom;
 //the order must match typescript!
 #[derive(FromPrimitive)]
 #[repr(u32)]
-pub enum IoEventIndex {
+pub enum BridgeEventIndex {
     LoopBegin,
     LoopUpdate,
     LoopDraw,
@@ -19,12 +19,12 @@ pub enum IoEventIndex {
     Started
 }
 
-//Let's us get a IoEvent from the number which is sent from JS
-impl TryFrom<u32> for IoEventIndex {
+//Let's us get a BridgeEvent from the number which is sent from JS
+impl TryFrom<u32> for BridgeEventIndex {
     type Error = &'static str;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        FromPrimitive::from_u32(value).ok_or("IoEvent: outside of range!")
+        FromPrimitive::from_u32(value).ok_or("BridgeEvent: outside of range!")
     }
 }
 

@@ -1,13 +1,13 @@
 import {html} from "lit-html";
 import {get_state} from "@state/state";
-import {send_io_event_to_core, IoEvent} from "@events/events";
+import {send_bridge_event, BridgeEvent} from "events/events";
 
 import "./audio-toggle.css";
 
 export const audio_toggle = () => {
     const {audio_active} = get_state();
 
-    const onClick = () => send_io_event_to_core(IoEvent.ToggleAudio);
+    const onClick = () => send_bridge_event(BridgeEvent.ToggleAudio);
 
     return html`
         <div class="audio-toggle">

@@ -14,4 +14,4 @@ const prodDebugSettings:DebugSettings = {
     skipStart: false
 }
 
-export const debugSettings = isProduction ? prodDebugSettings : devDebugSettings;
+export const debug_settings = isProduction ? prodDebugSettings : devDebugSettings;

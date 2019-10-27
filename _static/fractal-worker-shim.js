@@ -7,12 +7,12 @@
  */
 
 self.importScripts("./wasm/fractal/pkg/my_fractal.js");
-const {run} = wasm_core;
+const {run} = wasm_fractal;
 
 
 
 (async () => { 
-    await wasm_core("./wasm/fractal/pkg/my_fractal_bg.wasm");
+    await wasm_fractal("./wasm/fractal/pkg/my_fractal_bg.wasm");
 
     let send_event;
 

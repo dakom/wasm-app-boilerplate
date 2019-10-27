@@ -28,7 +28,7 @@ These are pretty much locked and won't need editing:
 
 We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also sometimes shared between crates and modules.
 
-Events that are sent between threads are really all I/O in some sense, so they are called `IoEvent`
+Events that are sent between threads are really all I/O in some sense, so they are called `BridgeEvent`
 
 State is unified as one struct/interface, since it is sent at a particular point in time - but it could easily be split up or be thought of as a container object.
 

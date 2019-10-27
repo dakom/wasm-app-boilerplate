@@ -1,6 +1,6 @@
 import {html} from "lit-html";
 import {get_state} from "@state/state";
-import {send_event, IoEvent} from "@events/events";
+import {send_bridge_event, BridgeEvent} from "@events/events";
 
 import "./speed-slider.css";
 
@@ -8,7 +8,7 @@ export const speed_slider = () => {
     const {speed} = get_state();
 
     const onInput = evt => {
-        send_event([IoEvent.Speed, parseFloat(evt.target.value)]);
+        send_bridge_event([BridgeEvent.Speed, parseFloat(evt.target.value)]);
     }
 
     return html`
