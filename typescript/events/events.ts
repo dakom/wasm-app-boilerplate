@@ -1,4 +1,5 @@
 import {get_service} from "@state/state";
+import {render_ui} from "@ui/ui";
 import {start_main} from "../entry/index";
 import {BridgeEvent, ValidBridgeEvents} from "./bridge-events";
 export * from "./bridge-events";
@@ -28,6 +29,7 @@ export const state_transition_event = (evt:"start") => {
 export const send_bridge_event_from_core_to_ts_unchecked:EventSender = (evt_type:BridgeEvent, evt_data?:any) => {
     switch(evt_type) {
         case BridgeEvent.AssetsLoaded: send_state_event("ASSETS_LOADED"); break;
+        case BridgeEvent.RenderUi: render_ui(); break; 
     }
 }
 

@@ -5,6 +5,18 @@ import {render_ui} from "@ui/ui";
 import { get_window_size } from "@utils/window";
 import "./index.css";
 
+//render the ui until main game loop starts
+//after that point it'll be driven by main loop ticks
+let _init_ui_loop = true;
+let render_ui_until_game_loop = () => {
+    if(_init_ui_loop) {
+        render_ui();
+        requestAnimationFrame(render_ui_until_game_loop);
+    } 
+}
+requestAnimationFrame(render_ui_until_game_loop);
+
+
 //just to track initial setup/loading
 const wasm_loaded = {
     core: false,
@@ -41,19 +53,14 @@ function try_init_main() {
     }
 
     send_state_event("READY");
-
 }
-
-//always render the ui
-const on_tick = () => {
-    requestAnimationFrame(on_tick);
-    render_ui();
-}
-requestAnimationFrame(on_tick);
 
 
 //this will be called via state_transition_event() which itself is called inside of a state transition
 export const start_main = () => {
+
+    _init_ui_loop = false;
+
     const canvas_dom_element = document.getElementById("canvas");
     const { width, height } = get_window_size();
 

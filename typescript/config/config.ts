@@ -7,8 +7,8 @@ interface DebugSettings {
 }
 
 const devDebugSettings:DebugSettings = {
-    skipStart: true 
-    //skipStart: false
+    //skipStart: true 
+    skipStart: false
 }
 
 const prodDebugSettings:DebugSettings = {

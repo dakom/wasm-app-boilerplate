@@ -11,6 +11,7 @@ pub enum BridgeEventIndex {
     Speed,
     WindowSize,
     AssetsLoaded,
+    RenderUi
 }
 
 //Let's us get a BridgeEvent from the number which is sent from JS

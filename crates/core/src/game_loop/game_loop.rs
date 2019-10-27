@@ -2,7 +2,7 @@ use awsm_web::tick;
 use awsm_web::tick::{MainLoop, MainLoopOptions, RafLoop};
 use crate::renderer::Renderer;
 use crate::audio::AudioSequencer;
-use crate::events::EventSender;
+use crate::events::*;
 use crate::systems;
 
 use log::info;
@@ -46,6 +46,7 @@ impl GameLoop {
                 let mut sequencer = sequencer.borrow_mut();
                 systems::graphics::render(&world, &mut renderer, interpolation);
                 systems::audio::sequence(&world, &mut sequencer, interpolation);
+                event_sender.send(&Event::RenderUi{});
             }
         };
 

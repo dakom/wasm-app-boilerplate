@@ -8,7 +8,8 @@ export enum BridgeEvent {
     ToggleAudio,
     Speed,
     WindowSize,
-    AssetsLoaded
+    AssetsLoaded,
+    RenderUi
 }
 
 export type ValidBridgeEvents = 
@@ -16,6 +17,7 @@ export type ValidBridgeEvents =
     | [BridgeEvent.Speed, number]
     | [BridgeEvent.WindowSize, WindowSize]
     | BridgeEvent.AssetsLoaded
+    | BridgeEvent.RenderUi
 
 interface WindowSize{
     width: number;

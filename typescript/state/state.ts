@@ -27,6 +27,7 @@ const machine = Machine({
         },
 
         start_loading: {
+            onEntry: () => state_transition_event("start"),
             on: {
                 ASSETS_LOADED: "running"
             }
@@ -49,15 +50,7 @@ let _service;
 export const get_service = () => {
     if(!_service) {
         _service = 
-            interpret(machine)
-                .onTransition(state => {
-                    if(state.changed) {
-                        if(state.matches("start_loading") && (state.history.matches("waiting") || state.history.matches("init"))) {
-                            state_transition_event("start");
-                        }
-                    }
-                })
-                .start();
+            interpret(machine).start();
     }
 
     return _service;
