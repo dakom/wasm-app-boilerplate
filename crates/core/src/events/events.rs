@@ -1,5 +1,6 @@
 use num_derive::FromPrimitive;    
 use num_traits::FromPrimitive;
+use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 
 //the order must match typescript!
@@ -27,3 +28,15 @@ impl TryFrom<u32> for IoEventIndex {
     }
 }
 
+//All the event data:
+#[derive(Serialize, Deserialize)]
+pub struct Speed(pub f64);
+
+#[derive(Serialize, Deserialize)]
+pub struct Timestamp(pub f64);
+
+#[derive(Serialize, Deserialize)]
+pub struct WindowSize {
+    pub width: u32,
+    pub height: u32 
+}

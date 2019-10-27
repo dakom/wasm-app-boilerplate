@@ -6,11 +6,13 @@
  * also note that it's build with --no-modules-global-var wasm_core to avoid global namespace collisions
  */
 
-self.importScripts("./wasm/core/pkg/my_core.js");
+self.importScripts("./wasm/fractal/pkg/my_fractal.js");
 const {run} = wasm_core;
 
+
+
 (async () => { 
-    await wasm_core("./wasm/core/pkg/my_core_bg.wasm");
+    await wasm_core("./wasm/fractal/pkg/my_fractal_bg.wasm");
 
     let send_event;
 

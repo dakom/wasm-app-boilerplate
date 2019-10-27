@@ -1,5 +1,4 @@
-pub use shared::events::{Speed, WindowSize};
-pub use shared::state::{InitPhase};
+pub use crate::events::{Speed, WindowSize};
 
 pub struct Collision {}
 pub struct AudioActive(pub bool);
@@ -14,6 +13,20 @@ pub struct InitState {
     pub audio_loaded: bool
 }
 
+//the order must match typescript
+#[derive(PartialEq, Copy, Clone)]
+#[repr(u32)]
+pub enum InitPhase {
+    Waiting,
+    Loading,
+    Ready
+}
+
+impl Default for InitPhase {
+    fn default() -> Self {
+        Self::Waiting
+    }
+}
 impl InitState {
     pub fn new () -> Self {
         Default::default()

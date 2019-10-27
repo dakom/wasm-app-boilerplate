@@ -1,5 +1,5 @@
 [package]
-name = "my_renderer"
+name = "my_fractal"
 version = "0.1.0"
 authors = ["David Komer <david.komer@gmail.com>"]
 edition = "2018"
@@ -8,19 +8,13 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-shared = { path="../shared"}
-nalgebra = "^0.18.1"
 wasm-bindgen = "0.2.51"
 js-sys = "0.3.27"
 cfg-if = "0.1.9"
 log = "0.4.8"
 serde = { version = "1.0.99", features = ["derive"] }
 serde-wasm-bindgen = "0.1.3"
-wasm-bindgen-futures= { version = "0.3.27", features = ["futures_0_3"] }
-web-sys = { version = "^0.3.27", features = ["HtmlCanvasElement"] }
 wee_alloc = "0.4.5"
-awsm_web = { version = "0.0.9", features = ["webgl", "loaders"], default-features = false }
-# awsm_web = { path="../../../../awsm/crates/web", features = ["webgl", "loaders"], default-features = false }
 
 console_log = { version = "0.1.2", optional = true}
 console_error_panic_hook = {version = "0.1.6", optional = true}

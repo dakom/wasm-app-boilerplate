@@ -5,8 +5,7 @@ use web_sys::{HtmlCanvasElement};
 use std::rc::{Rc};
 use std::cell::{RefCell};
 use log::{info};
-use shared::state::*;
-use shared::consts;
+use crate::consts;
 use super::events::*;
 use super::assets::load_assets;
 use nalgebra::{Matrix4, Point2, Vector2, Vector3};
@@ -29,8 +28,6 @@ pub struct Renderer {
     pub texture_id: Option<Id>,
     pub vao_id: Option<Id>,
     event_sender: EventSender,
-    prev_state: Option<State>,
-
     camera_mat:Matrix4<f32>,
     scaling_mat:Matrix4<f32>
 }
@@ -111,7 +108,7 @@ impl Renderer {
         );
     }
 
-    fn render(&mut self, state:&State, interpolation: f64) {
+    fn render(&mut self, world:&World, interpolation: f64) {
         self.webgl.activate_program(self.program_id.unwrap()).unwrap();
 
 

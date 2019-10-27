@@ -3,8 +3,6 @@ lto = true
 
 [workspace]
 members = [
-    "crates/audio",
     "crates/core",
-    "crates/renderer",
-    "crates/shared"
+    "crates/fractal",
 ]

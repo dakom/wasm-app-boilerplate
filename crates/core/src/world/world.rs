@@ -1,7 +1,6 @@
 use shipyard::*;
-use shared::consts;
+use crate::consts;
 use crate::components::*;
-use shared::state::*;
 
 pub fn init_world(window_width: u32, window_height: u32) -> World {
     let world = World::default();
@@ -16,12 +15,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
     world.register::<Collision>();
 
     world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut init_state)| {
-        entities.add_entity(
-            (&mut init_state), 
-            (
-                InitState::new()
-            )
-        );
+        entities.add_entity(&mut init_state, InitState::new());
     });
 
     world.run::<(EntitiesMut, &mut Position, &mut Speed, &mut Direction), _>(|(mut entities, mut pos, mut speed, mut dir)| {
@@ -36,22 +30,12 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
     });
 
     world.run::<(EntitiesMut, &mut WindowSize), _>(|(mut entities, mut window_size)| {
-        entities.add_entity(
-            (&mut window_size), 
-            (
-                WindowSize {width: window_width, height: window_height} 
-            )
-        );
+        entities.add_entity(&mut window_size, WindowSize {width: window_width, height: window_height});
     });
 
 
     world.run::<(EntitiesMut, &mut AudioActive), _>(|(mut entities, mut audio_active)| {
-        entities.add_entity(
-            (&mut audio_active), 
-            (
-                AudioActive(State::default().audio_active)
-            )
-        );
+        entities.add_entity(&mut audio_active, AudioActive(false));
     });
 
     world

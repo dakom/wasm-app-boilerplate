@@ -12,11 +12,11 @@ import "./index.css";
 //import {set_audio_state, get_audio_state, update_audio} from "audio/audio";
 
 
-const app_worker = new Worker("core-worker-shim.js");
+const fractal_worker = new Worker("fractal-worker-shim.js");
 /**
  * Tell the event sender where we're sending to
  */
-init_events(app_worker);
+init_events(fractal_worker);
 
 //these really just exists in Rust
 //only reason we need it here is because rendering has to be on main thread
@@ -68,8 +68,6 @@ app_worker.onmessage = (msg: MessageEvent) => {
                         return run(canvas_dom_element, width, height, send_event_unchecked)
                     })
                     .then(_renderWebGl => renderWebGl = _renderWebGl);
-                
-                startMainLoop();
             } break;
 
             case "STATE": {
@@ -85,6 +83,7 @@ app_worker.onmessage = (msg: MessageEvent) => {
 //So this callback is passed down to UI
 //Loading audio also depends on the context... but the renderer loading isn't held up by this
 export const onStarted= () => {
+    /*
     load_wasm("wasm/audio/pkg/my_audio", "wasm_audio")
         .then(run => 
             run(send_event_unchecked, get_audio_context())
@@ -93,6 +92,7 @@ export const onStarted= () => {
 
     send_event([IoEvent.WindowSize, get_window_size()]);
     send_event(IoEvent.Started);
+    */
 }
 
 if(debugSettings.skipStart) {
@@ -100,6 +100,7 @@ if(debugSettings.skipStart) {
 }
 
 //Main game loop
+/*
 function startMainLoop() {
     MainLoop
         .setBegin((timestamp, delta) => {
@@ -132,3 +133,4 @@ function startMainLoop() {
         })
         .start();
 }
+*/

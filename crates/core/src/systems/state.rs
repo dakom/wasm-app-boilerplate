@@ -1,9 +1,9 @@
+/*
 use shipyard::*;
 use shared::state::*;
 use shared::consts;
 use log::{info};
 use crate::components::*;
-
 pub fn extract_state(world:&World, state:&mut State) {
 
     world.run::<(&AudioActive), _>(|(active)| {
@@ -60,3 +60,4 @@ pub fn extract_state(world:&World, state:&mut State) {
     }
 
 }
+*/

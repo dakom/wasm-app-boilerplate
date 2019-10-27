@@ -1,6 +1,5 @@
 use shipyard::*;
-use shared::consts;
-use log::{info};
+use crate::consts;
 use crate::components::*;
 
 pub fn update_motion(world:&World, delta:f64) {
@@ -71,14 +70,9 @@ pub fn update_motion(world:&World, delta:f64) {
                     collision = true;
                 }
 
-                if(collision) {
+                if collision {
                     world.run::<(EntitiesMut, &mut Collision), _>(|(mut entities, mut collision)| {
-                        entities.add_entity(
-                            (&mut collision), 
-                            (
-                               Collision {} 
-                            )
-                        );
+                        entities.add_entity(&mut collision,  Collision {});
                     });
                 }
 
