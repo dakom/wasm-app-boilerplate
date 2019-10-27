@@ -14,30 +14,6 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
     let evt_type:BridgeEventIndex = evt_type.try_into()?;
 
     match evt_type {
-        /*
-        BridgeEventIndex::LoopBegin =>
-        {
-            let (timestamp, delta):(f64, f64) = serde_wasm_bindgen::from_value(evt_data)?;
-            //info!("{} {}", timestamp, delta);
-        },
-        BridgeEventIndex::LoopUpdate =>
-        {
-            let delta:f64 = serde_wasm_bindgen::from_value(evt_data)?;
-            systems::motion::update_motion(&world, delta);
-            systems::state::extract_state(&world,state);
-            //info!("{}", delta);
-        },
-        BridgeEventIndex::LoopDraw =>
-        {
-            let interpolation:f64 = serde_wasm_bindgen::from_value(evt_data)?;
-            //info!("{}", interpolation);
-        },
-        BridgeEventIndex::LoopEnd=>
-        {
-            let (fps, end):(f64, bool) = serde_wasm_bindgen::from_value(evt_data)?;
-            //info!("{} {}", fps, end);
-        },
-        */
         BridgeEventIndex::ToggleAudio =>
         {
             world.run::<(EntitiesMut, &mut AudioActive), _>(|(mut entities, mut a)| {
@@ -72,39 +48,6 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
             });
         },
 
-        BridgeEventIndex::AudioLoaded => {
-            world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
-                if let Some(state) = state.iter().next() {
-                    state.audio_loaded = true;
-                    if state.renderer_loaded {
-                        state.phase = InitPhase::Ready
-                    }
-                }
-            });
-        },
-
-        BridgeEventIndex::RendererLoaded=> {
-            world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut state)| {
-                if let Some(state) = state.iter().next() {
-                    state.renderer_loaded = true;
-                    if state.audio_loaded {
-                        state.phase = InitPhase::Ready
-                    }
-                }
-            });
-        },
-
-        BridgeEventIndex::Started => {
-            world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut init_state)| {
-                if let Some(init_state) = init_state.iter().next() {
-                    if init_state.phase == InitPhase::Waiting {
-                        if !init_state.audio_loaded || !init_state.renderer_loaded {
-                            init_state.phase = InitPhase::Loading
-                        }
-                    }
-                }
-            });
-        },
         _ => 
         {
             info!("unknown event!");

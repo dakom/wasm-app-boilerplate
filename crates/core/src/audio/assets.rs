@@ -7,9 +7,11 @@ use log::{info};
 use crate::events::*; 
 use crate::consts;
 use awsm_web::loaders::fetch;
-use super::audio::Sequencer;
+use super::audio::AudioSequencer;
+use shipyard::*;
+use crate::components::{AssetsLoaded};
 
-pub fn load_assets(sequencer:Rc<RefCell<Sequencer>>) {
+pub fn load_assets(sequencer:Rc<RefCell<AudioSequencer>>, world:Rc<World>) {
 
     future_to_promise({
             async move {
@@ -23,7 +25,12 @@ pub fn load_assets(sequencer:Rc<RefCell<Sequencer>>) {
 
                 let mut sequencer = sequencer.borrow_mut();
                 sequencer.one_shot_buffer = Some(one_shot_buffer);
-                sequencer.send_event(&Event::Loaded);
+
+                world.run::<(&mut AssetsLoaded), _>(|assets_loaded| {
+                    if let Some(assets_loaded) = assets_loaded.iter().next() {
+                        assets_loaded.audio = true;
+                    }
+                });
 
                 Ok(JsValue::null())
             }

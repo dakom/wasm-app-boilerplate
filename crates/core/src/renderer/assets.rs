@@ -26,9 +26,11 @@ use awsm_web::webgl::{
     AttributeOptions,
     VertexArray
 };
+use crate::components::*;
 use super::renderer::Renderer;
+use shipyard::*;
 
-pub fn load_assets(renderer:Rc<RefCell<Renderer>>) {
+pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
     future_to_promise({
             async move {
@@ -83,8 +85,11 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>) {
                     )?;
                 renderer.vao_id = Some(vao_id);
 
-                //DONE - tell core :)
-                renderer.send_event(&Event::Loaded);
+                world.run::<(&mut AssetsLoaded), _>(|assets_loaded| {
+                    if let Some(assets_loaded) = assets_loaded.iter().next() {
+                        assets_loaded.renderer = true;
+                    }
+                });
 
                 Ok(JsValue::null())
             }

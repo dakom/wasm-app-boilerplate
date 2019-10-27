@@ -1,7 +1,7 @@
 #![feature(async_await)]
 
 mod renderer;
-mod assets;
+pub mod assets;
 
 
 pub use self::renderer::*;

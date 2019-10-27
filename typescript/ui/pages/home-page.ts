@@ -10,6 +10,7 @@ export const home = () => {
     const state_map = new Map();
     state_map.set(["init", "start_loading"], loading);
     state_map.set("waiting", waiting);
+    state_map.set("running", running);
 
     return html`
         <div class="ui">
@@ -33,7 +34,7 @@ const loading = () => html`
     </div>
 `
 
-const ready = () => html`
+const running = () => html`
     <div class="ui">
         <div class="home-page-header">
             ${audio_toggle()}

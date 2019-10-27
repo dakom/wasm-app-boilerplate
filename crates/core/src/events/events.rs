@@ -7,16 +7,10 @@ use std::convert::TryFrom;
 #[derive(FromPrimitive)]
 #[repr(u32)]
 pub enum BridgeEventIndex {
-    LoopBegin,
-    LoopUpdate,
-    LoopDraw,
-    LoopEnd,
     ToggleAudio,
     Speed,
     WindowSize,
-    RendererLoaded,
-    AudioLoaded,
-    Started
+    AssetsLoaded,
 }
 
 //Let's us get a BridgeEvent from the number which is sent from JS

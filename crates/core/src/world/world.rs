@@ -7,22 +7,24 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
 
     //These are added immediately 
     world.register::<Position>();
+    world.register::<LastPosition>();
     world.register::<Speed>();
     world.register::<Direction>();
     world.register::<WindowSize>();
     world.register::<AudioActive>();
-    world.register::<InitState>();
+    world.register::<AssetsLoaded>();
     world.register::<Collision>();
 
-    world.run::<(EntitiesMut, &mut InitState), _>(|(mut entities, mut init_state)| {
-        entities.add_entity(&mut init_state, InitState::new());
+    world.run::<(EntitiesMut, &mut AssetsLoaded), _>(|(mut entities, mut assets_loaded)| {
+        entities.add_entity(&mut assets_loaded, AssetsLoaded::default());
     });
 
-    world.run::<(EntitiesMut, &mut Position, &mut Speed, &mut Direction), _>(|(mut entities, mut pos, mut speed, mut dir)| {
+    world.run::<(EntitiesMut, &mut Position, &mut LastPosition, &mut Speed, &mut Direction), _>(|(mut entities, mut pos, mut last_pos, mut speed, mut dir)| {
         entities.add_entity(
-            (&mut pos, &mut speed, &mut dir), 
+            (&mut pos, &mut last_pos, &mut speed, &mut dir), 
             (
                 Position { x: (window_width as f64) / 2.0, y: (window_height as f64) / 2.0},
+                LastPosition { x: (window_width as f64) / 2.0, y: (window_height as f64) / 2.0},
                 Speed(consts::INITIAL_SPEED),
                 Direction {x: 1.0, y: 1.0}
             )
@@ -35,7 +37,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
 
 
     world.run::<(EntitiesMut, &mut AudioActive), _>(|(mut entities, mut audio_active)| {
-        entities.add_entity(&mut audio_active, AudioActive(false));
+        entities.add_entity(&mut audio_active, AudioActive(consts::DEFAULT_AUDIO));
     });
 
     world

@@ -1,4 +1,4 @@
-import { init_core_sender, send_bridge_event_to_ts, send_state_event } from "@events/events";
+import { init_core_sender, send_bridge_event_from_core_to_ts_unchecked, send_state_event } from "@events/events";
 import { get_audio_context } from "@utils/audio";
 import { load_wasm } from "@utils/wasm";
 import {render_ui} from "@ui/ui";
@@ -52,12 +52,12 @@ const on_tick = () => {
 requestAnimationFrame(on_tick);
 
 
-//this will be called via send_init_event() which itself is called inside of a state transition
+//this will be called via state_transition_event() which itself is called inside of a state transition
 export const start_main = () => {
     const canvas_dom_element = document.getElementById("canvas");
     const { width, height } = get_window_size();
 
     //when the core has finished loading, it'll send an event (via send_bridge_event_to_ts which is just send_bridge_event on the rust side)
     //that event will cause a state transition and then we're off to the races
-    init_core_sender(init_core(canvas_dom_element, get_audio_context(), width, height, send_bridge_event_to_ts));
+    init_core_sender(init_core(canvas_dom_element, get_audio_context(), width, height, send_bridge_event_from_core_to_ts_unchecked));
 }

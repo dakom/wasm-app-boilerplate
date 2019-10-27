@@ -1,5 +1,5 @@
 import { interpret, Machine, spawn, assign } from "xstate";
-import {send_init_event} from "@events/events";
+import {state_transition_event} from "@events/events";
 import {debug_settings} from "@config/config";
 
 const machine = Machine({
@@ -9,6 +9,7 @@ const machine = Machine({
         speed: .5,
         window_width: 0,
         window_height: 0,
+        audio_active: true 
     },
     states: {
         init: {
@@ -26,6 +27,19 @@ const machine = Machine({
         },
 
         start_loading: {
+            on: {
+                ASSETS_LOADED: "running"
+            }
+        },
+
+        running: {
+            on: {
+                TOGGLE_AUDIO: {
+                    actions: assign({
+                        audio_active: (ctx) => !ctx.audio_active
+                    }) as any
+                }
+            }
         }
     }
 });
@@ -39,10 +53,9 @@ export const get_service = () => {
                 .onTransition(state => {
                     if(state.changed) {
                         if(state.matches("start_loading") && (state.history.matches("waiting") || state.history.matches("init"))) {
-                            send_init_event("start");
+                            state_transition_event("start");
                         }
                     }
-                    console.log(state.value);
                 })
                 .start();
     }

@@ -14,8 +14,11 @@ use log::{info, Level};
 use wasm_bindgen::prelude::*;
 use std::rc::{Rc};
 use crate::game_loop::GameLoop;
-use crate::events::{handle_event};
+use crate::events::{handle_event, EventSender};
 use crate::world::init_world;
+use crate::renderer::Renderer;
+use crate::audio::AudioSequencer;
+use web_sys::{HtmlCanvasElement, AudioContext};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -45,15 +48,18 @@ cfg_if! {
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn run(window_width: u32, window_height: u32) -> Result<JsValue, JsValue> {
+pub fn run(canvas:HtmlCanvasElement, audio_ctx:AudioContext, window_width: u32, window_height: u32, send_bridge_event:js_sys::Function) -> Result<JsValue, JsValue> {
     init_panic();
     init_log();
 
     let world = Rc::new(init_world(window_width, window_height));
+    let event_sender = EventSender::new(send_bridge_event);
+    let renderer = Renderer::new(canvas)?;
+    let audio_sequencer = AudioSequencer::new(audio_ctx)?;
 
     let game_loop = Box::new({
         let world = Rc::clone(&world);
-        GameLoop::new(&world)?
+        GameLoop::new(world, renderer, audio_sequencer, event_sender.clone())?
     });
         
 

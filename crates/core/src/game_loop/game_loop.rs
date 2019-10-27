@@ -1,5 +1,10 @@
 use awsm_web::tick;
 use awsm_web::tick::{MainLoop, MainLoopOptions, RafLoop};
+use crate::renderer::Renderer;
+use crate::audio::AudioSequencer;
+use crate::events::EventSender;
+use crate::systems;
+
 use log::info;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -12,22 +17,41 @@ pub struct GameLoop {
 }
 
 impl GameLoop {
-    pub fn new(world:&World) -> Result<Self, JsValue> {
-    //callbacks
-        let begin = move |time, delta| {
-            //let my_str = format!("begin time: {} delta: {}!", time, delta);
+    pub fn new(world:Rc<World>, renderer:Renderer, sequencer:AudioSequencer, event_sender:EventSender) -> Result<Self, JsValue> {
+        let renderer = Rc::new(RefCell::new(renderer));
+        let sequencer = Rc::new(RefCell::new(sequencer));
+
+        let begin = {
+            let event_sender = event_sender.clone();
+            let world = Rc::clone(&world);
+
+            move |_time, _delta| {
+                systems::loaders::update_loaders(&world, &event_sender);
+            }
         };
 
-        let update = move |delta| {
+        let update = {
+            let world = Rc::clone(&world);
+            move |delta| {
+                systems::motion::update_motion(&world, delta);
+            }
         };
 
-        let draw = move |interpolation| {
-
-            //let this = JsValue::NULL;
-            //on_state.call1(&this, &serde_wasm_bindgen::to_value(&state).unwrap()).unwrap();
-            //on_state
+        let draw = {
+            let renderer = Rc::clone(&renderer);
+            let sequencer = Rc::clone(&sequencer);
+            let world = Rc::clone(&world);
+            move |interpolation| {
+                let mut renderer = renderer.borrow_mut();
+                let mut sequencer = sequencer.borrow_mut();
+                systems::graphics::render(&world, &mut renderer, interpolation);
+                systems::audio::sequence(&world, &mut sequencer, interpolation);
+            }
         };
-        let end = move |fps, abort| {
+
+        let end = {
+            move |_fps, _abort| {
+            }
         };
 
         let raf_loop = RafLoop::start({
@@ -36,6 +60,13 @@ impl GameLoop {
                 main_loop.tick(ts);
             }
         })?;
+
+
+        //Initialize loaders
+        //TODO: this would be nicer as part of the game loop itself
+        //But that gave lifetime errors...
+        crate::audio::assets::load_assets(sequencer, Rc::clone(&world));
+        crate::renderer::assets::load_assets(renderer, Rc::clone(&world));
 
         Ok(Self{
             raf_loop

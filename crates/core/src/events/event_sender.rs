@@ -5,9 +5,10 @@ use super::{BridgeEventIndex};
 //when going from rust - use enums and only what we need!
 #[derive(Serialize, Deserialize)]
 pub enum Event {
-    Loaded,
+    AssetsLoaded,
 }
 
+#[derive(Clone)]
 pub struct EventSender {
     _send_event: js_sys::Function,
 }
@@ -21,7 +22,7 @@ impl EventSender {
 
     pub fn send(&self, evt:&Event) {
         let (evt_type, evt_data) = match evt {
-            Event::Loaded => (BridgeEventIndex::RendererLoaded, JsValue::UNDEFINED),
+            Event::AssetsLoaded => (BridgeEventIndex::AssetsLoaded, JsValue::UNDEFINED),
         };
 
         //Even though we're ultimately going from Rust -> rustc

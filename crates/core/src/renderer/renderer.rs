@@ -28,13 +28,14 @@ pub struct Renderer {
     pub program_id: Option<Id>,
     pub texture_id: Option<Id>,
     pub vao_id: Option<Id>,
-    event_sender: EventSender,
+    last_window_width: u32,
+    last_window_height: u32,
     camera_mat:Matrix4<f32>,
-    scaling_mat:Matrix4<f32>
+    scaling_mat:Matrix4<f32>,
 }
 
 impl Renderer {
-    pub fn new(canvas:HtmlCanvasElement, send_event: js_sys::Function) -> Result<Self, JsValue> {
+    pub fn new(canvas:HtmlCanvasElement) -> Result<Self, JsValue> {
         //not using any webgl2 features so might as well stick with v1
         let gl = get_webgl_context_1(&canvas, Some(&WebGlContextOptions{
             alpha: false,
@@ -45,8 +46,6 @@ impl Renderer {
 
         webgl.register_extension_vertex_array();
 
-        let event_sender = EventSender::new(send_event);
-
 
         let scaling_mat = Matrix4::new_nonuniform_scaling(&Vector3::new(
                     (consts::BALL.radius * 2.0) as f32,
@@ -55,18 +54,15 @@ impl Renderer {
         ));
 
         Ok(Self {
-            event_sender,
             webgl,
             program_id: None,
             texture_id: None,
             vao_id: None,
+            last_window_width: 0,
+            last_window_height: 0,
             camera_mat: Matrix4::identity(),
             scaling_mat
         })
-    }
-
-    pub fn send_event(&self, evt:&Event) {
-        self.event_sender.send(evt);
     }
 
     pub fn pre_render(&mut self, window_width: u32, window_height: u32) {
@@ -79,22 +75,35 @@ impl Renderer {
             ClearBufferMask::ColorBufferBit,
             ClearBufferMask::DepthBufferBit,
         ]);
+
+        if(self.last_window_width != window_width || self.last_window_height != window_height) {
+            self.camera_mat = Matrix4::new_orthographic(
+                        0.0,
+                        window_width as f32,
+                        0.0,
+                        window_height as f32,
+                        0.0,
+                        1.0,
+            );
+        }
     }
 
+    pub fn render(&mut self, pos:(f32, f32)) {
+        self.program_id.map(|program_id| {
+            self.webgl.activate_program(program_id).unwrap();
 
-    pub fn update_camera(&mut self, width: u32, height: u32) {
-        self.camera_mat = Matrix4::new_orthographic(
-                    0.0,
-                    width as f32,
-                    0.0,
-                    height as f32,
-                    0.0,
-                    1.0,
-        );
-    }
+            self.webgl.upload_uniform_fvals_2("u_position", pos).unwrap();
 
-    fn render(&mut self, world:&World, interpolation: f64) {
-        //self.pre_render(state.window_width, state.window_height);
+            self.webgl.upload_uniform_mat_4("u_camera", &self.camera_mat.as_slice()).unwrap();
+
+            self.webgl.upload_uniform_mat_4("u_size", &self.scaling_mat.as_slice()).unwrap();
+
+            self.webgl.activate_texture_for_sampler(self.texture_id.unwrap(), "u_sampler").unwrap();
+
+            self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
+
+            self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
+        });
         /*
         self.webgl.activate_program(self.program_id.unwrap()).unwrap();
 

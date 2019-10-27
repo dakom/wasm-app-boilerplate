@@ -1,4 +1,5 @@
 use shipyard::*;
+use log::{info};
 use crate::consts;
 use crate::components::*;
 
@@ -19,6 +20,15 @@ pub fn update_motion(world:&World, delta:f64) {
             entities.delete(&mut all_storages, id);
         }
     });
+
+
+    world.run::<(&Position, &mut LastPosition), _> (|(pos, last_pos)| {
+        for (pos, last_pos) in (pos, last_pos).iter() { 
+            last_pos.x = pos.x; 
+            last_pos.y = pos.y; 
+        }
+    });
+
     world.run::<(&mut Position, &Speed, &Direction), _> (|(positions, speeds, directions)| {
         for (pos, speed, dir) in (positions, speeds, directions).iter() { 
             let speed = speed.0;
@@ -79,4 +89,6 @@ pub fn update_motion(world:&World, delta:f64) {
             }
         }
     });
+
+
 }

@@ -9,3 +9,5 @@ pub struct Ball {
 pub const MAX_SPEED:f64 = 0.7;
 
 pub const INITIAL_SPEED:f64 = 0.5;
+
+pub const DEFAULT_AUDIO:bool = true;
