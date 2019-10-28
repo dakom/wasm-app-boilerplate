@@ -31,11 +31,18 @@ let init_core;
 
 //interface to worker wasm - begin loading it immediately
 const fractal_worker = new Worker("fractal-worker-shim.js");
+let fractal_data;
 fractal_worker.onmessage = (msg: MessageEvent) => {
     if(msg.data.type === "READY") {
         wasm_loaded.fractal = true;
         try_init_main();
+    } else if(msg.data.type === "DRAW") {
+        fractal_data.dataBuf = msg.data.dataBuf;
+        fractal_data.imgData.data.set(new Uint8ClampedArray(fractal_data.dataBuf));
+        fractal_data.ctx.putImageData(fractal_data.imgData, 0, 0);
+        request_fractal_update();
     }
+
 }
 
 //also load the core wasm immediately
@@ -67,4 +74,32 @@ export const start_main = () => {
     //when the core has finished loading, it'll send an event (via send_bridge_event_to_ts which is just send_bridge_event on the rust side)
     //that event will cause a state transition and then we're off to the races
     init_core_sender(init_core(canvas_dom_element, get_audio_context(), width, height, send_bridge_event_from_core_to_ts_unchecked));
+
+    fractal_data = prep_fractal_data();
+    fractal_worker.postMessage({type: "START"});
+    request_fractal_update();
+}
+
+function request_fractal_update() {
+    const { width, height } = get_window_size();
+    fractal_worker.postMessage({type: "UPDATE", width, height, dataBuf: fractal_data.dataBuf}, [fractal_data.dataBuf]);
+}
+function prep_fractal_data() {
+    const { width, height } = get_window_size();
+    const canvas = document.getElementById("fractal_canvas") as HTMLCanvasElement;
+    //const canvas = document.createElement('canvas');
+    //document.body.appendChild(canvas);        
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.createImageData(width, height);
+    const dataBuf = new ArrayBuffer(imgData.data.byteLength);
+
+    return {
+        canvas,
+        ctx,
+        imgData,
+        dataBuf
+    }
 }

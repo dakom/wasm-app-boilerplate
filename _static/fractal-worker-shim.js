@@ -7,14 +7,17 @@
  */
 
 self.importScripts("./wasm/fractal/pkg/my_fractal.js");
-const {run} = wasm_fractal;
+const {update_pixels} = wasm_fractal;
 
+const MAX_ITERATIONS = 30;
 
+let palettes = [];
+let dataBuf;
 
 (async () => { 
     await wasm_fractal("./wasm/fractal/pkg/my_fractal_bg.wasm");
 
-    let send_event;
+    
 
     /**
      *  Wasm is ready, now setup communication with the main thread
@@ -24,10 +27,27 @@ const {run} = wasm_fractal;
      */
     self.onmessage = msg => {
         if(msg.data) {
-            if(msg.data.type === "READY") {
-				send_event = run(on_draw, msg.data.windowSize.width, msg.data.windowSize.height);
-            } else if(send_event && msg.data.type === "EVENT") {
-				send_event(msg.data.evt_type, msg.data.evt_data);
+            if(msg.data.type === "START") {
+                for (let i = palettes.length; i <= MAX_ITERATIONS; i++) {
+                    palettes.push(Math.floor(Math.random() * 0xFF));
+                    palettes.push(Math.floor(Math.random() * 0xFF));
+                    palettes.push(Math.floor(Math.random() * 0xFF));
+                    palettes.push(0xFF);
+                }
+            }
+            else if(msg.data.type === "UPDATE") {
+                dataBuf = msg.data.dataBuf;
+                let imgBuf = new Uint8ClampedArray(dataBuf);
+                imgBuf.fill(0);
+                update_pixels(imgBuf, palettes, msg.data.width, msg.data.height, MAX_ITERATIONS);
+                palettes.unshift(palettes.pop());
+
+                //console.log(palettes.reduce((curr, acc) => curr.concat(acc)));
+
+                self.postMessage({
+                    type: "DRAW",
+                    dataBuf,
+                }, [dataBuf]);
             }
         }
     };
@@ -37,7 +57,3 @@ const {run} = wasm_fractal;
         type: "READY"
     });
 })();
-
-function on_draw(data) {
-    self.postMessage({ type: "STATE", data });
-}

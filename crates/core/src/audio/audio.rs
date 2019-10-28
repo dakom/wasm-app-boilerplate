@@ -31,9 +31,7 @@ impl AudioSequencer {
     pub fn play(&mut self) {
         self.one_shot_buffer.as_ref().map(|buf| {
 
-            //TODO change to proper oneshot without the forgotten Box
-            //Depends on https://github.com/dakom/awsm/issues/38
-            std::mem::forget(Box::new(AudioPlayer::start( &self.ctx, &buf, None as Option<Box<dyn FnMut()>>).unwrap()));
+            AudioPlayer::play_oneshot( &self.ctx, &buf, None as Option<Box<dyn FnMut()>>);
         });
     }
 }
