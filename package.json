@@ -38,7 +38,7 @@
     "_rust:fractal:clean": "rimraf ./_static/wasm/fractal/pkg && rimraf ./crates/fractal/target && rimraf ./crates/fractal/pkg",
     "_rust:fractal:bindgen:dev": "wasm-bindgen ./target/wasm32-unknown-unknown/debug/my_fractal.wasm --no-typescript --target no-modules --no-modules-global wasm_fractal --out-dir ./_static/wasm/fractal/pkg",
     "_rust:fractal:bindgen:release": "wasm-bindgen ./target/wasm32-unknown-unknown/release/my_fractal.wasm --no-typescript --target no-modules --no-modules-global wasm_fractal --out-dir ./_static/wasm/fractal/pkg",
-    "_rust:fractal:opt": "cross-env BINARYEN_fractalS=1 wasm-opt -O3 -o ./_static/wasm/fractal/pkg/my_fractal_bg.wasm ./_static/wasm/fractal/pkg/my_fractal_bg.wasm",
+    "_rust:fractal:opt": "cross-env BINARYEN_CORES=1 wasm-opt -O3 -o ./_static/wasm/fractal/pkg/my_fractal_bg.wasm ./_static/wasm/fractal/pkg/my_fractal_bg.wasm",
     "//COPY": "",
     "_copy:static": "cpy * ../dist --cwd=_static && cpy **/* ../../dist/wasm --cwd=_static/wasm --parents && cpy **/* ../../dist/media --cwd=_static/media --parents"
   },

@@ -3,66 +3,52 @@
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
 # Dataflow
-![flowchart](https://i.imgur.com/7tJoLKg.png)
+![flowchart](https://i.imgur.com/R9D7YJa.png)
 
 # Files and directories
 
-* [crates/core/src](crates/core/src) - the worker core (driven by [shipyard ECS](https://github.com/leudz/shipyard)) 
-* [crates/renderer/src](crates/renderer/src) - webgl renderer output (driven by [awsm_web](https://github.com/dakom/awsm)) 
-* [crates/audio/src](crates/audio/src) - audio output (plain web-sys) 
-* [crates/shared/src](crates/shared/src) - state and events on the rust side 
-* [typescript/ui](typescript/ui) - the rendering of ui state
-* [typescript/events](typescript/events) - events on the typescript side 
-* [typescript/state](typescript/state) - state on the typescript side 
-* [typescript/utils](typescript/utils) - utils for typescript 
-* [typescript/config](typescript/config) - config for typescript 
+* [typescript/ui](typescript) - the entry point, event bridging, and dom/ui 
+* [crates/core/src](crates/core/src) - the game core (driven by [shipyard ECS](https://github.com/leudz/shipyard) and [awsm_web](https://github.com/dakom/awsm))
+* [crates/shared/src](crates/fractal/src) - fractal generator for worker testing 
 * [_static/media](_static/media) - static media 
-
-These are pretty much locked and won't need editing:
-
-* dev config files (webpack, tsconfig.json, cargo.toml, package.json, etc.)
-* [_static](_static) other than the `media` folder
-* [typescript/entry](typescript/entry)
 
 # Shared types for Events and State
 
-We want the events and state to be checked by the compiler on both the Typescript and Rust side, and this gets a little tricky since they are also sometimes shared between crates and modules.
+We want the events and state that must be shared to be checked by the compiler on both the Typescript and Rust side.
 
-Events that are sent between threads are really all I/O in some sense, so they are called `BridgeEvent`
-
-State is unified as one struct/interface, since it is sent at a particular point in time - but it could easily be split up or be thought of as a container object.
-
-Keeping all this in sync takes a manual change - i.e. creating a new event or state on the Rust side means changing it on the TS side
-
-Also, for the sake of efficiency, enums should be serialized as simple integers. This is setup with examples in both directions (see event type and init phase) 
-
-To keep things idiomatic in both languages, events are enums that own their data when going from Rust, and index-based enums with sidecar data when going from JS.
-
-Fun!
-
-It will seem super complicated at first, but it's really not so bad thanks to the type checking - let the compiler be your guide :)
-
-(serialization / deserialization is via serde Rust <> JS Objects... if flatbuffers were used, it could be an optimization here due to Transferable objects, and address the overall headache of having multiple sources of truth - but it could be a performance cost due to the runtime impact. Profile and see before pulling the trigger!)
+These shared events are called `BridgeEvent`. On the rust side `BridgeEventIndex` must match the enum on the Typescript side
 
 # Managing application state in WASM
 
-The core mechanism in the demo here is the [Shipyard Enity Component System](https://github.com/leudz/shipyard), and with just a bare minimum example needed to shuttle the events and state back and forth across all areas and kick the tires where they need kickin'.
+The core mechanism in the demo here is the [Shipyard Enity Component System](https://github.com/leudz/shipyard), and with just a bare minimum example needed to kick the tires where they need kickin'.
 
-The ECS could easily be swapped with a different approach altogether - functional reactive programming, statecharts, etc. but ECS is great!
+The ECS could easily be composed with a different approach altogether - functional reactive programming, statecharts, etc.
 
-Whatever it is, it's updated in a game loop - and ultimately sends out the derived output state
+Whatever it is, it's updated in a game loop - and ultimately processes input, produces output, handles events, and keeps state.
+
+# WebGL / Audio
+
+WebGl uses [awsm_web](https://github.com/dakom/awsm) but it's kept to a very small proof of concept here. Of course, sky's the limit!
+
+Audio uses straight web-sys/bindgen/js-sys etc. One gotcha is that user interaction must happen before an AudioContext can be created, and an AudioContext is required for loading AudioBuffers. That's setup to work properly here via the start button callback (which does _not_ hold back the renderer from loading images).
+
+# Workers
+
+I wanted this demo to include a rust-powered worker. The messaging is done through a small js shim which also gets around some bundling issues
+
+In order to pick something interesting but slow I threw in a mandelbrot fractal renderer that was sitting from some old project
+
+On slower machines it may take a while to see the images update.
 
 # HTML rendering of ui state
 
-The DOM is re-rendered via lit-html every frame-tick. This is fast since lit-html doesn't need to diff (short summary - the dynamic parts only need to check against _themselves_ to see if they're dirty, and if they are they know where and what to write)
-
-`get_state()` and `send_event()` can be queried from anywhere. They have no inherent relationship to the dom hierarchy. 
+The DOM is re-rendered via lit-html every frame-tick. This is fast (relatively speaking) since lit-html doesn't need to diff (short summary - the dynamic parts only need to check against _themselves_ to see if they're dirty, and if they are they know where and what to write)
 
 ### Ui State vs. DOM state 
 
-The following really applies everywhere, but it's only necessary to show it in terms of UI and it can then be extrapolated for WebGL, audio, etc. Plus I think it's more of a footgun when it comes to UI:
+The following really applies everywhere, but it's more of a footgun when it comes to UI:
 
-**The rule of thumb is that asynchronous callbacks should never depend on `get_state()`. Either use a locally cached copy or get it from the element.**
+**The rule of thumb is that asynchronous callbacks should never depend on a global `get_state()`. Either use a locally cached copy or get it from the element.**
 
 There's no guarantee that the state seen at the time of a render is the same as the state seen when an async callback fires, or even that it exists at all at that point!
 
@@ -99,11 +85,6 @@ Even though `value` was set from `get_state().textInput`, the latter is now unde
 
 Also `evt.target.value` is different than `value` even though it is bound to it. If `onInput` sends a state change, then perhaps it would have matched `value`, but there's a small window of possible difference. Better to use the `evt.target.value`, after all - that's the actual event data! 
 
-# WebGL / Audio
-
-WebGl uses [awsm_web](https://github.com/dakom/awsm) to manage gl state but it's kept to a very small proof of concept here. Of course, sky's the limit!
-
-Audio uses straight web-sys/bindgen/js-sys etc. One gotcha is that user interaction must happen before an AudioContext can be created, and an AudioContext is required for loading AudioBuffers. That's setup to work properly here via the start button callback (which does _not_ hold back the renderer from loading images).
 
 # Requirements 
 
