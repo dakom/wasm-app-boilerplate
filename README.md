@@ -7,10 +7,10 @@
 
 # Files and directories
 
-* [typescript/ui](typescript) - the entry point, event bridging, and dom/ui 
+* [typescript](typescript) - the entry point, event bridging, and dom/ui 
 * [crates/core/src](crates/core/src) - the game core (driven by [shipyard ECS](https://github.com/leudz/shipyard) and [awsm_web](https://github.com/dakom/awsm))
 * [crates/shared/src](crates/fractal/src) - fractal generator for worker testing 
-* [_static/media](_static/media) - static media 
+* [_static](_static) - worker shim and static media 
 
 # Shared types for Events and State
 
