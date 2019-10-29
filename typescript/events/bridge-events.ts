@@ -9,7 +9,8 @@ export enum BridgeEvent {
     Speed,
     WindowSize,
     AssetsLoaded,
-    RenderUi
+    RenderUi,
+    BgTexture
 }
 
 export type ValidBridgeEvents = 
@@ -18,6 +19,7 @@ export type ValidBridgeEvents =
     | [BridgeEvent.WindowSize, WindowSize]
     | BridgeEvent.AssetsLoaded
     | BridgeEvent.RenderUi
+    | [BridgeEvent.BgTexture, ImageData]
 
 interface WindowSize{
     width: number;

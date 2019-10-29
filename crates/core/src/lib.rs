@@ -12,7 +12,8 @@ mod consts;
 use cfg_if::cfg_if;
 use log::{info, Level};
 use wasm_bindgen::prelude::*;
-use std::rc::{Rc};
+use std::rc::Rc;
+use std::cell::RefCell;
 use crate::game_loop::GameLoop;
 use crate::events::{handle_event, EventSender};
 use crate::world::init_world;
@@ -52,14 +53,18 @@ pub fn run(canvas:HtmlCanvasElement, audio_ctx:AudioContext, window_width: u32, 
     init_panic();
     init_log();
 
-    let world = Rc::new(init_world(window_width, window_height));
     let event_sender = EventSender::new(send_bridge_event);
+    let world = Rc::new(init_world(window_width, window_height));
     let renderer = Renderer::new(canvas)?;
-    let audio_sequencer = AudioSequencer::new(audio_ctx)?;
+    let renderer = Rc::new(RefCell::new(renderer));
+    let sequencer= AudioSequencer::new(audio_ctx)?;
+    let sequencer = Rc::new(RefCell::new(sequencer));
 
     let game_loop = Box::new({
         let world = Rc::clone(&world);
-        GameLoop::new(world, renderer, audio_sequencer, event_sender.clone())?
+        let renderer = Rc::clone(&renderer);
+        let sequencer = Rc::clone(&sequencer);
+        GameLoop::new(world, renderer, sequencer, event_sender.clone())?
     });
         
 
@@ -68,10 +73,14 @@ pub fn run(canvas:HtmlCanvasElement, audio_ctx:AudioContext, window_width: u32, 
     //See https://stackoverflow.com/a/53219594/784519
     let _send_event = Box::new({
         let world = Rc::clone(&world);
+        let renderer = Rc::clone(&renderer);
+        let sequencer = Rc::clone(&sequencer);
         move |evt_type:u32, data:JsValue| {
             {
+                let mut renderer = renderer.borrow_mut();
+                let mut sequencer = sequencer.borrow_mut();
                 //The actual handling of events is in this function
-                match handle_event(evt_type, data, &world) {
+                match handle_event(evt_type, data, &world, &mut renderer, &mut sequencer) {
                     Err(reason) => info!("Error: {:?}", reason),
                     _ => {}
                 }

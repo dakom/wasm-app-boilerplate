@@ -13,7 +13,7 @@ export const speed_slider = () => {
 
     return html`
         <div class="velocity-slider">
-            <div class="label">Current speed: ${speed} </div>
+            <div class="label">Smiley speed: ${speed} </div>
             <input type="range" min="0" max="1" value="${speed}" step=".0001" @input=${onInput}>
         </div>
     `

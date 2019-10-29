@@ -20,13 +20,25 @@ use awsm_web::webgl::{
     Id,
     GlToggle,
     BeginMode,
-    BlendFactor
+    BlendFactor,
+    TextureTarget,
+    SimpleTextureOptions,
+    PixelFormat,
+    WebGlTextureSource,
+    BufferData,
+    BufferTarget,
+    BufferUsage,
+    DataType,
+    AttributeOptions,
+    VertexArray
 };
 
 pub struct Renderer {
     pub webgl:WebGl1Renderer,
-    pub program_id: Option<Id>,
-    pub texture_id: Option<Id>,
+    pub smiley_program_id: Option<Id>,
+    pub bg_program_id: Option<Id>,
+    pub smiley_texture_id: Option<Id>,
+    pub bg_texture_id: Option<Id>,
     pub vao_id: Option<Id>,
     last_window_width: u32,
     last_window_height: u32,
@@ -53,10 +65,14 @@ impl Renderer {
                     0.0f32,
         ));
 
+        let bg_texture_id = webgl.create_texture()?;
+
         Ok(Self {
             webgl,
-            program_id: None,
-            texture_id: None,
+            smiley_program_id: None,
+            bg_program_id: None,
+            smiley_texture_id: None,
+            bg_texture_id: Some(bg_texture_id),
             vao_id: None,
             last_window_width: 0,
             last_window_height: 0,
@@ -66,8 +82,11 @@ impl Renderer {
     }
 
     pub fn pre_render(&mut self, window_width: u32, window_height: u32) {
+
         //These are checked in awsm to skip if it's the same as last tick
         self.webgl.resize(window_width, window_height);
+        //self.webgl.set_depth_mask(false);
+        self.webgl.set_depth_mask(false);
         self.webgl.toggle(GlToggle::Blend, true);
         self.webgl.set_blend_func(BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha);
         self.webgl.gl.clear_color(1.0, 1.0, 1.0, 1.0);
@@ -85,52 +104,43 @@ impl Renderer {
                         0.0,
                         1.0,
             );
+            self.last_window_width = window_width;
+            self.last_window_height = window_height;
         }
     }
 
     pub fn render(&mut self, pos:(f32, f32)) {
-        self.program_id.map(|program_id| {
-            self.webgl.activate_program(program_id).unwrap();
+        match (self.bg_program_id, self.smiley_program_id) {
+            (Some(bg_program_id), Some(smiley_program_id)) => {
 
-            self.webgl.upload_uniform_fvals_2("u_position", pos).unwrap();
+                self.webgl.activate_program(smiley_program_id).unwrap();
+                self.webgl.upload_uniform_fvals_2("u_position", pos).unwrap();
+                self.webgl.upload_uniform_mat_4("u_camera", &self.camera_mat.as_slice()).unwrap();
+                self.webgl.upload_uniform_mat_4("u_size", &self.scaling_mat.as_slice()).unwrap();
+                self.webgl.activate_texture_for_sampler(self.smiley_texture_id.unwrap(), "u_sampler").unwrap();
+                self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
+                self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
 
-            self.webgl.upload_uniform_mat_4("u_camera", &self.camera_mat.as_slice()).unwrap();
+                self.webgl.activate_program(bg_program_id).unwrap();
+                self.webgl.activate_texture_for_sampler(self.bg_texture_id.unwrap(), "u_sampler").unwrap();
+                self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
+                self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
+            },
+            _ => {}
+        }
+    }
 
-            self.webgl.upload_uniform_mat_4("u_size", &self.scaling_mat.as_slice()).unwrap();
-
-            self.webgl.activate_texture_for_sampler(self.texture_id.unwrap(), "u_sampler").unwrap();
-
-            self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
-
-            self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
-        });
-        /*
-        self.webgl.activate_program(self.program_id.unwrap()).unwrap();
-
-
-        let pos = match &self.prev_state {
-            None => (state.ball_position_x as f32, state.ball_position_y as f32),
-            Some(prev_state) => {
-                let v1 = Vector2::new(prev_state.ball_position_x, prev_state.ball_position_y);
-                let v2 = Vector2::new(state.ball_position_x, state.ball_position_y);
-                let res = v1.lerp(&v2, interpolation);
-                //info!("{} -> {}, {} -> {}", v2[0], res[0], v2[1], res[1]);
-                (res[0] as f32, res[1] as f32)
-            }
-        };
-
-        self.webgl.upload_uniform_fvals_2("u_position", pos);
-
-        self.webgl.upload_uniform_mat_4("u_camera", &self.camera_mat.as_slice()).unwrap();
-
-        self.webgl.upload_uniform_mat_4("u_size", &self.scaling_mat.as_slice()).unwrap();
-
-        self.webgl.activate_texture_for_sampler(self.texture_id.unwrap(), "u_sampler").unwrap();
-
-        self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
-
-        self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
-        */
+    pub fn upload_bg_texture(&mut self, img_data:&web_sys::ImageData) -> Result<(), JsValue> {
+        self.webgl.assign_simple_texture(
+                self.bg_texture_id.unwrap(),
+                TextureTarget::Texture2d,
+                &SimpleTextureOptions {
+                    pixel_format: PixelFormat::Rgba,
+                    ..SimpleTextureOptions::default()
+                },
+                &WebGlTextureSource::ImageData(&img_data),
+            )?;
+        Ok(())
     }
 
 }

@@ -17,9 +17,7 @@ pub struct GameLoop {
 }
 
 impl GameLoop {
-    pub fn new(world:Rc<World>, renderer:Renderer, sequencer:AudioSequencer, event_sender:EventSender) -> Result<Self, JsValue> {
-        let renderer = Rc::new(RefCell::new(renderer));
-        let sequencer = Rc::new(RefCell::new(sequencer));
+    pub fn new(world:Rc<World>, renderer:Rc<RefCell<Renderer>>, sequencer:Rc<RefCell<AudioSequencer>>, event_sender:EventSender) -> Result<Self, JsValue> {
 
         let begin = {
             let event_sender = event_sender.clone();

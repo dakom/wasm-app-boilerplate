@@ -5,14 +5,14 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 static mut ORIGIN_REAL:f64 = 0.3988906701602579;
 static mut ORIGIN_IMAGINARY:f64 = 0.31251882189683733;
-static mut RADIUS:f64 = 1.0;
-static mut ZOOM_FACTOR:f64 = 0.5;
+static mut RADIUS:f64 = 0.1;
+static mut ZOOM_FACTOR:f64 = 0.0;
 static mut ZOOM_CENTER_X:f64 = 0.0;
 static mut ZOOM_CENTER_Y:f64 = 0.0;
 
 // Called by our JS entry point to run the example.
 #[wasm_bindgen]
-pub fn update_pixels(pixels:&mut [u8], palettes:&[u8], width:u32, height:u32, max_iterations:u32) {
+pub fn update_pixels(pixels:&mut [u8], palette:&[u8], width:u32, height:u32, max_iterations:u32) {
     unsafe {
         let scaleX:f64= (2.0 * RADIUS) / (width as f64);
             let scaleY:f64= (2.0 * RADIUS) / (height as f64);
@@ -29,7 +29,7 @@ pub fn update_pixels(pixels:&mut [u8], palettes:&[u8], width:u32, height:u32, ma
                         let zi2 = zi * zi;
 
                         if (zr2 + zi2) >= 4.0 {
-                            put_pixel(pixels, palettes, width, height, x, y, iter as usize); 
+                            put_pixel(pixels, palette, width, height, x, y, iter as usize); 
                             break;
                         }
 
@@ -41,6 +41,15 @@ pub fn update_pixels(pixels:&mut [u8], palettes:&[u8], width:u32, height:u32, ma
                 }
             }
     }
+}
+
+#[wasm_bindgen]
+pub fn cycle_palette(palette:&mut [u8]) {
+    let first_color:[u8;4] = [palette[0], palette[1], palette[2], palette[3]];
+
+    let len = palette.len();
+    palette.copy_within(4.., 0);
+    palette[len-4..].copy_from_slice(&first_color);
 }
 
 fn put_pixel(pixels:&mut [u8], palettes:&[u8], width:u32, height: u32, x:u32, y: u32, color_index: usize) {

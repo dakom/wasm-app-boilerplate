@@ -3,13 +3,16 @@ use log::{info};
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::convert::TryInto;
+use crate::renderer::Renderer;
+use crate::audio::AudioSequencer;
 use super::{BridgeEventIndex, Timestamp};
 use crate::systems;
 use crate::components::*;
 use shipyard::*;
 
 //if result is Ok(true) then send the updated state back
-pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(), JsValue> 
+
+pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut Renderer, sequencer:&mut AudioSequencer) -> Result<(), JsValue> 
 {
     let evt_type:BridgeEventIndex = evt_type.try_into()?;
 
@@ -43,9 +46,14 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World) -> Result<(),
                 if let Some(w) = w.iter().next() {
                     w.width = window_size.width;
                     w.height = window_size.height;
-                    //info!("got window size: {:?}", w);
                 }
             });
+        },
+
+        BridgeEventIndex::BgTexture => 
+        {
+            let img_data:web_sys::ImageData = evt_data.into();
+            renderer.upload_bg_texture(&img_data)?
         },
 
         _ => 

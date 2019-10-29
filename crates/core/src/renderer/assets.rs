@@ -32,10 +32,12 @@ use shipyard::*;
 
 pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
+
     future_to_promise({
             async move {
                 //load everything - then we can borrow renderer mutably since it'll be sync
-                let vertex = fetch::text("media/shaders/vertex.glsl").await?;
+                let smiley_vertex = fetch::text("media/shaders/smiley_vertex.glsl").await?;
+                let bg_vertex = fetch::text("media/shaders/bg_vertex.glsl").await?;
                 let fragment = fetch::text("media/shaders/fragment.glsl").await?;
                 let image = fetch::image("media/images/smiley.svg").await?;
 
@@ -43,8 +45,10 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
                 let mut renderer= renderer.borrow_mut();
 
                 //PROGRAM
-                let program_id = renderer.webgl.compile_program(&vertex, &fragment)?;
-                renderer.program_id = Some(program_id);
+                let program_id = renderer.webgl.compile_program(&smiley_vertex, &fragment)?;
+                renderer.smiley_program_id = Some(program_id);
+                let program_id = renderer.webgl.compile_program(&bg_vertex, &fragment)?;
+                renderer.bg_program_id = Some(program_id);
 
                 //TEXTURE
                 let texture_id = renderer.webgl.create_texture()?;
@@ -57,8 +61,7 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
                         },
                         &WebGlTextureSource::ImageElement(&image),
                     )?;
-
-                renderer.texture_id = Some(texture_id);
+                renderer.smiley_texture_id = Some(texture_id);
 
                 //QUAD GEOM DATA 
                 let buffer_id = renderer.webgl.create_buffer()?;
@@ -74,6 +77,8 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
                 //VAO
                 let vao_id = renderer.webgl.create_vertex_array()?;
+                renderer.vao_id = Some(vao_id);
+
                 renderer.webgl.assign_vertex_array(
                         vao_id,
                         None,
@@ -83,7 +88,9 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
                             opts: &AttributeOptions::new(2, DataType::Float),
                         }],
                     )?;
-                renderer.vao_id = Some(vao_id);
+
+
+
 
                 world.run::<(&mut AssetsLoaded), _>(|assets_loaded| {
                     if let Some(assets_loaded) = assets_loaded.iter().next() {
