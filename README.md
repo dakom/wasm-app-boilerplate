@@ -2,8 +2,38 @@
 
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
-# Dataflow
+# What is it?
+
+A boilerplate for high-performance web apps...
+
+It's kinda like this:
+
+* Rust/WASM
+  * Shipyard ECS (entity component system)
+  * awsm_web (webgl, audio, main loop)
+  * all kinds of heavy lifting
+* Typescript
+  * XState (statecharts)
+  * Lit-HTML (html rendering)
+  * dom/ui and message passing
+
+Or, as a picture:
+
 ![flowchart](https://i.imgur.com/R9D7YJa.png)
+
+# Development
+
+If rust (nightly), npm, and all the prerequisites below are in place- it's simply `npm install` and then `npm start`. Might be nicer to run as `npm start --silent` to get just the meat and potatoes.
+
+## Prerequisites
+
+The prerequisites are a bit of work to setup, but the good news is it's one-time only and overlaps with _any_ rust/wasm project
+
+1. Add `wasm32-unknown-unknown` target to the `nightly` toolchain: `rustup target add wasm32-unknown-unknown --toolchain nightly`
+2. `wasm-opt` must be made available on the PATH (for release mode only): Download from [binaryen releases](https://github.com/WebAssembly/binaryen/releases)
+3. `watchexec` must be installed (for dev mode only): `cargo install watchexec`
+
+Release builds can be packaged via `npm run bundle:local`, but it is also setup to bundle and deploy everything via github actions (see [.github/workflows/build.yml](.github/workflows/build.yml))
 
 # Files and directories
 
@@ -86,45 +116,16 @@ Even though `value` was set from `get_state().textInput`, the latter is now unde
 Also `evt.target.value` is different than `value` even though it is bound to it. If `onInput` sends a state change, then perhaps it would have matched `value`, but there's a small window of possible difference. Better to use the `evt.target.value`, after all - that's the actual event data! 
 
 
-# Requirements 
+## Watching 
 
-Some cargo binaries are expected to be there, like `watchexec` and `wasm-bindgen-cli` (installed via cargo install)
-
-Also rust, the toolchain, wasm target, etc.
-
-Lastly - `wasm-opt` should be on the path. Simplest is to download and extract from the [binaryen releases](https://github.com/WebAssembly/binaryen/releases) and add it to your path.
-
-Other than that, `npm` is used as the task runner. There's lots of minutia handled via sub-scripts and those are prefaced with an underscore.
-
-The only ones that are really run directly are those without an underscore (e.g. `npm start`)
-
-To do a complete build including copying to a dist folder, `npm run bundle:local`, but in a CI environment the copy step might be different (hence the additional bundle option) 
-
-All if this is setup in Travis for simple CI/CD to `gh-pages`, just set the `GITHUB_TOKEN` as an environment variable
-
-
-## Development 
-
-Basically, `npm start --silent` (silent makes it nicer to not get NPM errors when we're already getting Rust/TS errors)
-
-On first run, the sources will need to compile which will take a while. Subsequent recompiles are _much_ faster.
-
-The worker JS itself is actually a very small file in the static dir... no reason to mess with that at all
-
-When the Rust/WASM recompiles, it places the wasm in the static directory too. This will be cleaned via `npm run clean`
-
-Webpack is configured to watch for changes in the static dir (this is a speedup compared to having webpack watch rust sources).
-
-Lastly, Rust is setup via its own watcher (watchexec) to recompile when its sources change, and this is configured as an npm script
-
-The wasm which is imported via the entry (not worker) is imported as a module.
-
-So there are multiple processes that run in parallel and both are launched at `npm start`:
+There are multiple processes that run in parallel and both are launched at `npm start`:
 
 1. Webpack (with various settings): for typescript, core bundling, and static folder changes
 2. Watchexec -> npm -> rustc/wasm_bindgen/etc: for rust compilation (per each rust crate)
 
-In this way, the typescript reloading can be super fast and take advantage of HMR, and the Rust won't trigger false positives as the source changes and has compiler errors.
+Webpack is configured to watch for changes in the static dir (this is a speedup compared to having webpack watch rust sources).
+
+The typescript reloading can be super fast and take advantage of HMR, while the Rust won't trigger false positives as the source changes and has compiler errors.
 
 ## Test, Build, Deploy
 
