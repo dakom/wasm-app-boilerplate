@@ -40,9 +40,9 @@ Release builds can be packaged via `npm run bundle:local`, but it is also setup 
 * [crates/shared/src](crates/fractal/src) - fractal generator for worker testing 
 * [_static](_static) - worker shim and static media 
 
-# Shared types for Events and State
+# Shared types for Events
 
-We want the events and state that must be shared to be checked by the compiler on both the Typescript and Rust side.
+We want the events that must be sent across boundaries to be checked by the compiler on both the Typescript and Rust side.
 
 These shared events are called `BridgeEvent`. On the rust side `BridgeEventIndex` must match the enum on the Typescript side
 
@@ -62,11 +62,11 @@ Audio uses straight web-sys/bindgen/js-sys etc. One gotcha is that user interact
 
 # Workers
 
-I wanted this demo to include a rust-powered worker. The messaging is done through a small js shim which also gets around some bundling issues
+The messaging is done through a small js shim which also gets around some bundling issues.
 
-In order to pick something interesting but slow I threw in a mandelbrot fractal renderer that was sitting from some old project
+In order to pick something interesting but slow, the demo includes a mandelbrot fractal renderer that was sitting from some old project
 
-On slower machines it may take a while to see the images update.
+On slower machines it may take a while to see the images update. On faster machines it might be too fast to show the benefit of a worker ;)
 
 # HTML rendering of ui state
 
