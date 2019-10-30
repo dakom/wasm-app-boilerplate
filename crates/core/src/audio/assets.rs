@@ -26,10 +26,8 @@ pub fn load_assets(sequencer:Rc<RefCell<AudioSequencer>>, world:Rc<World>) {
                 let mut sequencer = sequencer.borrow_mut();
                 sequencer.one_shot_buffer = Some(one_shot_buffer);
 
-                world.run::<(&mut AssetsLoaded), _>(|assets_loaded| {
-                    if let Some(assets_loaded) = assets_loaded.iter().next() {
-                        assets_loaded.audio = true;
-                    }
+                world.run::<Unique<&mut AssetsLoaded>, _>(|assets_loaded| {
+                    assets_loaded.audio = true;
                 });
 
                 Ok(JsValue::null())

@@ -10,19 +10,9 @@ use crate::events::*;
 
 pub fn sequence(world:&World, sequencer:&mut AudioSequencer, interpolation:f64) {
 
-    let mut is_active = true;
-
-    world.run::<(&AudioActive), _>(|active| {
-        if let Some(active) = active.iter().next() {
-            is_active = active.0;
+    world.run::<(&Collision, Unique<&AudioActive>), _>(|(collision, is_active)| {
+        if is_active.0 && collision.iter().next().is_some() {
+            sequencer.play();
         }
     });
-
-    if is_active {
-        world.run::<(&Collision), _>(|collision| {
-            if let Some(collision) = collision.iter().next() {
-                sequencer.play();
-            }
-        });
-    }
 }

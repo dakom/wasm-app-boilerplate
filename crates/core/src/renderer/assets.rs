@@ -92,10 +92,8 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
 
 
-                world.run::<(&mut AssetsLoaded), _>(|assets_loaded| {
-                    if let Some(assets_loaded) = assets_loaded.iter().next() {
-                        assets_loaded.renderer = true;
-                    }
+                world.run::<Unique<&mut AssetsLoaded>, _>(|assets_loaded| {
+                    assets_loaded.renderer = true;
                 });
 
                 Ok(JsValue::null())
