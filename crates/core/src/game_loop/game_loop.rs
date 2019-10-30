@@ -18,7 +18,7 @@ pub struct GameLoop {
 
 impl GameLoop {
     pub fn new(world:Rc<World>, renderer:Rc<RefCell<Renderer>>, sequencer:Rc<RefCell<AudioSequencer>>, event_sender:EventSender) -> Result<Self, JsValue> {
-
+        // loop was ported from https://github.com/IceCreamYou/MainLoop.js#usage
         let begin = {
             let event_sender = event_sender.clone();
             let world = Rc::clone(&world);
