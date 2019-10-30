@@ -94,23 +94,19 @@ impl Renderer {
     }
 
     pub fn render(&mut self, pos:(f32, f32)) {
-        match (self.bg_program_id, self.smiley_program_id) {
-            (Some(bg_program_id), Some(smiley_program_id)) => {
+        if let (Some(bg_program_id), Some(smiley_program_id)) = (self.bg_program_id, self.smiley_program_id) {
+            self.webgl.activate_program(smiley_program_id).unwrap();
+            self.webgl.upload_uniform_fvals_2("u_position", pos).unwrap();
+            self.webgl.upload_uniform_mat_4("u_camera", &self.camera_mat.as_slice()).unwrap();
+            self.webgl.upload_uniform_mat_4("u_size", &self.scaling_mat.as_slice()).unwrap();
+            self.webgl.activate_texture_for_sampler(self.smiley_texture_id.unwrap(), "u_sampler").unwrap();
+            self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
+            self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
 
-                self.webgl.activate_program(smiley_program_id).unwrap();
-                self.webgl.upload_uniform_fvals_2("u_position", pos).unwrap();
-                self.webgl.upload_uniform_mat_4("u_camera", &self.camera_mat.as_slice()).unwrap();
-                self.webgl.upload_uniform_mat_4("u_size", &self.scaling_mat.as_slice()).unwrap();
-                self.webgl.activate_texture_for_sampler(self.smiley_texture_id.unwrap(), "u_sampler").unwrap();
-                self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
-                self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
-
-                self.webgl.activate_program(bg_program_id).unwrap();
-                self.webgl.activate_texture_for_sampler(self.bg_texture_id.unwrap(), "u_sampler").unwrap();
-                self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
-                self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
-            },
-            _ => {}
+            self.webgl.activate_program(bg_program_id).unwrap();
+            self.webgl.activate_texture_for_sampler(self.bg_texture_id.unwrap(), "u_sampler").unwrap();
+            self.webgl.activate_vertex_array(self.vao_id.unwrap()).unwrap();
+            self.webgl.draw_arrays(BeginMode::TriangleStrip, 0, 4);
         }
     }
 

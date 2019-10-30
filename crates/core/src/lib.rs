@@ -1,10 +1,18 @@
+#[allow(clippy::module_inception)]
 mod audio;
+#[allow(clippy::module_inception)]
 mod components;
+#[allow(clippy::module_inception)]
 mod events;
+#[allow(clippy::module_inception)]
 mod game_loop;
+#[allow(clippy::module_inception)]
 mod renderer;
+#[allow(clippy::module_inception)]
 mod systems;
+#[allow(clippy::module_inception)]
 mod world;
+#[allow(clippy::module_inception)]
 mod consts;
 
 use cfg_if::cfg_if;
@@ -62,7 +70,7 @@ pub fn run(canvas:HtmlCanvasElement, audio_ctx:AudioContext, window_width: u32, 
         let world = Rc::clone(&world);
         let renderer = Rc::clone(&renderer);
         let sequencer = Rc::clone(&sequencer);
-        GameLoop::new(world, renderer, sequencer, event_sender.clone())?
+        GameLoop::new(world, renderer, sequencer, event_sender)?
     });
         
 
@@ -78,9 +86,8 @@ pub fn run(canvas:HtmlCanvasElement, audio_ctx:AudioContext, window_width: u32, 
                 let mut renderer = renderer.borrow_mut();
                 let mut sequencer = sequencer.borrow_mut();
                 //The actual handling of events is in this function
-                match handle_event(evt_type, data, &world, &mut renderer, &mut sequencer) {
-                    Err(reason) => info!("Error: {:?}", reason),
-                    _ => {}
+                if let Err(reason) = handle_event(evt_type, data, &world, &mut renderer, &mut sequencer) {
+                    info!("Error: {:?}", reason);
                 }
             }
         }

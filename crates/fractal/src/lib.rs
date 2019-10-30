@@ -3,8 +3,8 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-static mut ORIGIN_REAL:f64 = 0.3988906701602579;
-static mut ORIGIN_IMAGINARY:f64 = 0.31251882189683733;
+static mut ORIGIN_REAL:f64 = 0.398_890_670_160_257_9;
+static mut ORIGIN_IMAGINARY:f64 = 0.312_518_821_896_837_33;
 static mut RADIUS:f64 = 0.1;
 //static mut ZOOM_FACTOR:f64 = 0.0;
 //static mut ZOOM_CENTER_X:f64 = 0.0;
@@ -19,10 +19,10 @@ pub fn update_pixels(pixels:&mut [u8], palette:&[u8], width:u32, height:u32, max
 
             for y in 0..height {
                 for x in 0..width {
-                    let cr = (ORIGIN_REAL - RADIUS) + ((x as f64) * scale_x);
-                    let ci = (ORIGIN_IMAGINARY - RADIUS) + ((y as f64) * scale_y);
-                    let mut zr = 0.0;
-                    let mut zi = 0.0;
+                    let cr = (x as f64).mul_add(scale_x, ORIGIN_REAL - RADIUS);
+                    let ci = (y as f64).mul_add(scale_y, ORIGIN_IMAGINARY - RADIUS);
+                    let mut zr = 0.0f64;
+                    let mut zi = 0.0f64;
 
                     for iter in 0..max_iterations { 
                         let zr2 = zr * zr;
@@ -34,7 +34,7 @@ pub fn update_pixels(pixels:&mut [u8], palette:&[u8], width:u32, height:u32, max
                         }
 
                         let znr = zr2 - zi2 + cr;
-                        let zni = 2.0 * (zr * zi) + ci;
+                        let zni = 2.0f64.mul_add(zr * zi, ci);
                         zr = znr;
                         zi = zni;
                     }

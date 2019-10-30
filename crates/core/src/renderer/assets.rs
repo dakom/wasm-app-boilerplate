@@ -71,7 +71,7 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
                 renderer.webgl.assign_vertex_array(
                         vao_id,
                         None,
-                        &vec![VertexArray {
+                        &[VertexArray {
                             attribute_name: "a_vertex",
                             buffer_id,
                             opts: &AttributeOptions::new(2, DataType::Float),

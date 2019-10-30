@@ -1,3 +1,4 @@
+use float_cmp::approx_eq;
 use shipyard::*;
 //use log::{info};
 use crate::consts;
@@ -38,6 +39,7 @@ pub fn update_motion(world:&World, delta:f64) {
         }
     });
 
+    #[allow(clippy::useless_let_if_seq)]
     world.run::<(&mut Position, &mut Direction, &WindowSize), _> (|(positions, directions, window_sizes)| {
         if let Some(window_size) = window_sizes.iter().next() {
             for (pos, dir) in (positions, directions).iter() {
@@ -56,25 +58,25 @@ pub fn update_motion(world:&World, delta:f64) {
                 let mut collision = false;
 
                 //TODO - use normal instead of just moving to edge
-                if dir.x == -1.0 && ball_left < wall_left {
+                if approx_eq!(f64, dir.x, -1.0) && ball_left < wall_left {
                     //pos.x = consts::BALL.radius;
                     dir.x = 1.0;
                     collision = true;
                 }
 
-                if dir.x == 1.0 && ball_right > wall_right {
+                if approx_eq!(f64, dir.x, 1.0) && ball_right > wall_right {
                     //pos.x = wall_right - consts::BALL.radius;
                     dir.x = -1.0;
                     collision = true;
                 }
 
-                if dir.y == 1.0 && ball_top > wall_top{
+                if approx_eq!(f64, dir.y, 1.0) && ball_top > wall_top{
                     //pos.y = wall_top - consts::BALL.radius;
                     dir.y = -1.0;
                     collision = true;
                 }
 
-                if dir.y == -1.0 && ball_bottom < wall_bottom {
+                if approx_eq!(f64, dir.y, -1.0) && ball_bottom < wall_bottom {
                     //pos.y = consts::BALL.radius;
                     dir.y = 1.0;
                     collision = true;

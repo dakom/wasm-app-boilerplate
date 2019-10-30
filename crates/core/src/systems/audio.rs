@@ -14,7 +14,7 @@ pub fn sequence(world:&World, sequencer:&mut AudioSequencer, _interpolation:f64)
 
     if is_active {
         world.run::<(&Collision), _>(|collision| {
-            if let Some(_) = collision.iter().next() {
+            if collision.iter().next().is_some() {
                 sequencer.play().unwrap();
             }
         });
