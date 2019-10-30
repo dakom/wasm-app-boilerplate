@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 mod audio;
 pub mod assets;
 

@@ -1,25 +1,22 @@
 use wasm_bindgen::prelude::*;
 use log::{info};
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::convert::TryInto;
 use crate::renderer::Renderer;
 use crate::audio::AudioSequencer;
-use super::{BridgeEventIndex, Timestamp};
-use crate::systems;
+use super::{BridgeEventIndex};
 use crate::components::*;
 use shipyard::*;
 
 //if result is Ok(true) then send the updated state back
 
-pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut Renderer, sequencer:&mut AudioSequencer) -> Result<(), JsValue> 
+pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut Renderer, _sequencer:&mut AudioSequencer) -> Result<(), JsValue> 
 {
     let evt_type:BridgeEventIndex = evt_type.try_into()?;
 
     match evt_type {
         BridgeEventIndex::ToggleAudio =>
         {
-            world.run::<(EntitiesMut, &mut AudioActive), _>(|(mut entities, mut a)| {
+            world.run::<(&mut AudioActive), _>(|a| {
                 if let Some(a) = a.iter().next() {
                     a.0 = !a.0 ;
                     //info!("got audio active: {}", a.0);
@@ -31,7 +28,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut
             let speed:Speed = serde_wasm_bindgen::from_value(evt_data)?;
 
             //speed crashes
-            world.run::<(EntitiesMut, &mut Speed), _>(|(mut entities, mut s)| { 
+            world.run::<(&mut Speed), _>(|s| { 
                 if let Some(s) = s.iter().next() {
                     s.0 = speed.0;
                     //info!("got speed: {}", s.0);
@@ -42,7 +39,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut
         BridgeEventIndex::WindowSize =>
         {
             let window_size:WindowSize = serde_wasm_bindgen::from_value(evt_data)?;
-            world.run::<(EntitiesMut, &mut WindowSize), _>(|(mut entities, mut w)| {
+            world.run::<(&mut WindowSize), _>(|w| {
                 if let Some(w) = w.iter().next() {
                     w.width = window_size.width;
                     w.height = window_size.height;

@@ -1,21 +1,11 @@
 use wasm_bindgen::prelude::*;
-use shipyard::*;
-use wasm_bindgen::JsCast;
-use wasm_bindgen_futures::futures_0_3::future_to_promise;
 use web_sys::{HtmlCanvasElement};
-use std::rc::{Rc};
-use std::cell::{RefCell};
-use log::{info};
 use crate::consts;
-use crate::events::*;
-use super::assets::load_assets;
-use nalgebra::{Matrix4, Point2, Vector2, Vector3};
-use awsm_web::loaders::fetch;
+use nalgebra::{Matrix4, Vector3};
 use awsm_web::webgl::{
     get_webgl_context_1, 
     WebGlContextOptions, 
     ClearBufferMask,
-    WebGlCommon,
     WebGl1Renderer,
     Id,
     GlToggle,
@@ -25,12 +15,6 @@ use awsm_web::webgl::{
     SimpleTextureOptions,
     PixelFormat,
     WebGlTextureSource,
-    BufferData,
-    BufferTarget,
-    BufferUsage,
-    DataType,
-    AttributeOptions,
-    VertexArray
 };
 
 pub struct Renderer {
@@ -56,7 +40,7 @@ impl Renderer {
 
         let mut webgl = WebGl1Renderer::new(gl)?;
 
-        webgl.register_extension_vertex_array();
+        webgl.register_extension_vertex_array()?;
 
 
         let scaling_mat = Matrix4::new_nonuniform_scaling(&Vector3::new(
@@ -95,7 +79,7 @@ impl Renderer {
             ClearBufferMask::DepthBufferBit,
         ]);
 
-        if(self.last_window_width != window_width || self.last_window_height != window_height) {
+        if self.last_window_width != window_width || self.last_window_height != window_height {
             self.camera_mat = Matrix4::new_orthographic(
                         0.0,
                         window_width as f32,

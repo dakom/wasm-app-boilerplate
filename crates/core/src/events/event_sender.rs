@@ -35,6 +35,6 @@ impl EventSender {
         let evt_type = JsValue::from(evt_type);
 
         let this = JsValue::NULL;
-        self._send_event.call2(&this, &evt_type, &evt_data);
+        self._send_event.call2(&this, &evt_type, &evt_data).unwrap();
     }
 }

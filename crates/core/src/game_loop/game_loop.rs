@@ -1,19 +1,16 @@
-use awsm_web::tick;
 use awsm_web::tick::{MainLoop, MainLoopOptions, RafLoop};
 use crate::renderer::Renderer;
 use crate::audio::AudioSequencer;
 use crate::events::*;
 use crate::systems;
 
-use log::info;
 use std::cell::RefCell;
 use std::rc::Rc;
 use shipyard::*;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
 
 pub struct GameLoop {
-    raf_loop:RafLoop
+    _raf_loop:RafLoop
 }
 
 impl GameLoop {
@@ -68,7 +65,7 @@ impl GameLoop {
         crate::renderer::assets::load_assets(renderer, Rc::clone(&world));
 
         Ok(Self{
-            raf_loop
+            _raf_loop: raf_loop
         })
     }
 }

@@ -2,12 +2,8 @@ use shipyard::*;
 use crate::consts;
 use crate::components::*;
 use crate::renderer::Renderer;
-use std::cell::RefCell;
-use std::rc::Rc;
-use crate::audio::AudioSequencer;
-use log::info;
 use crate::events::*;
-use nalgebra::{Matrix4, Point2, Vector2, Vector3};
+use nalgebra::{Vector2};
 pub fn render(world:&World, renderer:&mut Renderer, interpolation:f64) {
 
     world.run::<(&WindowSize), _>(|window_size| {

@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 mod audio;
 mod components;
 mod events;

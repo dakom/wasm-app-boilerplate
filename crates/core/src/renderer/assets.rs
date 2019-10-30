@@ -1,20 +1,9 @@
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use crate::events::*;
 use wasm_bindgen_futures::futures_0_3::future_to_promise;
-use web_sys::{HtmlCanvasElement};
 use std::rc::{Rc};
 use std::cell::{RefCell};
-use log::{info};
-use crate::consts;
 use awsm_web::loaders::fetch;
 use awsm_web::webgl::{
-    get_webgl_context_1, 
-    WebGlContextOptions, 
-    ClearBufferMask,
-    WebGlCommon,
-    WebGl1Renderer,
-    Id,
     TextureTarget,
     SimpleTextureOptions,
     PixelFormat,

@@ -1,14 +1,8 @@
 use shipyard::*;
-use crate::consts;
 use crate::components::*;
-use crate::renderer::Renderer;
-use std::cell::RefCell;
-use std::rc::Rc;
 use crate::audio::AudioSequencer;
-use log::info;
-use crate::events::*;
 
-pub fn sequence(world:&World, sequencer:&mut AudioSequencer, interpolation:f64) {
+pub fn sequence(world:&World, sequencer:&mut AudioSequencer, _interpolation:f64) {
 
     let mut is_active = true;
 
@@ -20,8 +14,8 @@ pub fn sequence(world:&World, sequencer:&mut AudioSequencer, interpolation:f64) 
 
     if is_active {
         world.run::<(&Collision), _>(|collision| {
-            if let Some(collision) = collision.iter().next() {
-                sequencer.play();
+            if let Some(_) = collision.iter().next() {
+                sequencer.play().unwrap();
             }
         });
     }
