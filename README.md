@@ -8,14 +8,12 @@ A boilerplate for high-performance web apps...
 
 It's kinda like this:
 
-* Rust/WASM
-  * Shipyard ECS (entity component system)
-  * awsm_web (webgl, audio, main loop)
-  * all kinds of heavy lifting
-* Typescript
-  * XState (statecharts)
-  * Lit-HTML (html rendering)
-  * dom/ui and message passing
+* Rust/WASM (the heavy lifting)
+  * [Shipyard ECS](https://github.com/leudz/shipyard) (entity component system)
+  * [awsm_web](https://github.com/dakom/awsm/tree/master/crates/web) (webgl, audio, main loop)
+* Typescript (dom/ui and message passing)
+  * [XState](https://github.com/davidkpiano/xstate) (statecharts)
+  * [Lit-HTML](https://github.com/Polymer/lit-html) (html rendering)
 
 Or, as a picture:
 
