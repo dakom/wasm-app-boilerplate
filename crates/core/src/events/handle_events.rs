@@ -16,11 +16,9 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut
     match evt_type {
         BridgeEventIndex::ToggleAudio =>
         {
-            world.run::<(&mut AudioActive), _>(|a| {
-                if let Some(a) = a.iter().next() {
-                    a.0 = !a.0 ;
-                    //info!("got audio active: {}", a.0);
-                }
+            world.run::<Unique<&mut AudioActive>, _>(|mut a| {
+                a.0 = !a.0;
+                //info!("got audio active: {}", a.0);
             });
         },
         BridgeEventIndex::Speed =>
