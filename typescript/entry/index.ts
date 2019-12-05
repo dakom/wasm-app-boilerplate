@@ -1,6 +1,5 @@
 import { init_core_sender, send_bridge_event_from_core_to_ts_unchecked, send_state_event, send_bridge_event, BridgeEvent } from "@events/events";
 import { get_audio_context } from "@utils/audio";
-import { load_wasm } from "@utils/wasm";
 import {render_ui} from "@ui/ui";
 import { get_window_size } from "@utils/window";
 import "./index.css";
@@ -42,13 +41,11 @@ fractal_worker.onmessage = (msg: MessageEvent) => {
 
 }
 
-//also load the core wasm immediately
-load_wasm("wasm/core/pkg/my_core", "wasm_core")
-    .then(_init_core => {
-        wasm_loaded.core = true;
-        init_core = _init_core;
-        try_init_main();
-    })
+(window as any).load_wasm(core => {
+    wasm_loaded.core = true;
+    init_core = core.run;
+    try_init_main();
+});
 
 //will be called successfully when everything is ready - after that, it's up to state management
 function try_init_main() {
