@@ -20,8 +20,8 @@ num-traits = "0.2.10"
 num-derive = "0.3.0"
 wee_alloc = "0.4.5"
 shipyard = { git= "https://github.com/leudz/shipyard.git", features = ["proc"], default-features = false}
-awsm_web = { version = "0.0.11", features = ["tick", "webgl", "loaders", "audio"], default-features = false }
-wasm-bindgen-futures= { version = "0.4.5"}
+awsm_web = { version = "0.0.13", features = ["tick", "webgl", "loaders", "audio"], default-features = false }
+wasm-bindgen-futures= "0.4.5"
 console_log = { version = "0.1.2", optional = true }
 console_error_panic_hook = { version = "0.1.6", optional = true }
 web-sys = { version = "0.3.32", features = [
