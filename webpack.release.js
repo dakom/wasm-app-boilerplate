@@ -54,6 +54,9 @@ module.exports = {
                 use: [
                     { loader: 'ts-loader', options: { transpileOnly: true } }
                 ],
+                exclude: [
+                    path.resolve(__dirname, "typescript/tests/**/*"),
+                ]
             },
             {
 

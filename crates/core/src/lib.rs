@@ -54,6 +54,8 @@ cfg_if! {
 }
 
 // Called by our JS entry point to run the example.
+
+#[cfg(not(feature = "ts_test"))]
 #[wasm_bindgen]
 pub fn run(canvas:HtmlCanvasElement, audio_ctx:AudioContext, window_width: u32, window_height: u32, send_bridge_event:js_sys::Function) -> Result<JsValue, JsValue> {
     init_panic();

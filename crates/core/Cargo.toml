@@ -36,8 +36,12 @@ web-sys = { version = "0.3.32", features = [
     'Event',
     'HtmlCanvasElement'
 ] }
+# Just for tests
+strum = {version = "0.16.0", optional = true }
+strum_macros = {version = "0.16.0", optional = true}
 
 [features]
 # TODO - remove these when we can really use dev feature (see https://users.rust-lang.org/t/dependencies-based-on-profile/32386/4)
 default = ["console_log", "console_error_panic_hook"]
 dev = ["console_log", "console_error_panic_hook"]
+ts_test = ["strum", "strum_macros"]

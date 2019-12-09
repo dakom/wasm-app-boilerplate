@@ -20,9 +20,9 @@ export const if_state_fn = <TContext, TEvent extends EventObject, T>(lookup:{[ke
     return res;
 }
 export const if_state_exec = <TContext, TEvent extends EventObject, T>(lookup:{[key:string]: () => T} | Map<string | Array<string>, () => T>) => (state:State<TContext, TEvent>):T => {
-    const fn = if_state_fn (lookup) (state);
+    const fn = if_state_fn <TContext, TEvent, T>(lookup) (state);
     return fn === undefined ? undefined : fn();
 }
 
 export const if_state_html = <TContext, TEvent extends EventObject>(lookup:{[key:string]: () => TemplateResult} | Map<string | Array<string>, () => TemplateResult>) => (state:State<TContext, TEvent>):TemplateResult => 
-    if_state_exec(lookup) (state);
+    if_state_exec<TContext, TEvent, TemplateResult>(lookup) (state);

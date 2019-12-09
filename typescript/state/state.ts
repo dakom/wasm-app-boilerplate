@@ -37,7 +37,7 @@ const machine = Machine({
             on: {
                 TOGGLE_AUDIO: {
                     actions: assign({
-                        audio_active: (ctx) => !ctx.audio_active
+                        audio_active: (ctx:any) => !ctx.audio_active
                     }) as any
                 }
             }

@@ -3,7 +3,7 @@ use log::{info};
 use std::convert::TryInto;
 use crate::renderer::Renderer;
 use crate::audio::AudioSequencer;
-use super::{BridgeEventIndex};
+use super::{BridgeEvent};
 use crate::components::*;
 use shipyard::*;
 
@@ -11,17 +11,17 @@ use shipyard::*;
 
 pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut Renderer, _sequencer:&mut AudioSequencer) -> Result<(), JsValue> 
 {
-    let evt_type:BridgeEventIndex = evt_type.try_into()?;
+    let evt_type:BridgeEvent = evt_type.try_into()?;
 
     match evt_type {
-        BridgeEventIndex::ToggleAudio =>
+        BridgeEvent::ToggleAudio =>
         {
             world.run::<Unique<&mut AudioActive>, _>(|mut a| {
                 a.0 = !a.0;
                 //info!("got audio active: {}", a.0);
             });
         },
-        BridgeEventIndex::Speed =>
+        BridgeEvent::Speed =>
         {
             let speed:Speed = serde_wasm_bindgen::from_value(evt_data)?;
 
@@ -34,7 +34,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut
             });
         },
 
-        BridgeEventIndex::WindowSize =>
+        BridgeEvent::WindowSize =>
         {
             let window_size:WindowSize = serde_wasm_bindgen::from_value(evt_data)?;
             world.run::<(&mut WindowSize), _>(|w| {
@@ -45,7 +45,7 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut
             });
         },
 
-        BridgeEventIndex::BgTexture => 
+        BridgeEvent::BgTexture => 
         {
             let img_data:web_sys::ImageData = evt_data.into();
             renderer.upload_bg_texture(&img_data)?

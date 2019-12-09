@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
-use super::{BridgeEventIndex};
+use super::{BridgeEvent};
 
 //when going from rust - use enums and only what we need!
 #[derive(Serialize, Deserialize)]
@@ -23,8 +23,8 @@ impl EventSender {
 
     pub fn send(&self, evt:&Event) {
         let (evt_type, evt_data) = match evt {
-            Event::AssetsLoaded => (BridgeEventIndex::AssetsLoaded, JsValue::UNDEFINED),
-            Event::RenderUi => (BridgeEventIndex::RenderUi, JsValue::UNDEFINED),
+            Event::AssetsLoaded => (BridgeEvent::AssetsLoaded, JsValue::UNDEFINED),
+            Event::RenderUi => (BridgeEvent::RenderUi, JsValue::UNDEFINED),
         };
 
         //Even though we're ultimately going from Rust -> rustc

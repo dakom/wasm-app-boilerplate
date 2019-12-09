@@ -29,7 +29,8 @@
         },
     },
     "include": [
-        "./**/*.ts"
+        "./**/*.ts",
+        "../_static/**/*.ts"
     ],
     "exclude": [
         "node_modules",

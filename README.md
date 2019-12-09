@@ -44,7 +44,9 @@ Release builds can be packaged via `npm run bundle:local`, but it is also setup 
 
 We want the events that must be sent across boundaries to be checked by the compiler on both the Typescript and Rust side.
 
-These shared events are called `BridgeEvent`. On the rust side `BridgeEventIndex` must match the enum on the Typescript side
+These shared events are called `BridgeEvent`. 
+
+They must match the same name and order, however this is guaranteed via the provided unit tests.
 
 # Managing application state in WASM
 
