@@ -13,7 +13,7 @@ cfg_if! {
 }
 
 #[cfg_attr(feature = "ts_test", derive(EnumIter, AsRefStr))]
-#[derive(FromPrimitive, Copy, Clone, Debug)]
+#[derive(FromPrimitive, Copy, Clone, Debug, Serialize, Deserialize)]
 #[repr(u32)]
 pub enum BridgeEvent {
     ToggleAudio,

@@ -41,7 +41,7 @@ impl GameLoop {
                 let mut sequencer = sequencer.borrow_mut();
                 systems::graphics::render(&world, &mut renderer, interpolation);
                 systems::audio::sequence(&world, &mut sequencer, interpolation);
-                event_sender.send(&Event::RenderUi{});
+                event_sender.send(&BridgeEvent::RenderUi{});
             }
         };
 

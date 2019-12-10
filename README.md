@@ -42,11 +42,21 @@ Release builds can be packaged via `npm run bundle:local`, but it is also setup 
 
 # Shared types for Events
 
-We want the events that must be sent across boundaries to be checked by the compiler on both the Typescript and Rust side.
+We want the event types to be checked by the compiler on both the Typescript and Rust side.
 
-These shared events are called `BridgeEvent`. 
+This happens through a few design decisions and a generic test:
 
-They must match the same name and order, however this is guaranteed via the provided unit tests.
+1. Events are split into the event type (`BridgeEvent`) and the event data.
+2. `BridgeEvent` is a simple index-based enum in both Rust and Typescript
+3. The exact order and names must match in both languages
+4. A [generic test](typescript/tests/events.spec.ts) ensures that it is all correct. 
+
+In order to ensure that the correct data type is sent for the event type, it's handled on each language:
+
+* Typescript: specify the pairs in `ValidEvent` and it's checked statically on the language level.
+* Rust: use regular Rust types, and they are turned into `BridgeEvent` just before sending via a single `match`.
+
+Additionally the events are (de)serialized on the Rust side with serde and derive macros.
 
 # Managing application state in WASM
 
