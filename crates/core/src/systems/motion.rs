@@ -1,5 +1,5 @@
 use float_cmp::approx_eq;
-use shipyard::*;
+use shipyard::prelude::*;
 //use log::{info};
 use crate::consts;
 use crate::components::*;
@@ -8,7 +8,7 @@ pub fn update_motion(world:&World, delta:f64) {
 
     let mut entities_to_delete:Vec<Key> = vec![];
 
-    world.run::<(&Collision), _>(|collision| {
+    world.run::<&Collision, _, _>(|collision| {
         entities_to_delete = collision
             .iter()
             .with_id()
@@ -16,21 +16,21 @@ pub fn update_motion(world:&World, delta:f64) {
             .collect::<Vec<Key>>();
     });
     
-    world.run::<(EntitiesMut, AllStorages), _>(|(mut entities, mut all_storages)| {
+    world.run::<AllStorages, _, _>(|mut all_storages| {
         for id in entities_to_delete {
-            entities.delete(&mut all_storages, id);
+            all_storages.delete(id);
         }
     });
 
 
-    world.run::<(&Position, &mut LastPosition), _> (|(pos, last_pos)| {
+    world.run::<(&Position, &mut LastPosition), _, _> (|(pos, last_pos)| {
         for (pos, last_pos) in (pos, last_pos).iter() { 
             last_pos.x = pos.x; 
             last_pos.y = pos.y; 
         }
     });
 
-    world.run::<(&mut Position, &Speed, &Direction), _> (|(positions, speeds, directions)| {
+    world.run::<(&mut Position, &Speed, &Direction), _, _> (|(positions, speeds, directions)| {
         for (pos, speed, dir) in (positions, speeds, directions).iter() { 
             let speed = speed.0;
             pos.x += (speed * dir.x) * delta;
@@ -40,7 +40,7 @@ pub fn update_motion(world:&World, delta:f64) {
     });
 
     #[allow(clippy::useless_let_if_seq)]
-    world.run::<(&mut Position, &mut Direction, &WindowSize), _> (|(positions, directions, window_sizes)| {
+    world.run::<(&mut Position, &mut Direction, &WindowSize), _, _> (|(positions, directions, window_sizes)| {
         if let Some(window_size) = window_sizes.iter().next() {
             for (pos, dir) in (positions, directions).iter() {
 
@@ -83,7 +83,7 @@ pub fn update_motion(world:&World, delta:f64) {
                 }
 
                 if collision {
-                    world.run::<(EntitiesMut, &mut Collision), _>(|(mut entities, mut collision)| {
+                    world.run::<(EntitiesMut, &mut Collision), _, _>(|(mut entities, mut collision)| {
                         entities.add_entity(&mut collision,  Collision {});
                     });
                 }

@@ -17,7 +17,7 @@ use awsm_web::webgl::{
 };
 use crate::components::*;
 use super::renderer::Renderer;
-use shipyard::*;
+use shipyard::prelude::*;
 
 pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
@@ -81,7 +81,7 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
 
 
-                world.run::<Unique<&mut AssetsLoaded>, _>(|assets_loaded| {
+                world.run::<Unique<&mut AssetsLoaded>, _, _>(|assets_loaded| {
                     assets_loaded.renderer = true;
                 });
 

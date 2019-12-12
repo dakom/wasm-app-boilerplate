@@ -6,7 +6,7 @@ use crate::systems;
 
 use std::cell::RefCell;
 use std::rc::Rc;
-use shipyard::*;
+use shipyard::prelude::*;
 use wasm_bindgen::prelude::*;
 
 pub struct GameLoop {
