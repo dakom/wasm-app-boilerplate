@@ -4,7 +4,7 @@ use std::rc::{Rc};
 use std::cell::{RefCell};
 use awsm_web::loaders::fetch;
 use super::audio::AudioSequencer;
-use shipyard::*;
+use shipyard::prelude::*;
 use crate::components::{AssetsLoaded};
 
 pub fn load_assets(sequencer:Rc<RefCell<AudioSequencer>>, world:Rc<World>) {
@@ -22,7 +22,7 @@ pub fn load_assets(sequencer:Rc<RefCell<AudioSequencer>>, world:Rc<World>) {
                 let mut sequencer = sequencer.borrow_mut();
                 sequencer.one_shot_buffer = Some(one_shot_buffer);
 
-                world.run::<Unique<&mut AssetsLoaded>, _>(|assets_loaded| {
+                world.run::<Unique<&mut AssetsLoaded>, _, _>(|assets_loaded| {
                     assets_loaded.audio = true;
                 });
 

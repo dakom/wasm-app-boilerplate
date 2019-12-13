@@ -1,4 +1,4 @@
-use shipyard::*;
+use shipyard::prelude::*;
 use crate::consts;
 use crate::components::*;
 
@@ -15,7 +15,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
     world.register_unique(AssetsLoaded::default());
     world.register::<Collision>();
 
-    world.run::<(EntitiesMut, &mut Position, &mut LastPosition, &mut Speed, &mut Direction), _>(|(mut entities, mut pos, mut last_pos, mut speed, mut dir)| {
+    world.run::<(EntitiesMut, &mut Position, &mut LastPosition, &mut Speed, &mut Direction), _, _>(|(mut entities, mut pos, mut last_pos, mut speed, mut dir)| {
         entities.add_entity(
             (&mut pos, &mut last_pos, &mut speed, &mut dir), 
             (
@@ -27,7 +27,7 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
         );
     });
 
-    world.run::<(EntitiesMut, &mut WindowSize), _>(|(mut entities, mut window_size)| {
+    world.run::<(EntitiesMut, &mut WindowSize), _, _>(|(mut entities, mut window_size)| {
         entities.add_entity(&mut window_size, WindowSize {width: window_width, height: window_height});
     });
 
