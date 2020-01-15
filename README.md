@@ -1,5 +1,7 @@
 [![Build Status](https://github.com/dakom/wasm-app-boilerplate/workflows/Test%2C%20Build%2C%20and%20Deploy/badge.svg)](https://github.com/dakom/wasm-app-boilerplate/actions)
 
+## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
+
 ### Note: for a more recent example, especially where DOM is a concern, see [todo-shipyard-lit-dominator](https://github.com/dakom/todo-shipyard-lit-dominator)
 
 # What is it?
