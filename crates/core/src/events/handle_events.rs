@@ -16,33 +16,27 @@ pub fn handle_event(evt_type:u32, evt_data: JsValue, world:&World, renderer:&mut
     match evt_type {
         BridgeEvent::ToggleAudio =>
         {
-            world.run::<Unique<&mut AudioActive>, _, _>(|mut a| {
-                a.0 = !a.0;
-                //info!("got audio active: {}", a.0);
-            });
+            let mut audio_active = world.borrow::<Unique<&mut AudioActive>>();
+            audio_active.0 = !audio_active.0;
         },
         BridgeEvent::Speed =>
         {
             let speed:Speed = serde_wasm_bindgen::from_value(evt_data)?;
 
-            //speed crashes
-            world.run::<&mut Speed, _, _>(|s| { 
-                if let Some(s) = s.iter().next() {
-                    s.0 = speed.0;
-                    //info!("got speed: {}", s.0);
-                }
-            });
+            let mut speeds = world.borrow::<&mut Speed>();
+            if let Some(s) = (&mut speeds).iter().next() {
+                s.0 = speed.0;
+            }
         },
 
         BridgeEvent::WindowSize =>
         {
             let window_size:WindowSize = serde_wasm_bindgen::from_value(evt_data)?;
-            world.run::<&mut WindowSize, _, _>(|w| {
-                if let Some(w) = w.iter().next() {
-                    w.width = window_size.width;
-                    w.height = window_size.height;
-                }
-            });
+            let mut window_sizes = world.borrow::<&mut WindowSize>();
+            if let Some(w) = (&mut window_sizes).iter().next() {
+                w.width = window_size.width;
+                w.height = window_size.height;
+            }
         },
 
         BridgeEvent::BgTexture => 

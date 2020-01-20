@@ -3,21 +3,24 @@ use crate::consts;
 use crate::components::*;
 
 pub fn init_world(window_width: u32, window_height: u32) -> World {
-    let world = World::default();
+    let world = World::new::<(
+        Position,
+        LastPosition,
+        Speed,
+        Direction,
+        WindowSize,
+        Collision
+    )>();
 
     //These are added immediately 
-    world.register::<Position>();
-    world.register::<LastPosition>();
-    world.register::<Speed>();
-    world.register::<Direction>();
-    world.register::<WindowSize>();
-    world.register_unique(AudioActive(consts::DEFAULT_AUDIO));
-    world.register_unique(AssetsLoaded::default());
-    world.register::<Collision>();
+    world.add_unique(AudioActive(consts::DEFAULT_AUDIO));
+    world.add_unique(AssetsLoaded::default());
 
-    world.run::<(EntitiesMut, &mut Position, &mut LastPosition, &mut Speed, &mut Direction), _, _>(|(mut entities, mut pos, mut last_pos, mut speed, mut dir)| {
+    {
+        let (mut entities, views) = world.borrow::<(EntitiesMut, (&mut Position, &mut LastPosition, &mut Speed, &mut Direction))>();
+        let (mut positions, mut last_positions, mut speeds, mut directions) = views;
         entities.add_entity(
-            (&mut pos, &mut last_pos, &mut speed, &mut dir), 
+            (&mut positions, &mut last_positions, &mut speeds, &mut directions), 
             (
                 Position { x: (window_width as f64) / 2.0, y: (window_height as f64) / 2.0},
                 LastPosition { x: (window_width as f64) / 2.0, y: (window_height as f64) / 2.0},
@@ -25,11 +28,10 @@ pub fn init_world(window_width: u32, window_height: u32) -> World {
                 Direction {x: 1.0, y: 1.0}
             )
         );
-    });
 
-    world.run::<(EntitiesMut, &mut WindowSize), _, _>(|(mut entities, mut window_size)| {
-        entities.add_entity(&mut window_size, WindowSize {width: window_width, height: window_height});
-    });
+        let mut window_sizes = world.borrow::<&mut WindowSize>();
+        entities.add_entity(&mut window_sizes, WindowSize {width: window_width, height: window_height});
+    }
 
     world
 }

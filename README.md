@@ -2,7 +2,7 @@
 
 ## [LIVE DEMO](https://dakom.github.io/wasm-app-boilerplate)
 
-### Note: for a more recent example, especially where DOM is a concern, see [todo-shipyard-lit-dominator](https://github.com/dakom/todo-shipyard-lit-dominator)
+### Note: for a more recent (and dom-centric) example, see [todo-shipyard-lit-dominator](https://github.com/dakom/todo-shipyard-lit-dominator)
 
 # What is it?
 

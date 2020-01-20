@@ -81,9 +81,7 @@ pub fn load_assets(renderer:Rc<RefCell<Renderer>>, world:Rc<World>) {
 
 
 
-                world.run::<Unique<&mut AssetsLoaded>, _, _>(|assets_loaded| {
-                    assets_loaded.renderer = true;
-                });
+                world.borrow::<Unique<&mut AssetsLoaded>>().renderer = true;
 
                 Ok(JsValue::null())
             }

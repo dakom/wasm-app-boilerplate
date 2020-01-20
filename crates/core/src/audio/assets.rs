@@ -23,11 +23,6 @@ pub fn load_assets(sequencer:Rc<RefCell<AudioSequencer>>, world:Rc<World>) {
                 sequencer.one_shot_buffer = Some(one_shot_buffer);
 
                 world.borrow::<Unique<&mut AssetsLoaded>>().audio = true;
-                /*
-                world.run::<Unique<&mut AssetsLoaded>, _, _>(|assets_loaded| {
-                    assets_loaded.audio = true;
-                });
-                */
 
                 Ok(JsValue::null())
             }
